@@ -1,0 +1,255 @@
+{
+  "header": {
+    "navItems": {
+      "promo": "Promo",
+      "aboutUs": "About Us",
+      "packages": "Packages",
+      "tayyranBusiness": "Tayyran Business",
+      "corporate": "Corporate"
+    },
+    "registerButton": "Sign Up"
+  },
+  "Stepper": {
+    "flightSteps": {
+      "chooseFlight": "Choose your flight",
+      "enterDetails": "Enter your details",
+      "upgradeExperience": "Upgrade your experience",
+      "finalDetails": "Final details"
+    },
+    "hotelSteps": {
+      "selectHotel": "Select Hotel",
+      "selectRoom": "Select Room",
+      "enterDetails": "Enter Your Details",
+      "finalDetails": "Final Details"
+    }
+  },
+  "HomePage": {
+    "heroSection": {
+      "mainHeading": "Let’s book your next trip! now",
+      "subHeading": "Choose from over 1.5 million hotels & 450+ airlines",
+      "searchForm": {
+        "formTypeHotels": "Hotels",
+        "formTypeFlights": "Flights",
+        "fromFieldLabel": "From",
+        "toFieldLabel": "To",
+        "DatePicker": "Departure Date",
+        "returnDate": "Return Date",
+        "travelersLabel": "Travelers",
+        "classLabel": "Class",
+        "searchButton": "Search",
+        "searchButtonLoading": "Searching ...",
+        "loadingText": "Loading ...",
+        "hotelCountryLabel": "Select Country",
+        "hotelCityLabel": "Select City",
+        "hotelCheckInDate": "Check-In",
+        "hotelCheckOutDate": "Check-Out"
+      }
+    },
+    "bestOffer": {
+      "bestOfferHeading": "Best Offer",
+      "bestOfferText": "Members save 10% or more on over 100,000 hotels worldwide when signed in",
+      "bestOfferButton": "Sign in now"
+    },
+    "topHotels": {
+      "topHotelsHeading": "Top Hotels",
+      "categories": {
+        "Trending": "Trending",
+        "5-Star": "5-Star",
+        "Asian": "Asian",
+        "Europe": "Europe",
+        "Middle-East": "Middle-East",
+        "Budget-Friendly": "Budget-Friendly",
+        "Adventure": "Adventure",
+        "Family-Friendly": "Family-Friendly"
+      }
+    },
+    "topDeals": {
+      "topDealsHeading": "Last Minute Weekend Deals",
+      "bookNowButton": "Book Now"
+    },
+    "weekendDeals": {
+      "heading": "Last Minute Weekend Deals",
+      "dealsButton": "Member Price Available"
+    },
+    "topFlights": {
+      "heading": "Popular flights near you",
+      "categories": {
+        "International": "International",
+        "Domestic": "Domestic"
+      }
+    },
+    "mobileAppSection": {
+      "heading": "Get Our Mobile App!",
+      "exprensHeading": "Experience Convenience at Your Fingertips",
+      "subHeading": "Explore our curated list of the best countries to visit in 2024 and discover incredible destinations waiting to be explored",
+      "downloadButton": "Download Now"
+    }
+  },
+  "flightsearch": {
+    "noflight": "No Flight Found"
+  },
+  "searchForm": {
+    "tripTypes": {
+      "roundtrip": "Back and forth",
+      "oneway": "One way only",
+      "multiplecities": "Multiple cities"
+    },
+    "flightClass": {
+      "economy": "Economy",
+      "premiumEconomy": "Premium Economy",
+      "business": "Business",
+      "firstClass": "First Class"
+    },
+    "travlers": {
+      "buttonLabel": "Passengers",
+      "travlers": "Travelers",
+      "adults": {
+        "label": "Adults",
+        "note": "12+ Yrs"
+      },
+      "children": {
+        "label": "children",
+        "note": "2-12 Yrs"
+      },
+      "infants": {
+        "label": "infants",
+        "note": "under 2Yrs"
+      }
+    },
+    "from": "From",
+    "to": "To",
+    "returndate": "Return Date",
+    "searchButton": "Search",
+    "loadingButton": "Searching..."
+  },
+  "filters": {
+    "heading": "Flights",
+    "earliestarrival": "Earliest Arrival",
+    "earliesttakeoff": "Earliest Takeoff",
+    "shortest": "Shortest Flights",
+    "cheapest": "Cheapest Flights",
+    "departuretime": {
+      "departuretimeheading": "Departure Time",
+      "before_morning": "Before 06:00AM",
+      "morning": "06:00AM - 12:00PM",
+      "afternoon": "12:00PM - 06:00PM",
+      "evening": "After 06:00PM"
+    },
+    "price": "Price Range",
+    "pricecurrency": "SAR",
+    "stops": {
+      "stopsheading": "Stops",
+      "any": "Any number of stops",
+      "direct": "Direct flights only",
+      "one": "1 stop",
+      "two_or_more": "2 stops or more"
+    },
+    "airlines": "Airlines"
+  },
+  "bookNow": {
+    "pageTitle": "Complete Your Booking",
+    "personalDetails": {
+      "title": "Personal details",
+      "titleOptions": {
+        "mr": "Mr",
+        "ms": "Ms",
+        "mrs": "Mrs"
+      },
+      "firstName": "First name *",
+      "middleName": "Middle name (Optional)",
+      "lastName": "Last name *",
+      "dateOfBirth": "Date of birth *",
+      "dayPlaceholder": "Day",
+      "monthPlaceholder": "Month",
+      "yearPlaceholder": "Year",
+      "nationality": "Nationality *"
+    },
+    "travelDocument": {
+      "title": "Travel document",
+      "documentType": "Document type *",
+      "passportNumber": "Passport number *",
+      "issuingCountry": "Issuing country *",
+      "expiryDate": "Passport expiry date *"
+    },
+    "contactDetails": {
+      "title": "Contact details",
+      "email": "Email *",
+      "emailNote": "Your purchased tickets will be sent to this email.",
+      "phoneCode": "Code *",
+      "phoneNumber": "Mobile number *"
+    },
+    "payment": {
+      "confirmButton": "Confirm Booking",
+      "processing": "Processing...",
+      "continueToPayment": "Continue to Payment",
+      "backToDetails": "Back to Traveler Details",
+      "totalPrice": "Total Price:",
+      "currency": "SAR",
+      "amount": "Amount"
+    },
+    "baggage": {
+      "cabin": "7 KG Cabin baggage",
+      "checked": "20kg total checked baggage",
+      "quantity": "1 piece"
+    },
+    "errors": {
+      "requiredField": "This field is required",
+      "invalidEmail": "Please enter a valid email",
+      "invalidPhone": "Please enter a valid phone number",
+      "completeAllTravelers": "Please Complete All Travelers Info"
+    }
+  },
+  "FlightCard": {
+    "direct": "Direct",
+    "stop": "Stop",
+    "stops": "Stops",
+    "noStops": "No Stops",
+    "flightHasNoStop": "Flight has no stop",
+    "arrival": "Arrival",
+    "departure": "Departure",
+    "airport": "Airport",
+    "duration": "Duration",
+    "departureTitle": "Departure",
+    "flightDetails": "Flight Details",
+    "baggageIncluded": "Baggage Included"
+  },
+  "HotelPage": {
+    "noHotelsFound": "No hotels found for the provided criteria.",
+    "showing": "Showing",
+    "places": "places",
+    "starHotel": "Star Hotel",
+    "amenities": "Amenities",
+    "startingFrom": "Starting from",
+    "night": "Night",
+    "excludingTax": "excl. tax",
+    "viewPlace": "View Place",
+    "noImage": "No image available"
+  },
+  "hotel": {
+    "invalidHotelCode": "Invalid Hotel Code.",
+    "error": "Error"
+  },
+  "hotelDetails": {
+    "stars": "{rating} Star Hotel",
+    "buttons": {
+      "bookNow": "Book Now"
+    }
+  },
+  "footer": {
+    "contactUs": "Contact Us",
+    "socialMedia": "Follow Us On Social",
+    "legal": "Legal",
+    "importantLinks": "Resources",
+    "aboutUs": "About Us",
+    "footerPargraph": "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document",
+    "rights": " All rights reserved ©"
+  },
+  "errors": {
+    "fromError": "Please select a departure city",
+    "toError": "Please select a destination city.",
+    "requiredFields": "Please fill in all required fields for the hotel search.",
+    "hotelErrorFetchingCountries": "Error fetching countries:",
+    "hotelErrorFetchingcities": "Error fetching cities:",
+    "hotelSearchAlert": "Please select city, check-in, and check-out dates."
+  }
+}

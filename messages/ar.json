@@ -1,0 +1,255 @@
+{
+  "header": {
+    "navItems": {
+      "promo": "عرض ترويجي",
+      "aboutUs": "من نحن",
+      "packages": "الباقات",
+      "tayyranBusiness": "طيّران بزنس",
+      "corporate": "الشركات"
+    },
+    "registerButton": "إنشاء حساب"
+  },
+  "Stepper": {
+    "flightSteps": {
+      "chooseFlight": "اختر رحلتك",
+      "enterDetails": "أدخل بياناتك",
+      "upgradeExperience": "حسّن تجربتك",
+      "finalDetails": "التفاصيل النهائية"
+    },
+    "hotelSteps": {
+      "selectHotel": "اختر الفندق",
+      "selectRoom": "اختر الغرفة",
+      "enterDetails": "أدخل بياناتك",
+      "finalDetails": "التفاصيل النهائية"
+    }
+  },
+  "HomePage": {
+    "heroSection": {
+      "mainHeading": "لنحجز رحلتك القادمة الآن!",
+      "subHeading": "اختر من بين أكثر من 1.5 مليون فندق و 450+ شركة طيران",
+      "searchForm": {
+        "formTypeHotels": "فنادق",
+        "formTypeFlights": "رحلات طيران",
+        "fromFieldLabel": "من",
+        "toFieldLabel": "إلى",
+        "DatePicker": "تاريخ المغادرة",
+        "returnDate": "تاريخ العودة",
+        "travelersLabel": "المسافرون",
+        "classLabel": "الدرجة",
+        "searchButton": "بحث",
+        "searchButtonLoading": "جارٍ البحث...",
+        "loadingText": "جارٍ التحميل...",
+        "hotelCountryLabel": "اختر الدولة",
+        "hotelCityLabel": "اختر المدينة",
+        "hotelCheckInDate": "تاريخ الوصول",
+        "hotelCheckOutDate": "تاريخ المغادرة"
+      }
+    },
+    "bestOffer": {
+      "bestOfferHeading": "أفضل عرض",
+      "bestOfferText": "الأعضاء يوفرون 10٪ أو أكثر على أكثر من 100,000 فندق حول العالم عند تسجيل الدخول",
+      "bestOfferButton": "سجّل الدخول الآن"
+    },
+    "topHotels": {
+      "topHotelsHeading": "أفضل الفنادق",
+      "categories": {
+        "Trending": "الأكثر رواجاً",
+        "5-Star": "5 نجوم",
+        "Asian": "آسيوية",
+        "Europe": "أوروبا",
+        "Middle-East": "الشرق الأوسط",
+        "Budget-Friendly": "اقتصادية",
+        "Adventure": "مغامرة",
+        "Family-Friendly": "مناسبة للعائلات"
+      }
+    },
+    "topDeals": {
+      "topDealsHeading": "عروض اللحظة الأخيرة لعطلة نهاية الأسبوع",
+      "bookNowButton": "احجز الآن"
+    },
+    "weekendDeals": {
+      "heading": "عروض اللحظة الأخيرة لعطلة نهاية الأسبوع",
+      "dealsButton": "سعر الأعضاء متاح"
+    },
+    "topFlights": {
+      "heading": "رحلات طيران شهيرة بالقرب منك",
+      "categories": {
+        "International": "دولية",
+        "Domestic": "محلية"
+      }
+    },
+    "mobileAppSection": {
+      "heading": "حمّل تطبيقنا الآن!",
+      "exprensHeading": "جرّب الراحة بين يديك",
+      "subHeading": "استكشف قائمتنا المختارة لأفضل الدول للزيارة في عام 2024 واكتشف وجهات مذهلة بانتظارك",
+      "downloadButton": "حمّل الآن"
+    }
+  },
+  "flightsearch": {
+    "noflight": "لا توجد رحلات متاحة"
+  },
+  "searchForm": {
+    "tripTypes": {
+      "roundtrip": "ذهاب وعودة",
+      "oneway": "ذهاب فقط",
+      "multiplecities": "مدن متعددة"
+    },
+    "flightClass": {
+      "economy": "اقتصادية",
+      "premiumEconomy": "اقتصادية مميزة",
+      "business": "رجال أعمال",
+      "firstClass": "الدرجة الأولى"
+    },
+    "travlers": {
+      "buttonLabel": "الركاب",
+      "travlers": "المسافرون",
+      "adults": {
+        "label": "البالغون",
+        "note": "12 سنة فما فوق"
+      },
+      "children": {
+        "label": "الأطفال",
+        "note": "من 2 إلى 12 سنة"
+      },
+      "infants": {
+        "label": "الرضع",
+        "note": "أقل من سنتين"
+      }
+    },
+    "from": "من",
+    "to": "إلى",
+    "returndate": "تاريخ العودة",
+    "searchButton": "بحث",
+    "loadingButton": "جارٍ البحث..."
+  },
+  "filters": {
+    "heading": "الرحلات",
+    "earliestarrival": "أقرب وقت وصول",
+    "earliesttakeoff": "أقرب وقت إقلاع",
+    "shortest": "أقصر الرحلات",
+    "cheapest": "أرخص الرحلات",
+    "departuretime": {
+      "departuretimeheading": "وقت الإقلاع",
+      "before_morning": "قبل 06:00 صباحاً",
+      "morning": "06:00 صباحاً - 12:00 ظهراً",
+      "afternoon": "12:00 ظهراً - 06:00 مساءً",
+      "evening": "بعد 06:00 مساءً"
+    },
+    "price": "نطاق السعر",
+    "pricecurrency": "ر.س",
+    "stops": {
+      "stopsheading": "التوقفات",
+      "any": "أي عدد من التوقفات",
+      "direct": "رحلات مباشرة فقط",
+      "one": "توقف واحد",
+      "two_or_more": "توقفان أو أكثر"
+    },
+    "airlines": "شركات الطيران"
+  },
+  "bookNow": {
+    "pageTitle": "أكمل حجزك",
+    "personalDetails": {
+      "title": "البيانات الشخصية",
+      "titleOptions": {
+        "mr": "السيد",
+        "ms": "الآنسة",
+        "mrs": "السيدة"
+      },
+      "firstName": "الاسم الأول *",
+      "middleName": "الاسم الأوسط (اختياري)",
+      "lastName": "اسم العائلة *",
+      "dateOfBirth": "تاريخ الميلاد *",
+      "dayPlaceholder": "اليوم",
+      "monthPlaceholder": "الشهر",
+      "yearPlaceholder": "السنة",
+      "nationality": "الجنسية *"
+    },
+    "travelDocument": {
+      "title": "وثيقة السفر",
+      "documentType": "نوع الوثيقة *",
+      "passportNumber": "رقم الجواز *",
+      "issuingCountry": "بلد الإصدار *",
+      "expiryDate": "تاريخ انتهاء الجواز *"
+    },
+    "contactDetails": {
+      "title": "بيانات التواصل",
+      "email": "البريد الإلكتروني *",
+      "emailNote": "سيتم إرسال تذاكرك المشتراة إلى هذا البريد الإلكتروني.",
+      "phoneCode": "كود *",
+      "phoneNumber": "رقم الجوال *"
+    },
+    "payment": {
+      "confirmButton": "تأكيد الحجز",
+      "processing": "جارٍ المعالجة...",
+      "continueToPayment": "المتابعة إلى الدفع",
+      "backToDetails": "الرجوع إلى بيانات المسافرين",
+      "totalPrice": "السعر الإجمالي:",
+      "currency": "ر.س",
+      "amount": "المبلغ"
+    },
+    "baggage": {
+      "cabin": "7 كجم حقيبة يد",
+      "checked": "20 كجم أمتعة مشحونة",
+      "quantity": "قطعة واحدة"
+    },
+    "errors": {
+      "requiredField": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+      "invalidPhone": "يرجى إدخال رقم هاتف صحيح",
+      "completeAllTravelers": "يرجي ادخال بيانات جميع المسافرين"
+    }
+  },
+  "FlightCard": {
+    "direct": "مباشرة",
+    "stop": "توقف",
+    "stops": "توقفات",
+    "noStops": "لا توجد توقفات",
+    "flightHasNoStop": "الرحلة بدون توقف",
+    "arrival": "الوصول",
+    "departure": "المغادرة",
+    "airport": "المطار",
+    "duration": "المدة",
+    "departureTitle": "الإقلاع",
+    "flightDetails": "تفاصيل الرحلة",
+    "baggageIncluded": "الأمتعة مشمولة"
+  },
+  "HotelPage": {
+    "noHotelsFound": "لم يتم العثور على فنادق بناءً على المعايير المحددة.",
+    "showing": "عرض",
+    "places": "أماكن",
+    "starHotel": "فندق نجوم",
+    "amenities": "المرافق",
+    "startingFrom": "ابتداءً من",
+    "night": "ليلة",
+    "excludingTax": "غير شامل الضريبة",
+    "viewPlace": "عرض المكان",
+    "noImage": "لا توجد صورة متاحة"
+  },
+  "hotel": {
+    "invalidHotelCode": "رمز فندق غير صالح.",
+    "error": "خطأ"
+  },
+  "hotelDetails": {
+    "stars": "فندق {rating} نجوم",
+    "buttons": {
+      "bookNow": "احجز الآن"
+    }
+  },
+  "footer": {
+    "contactUs": "اتصل بنا",
+    "socialMedia": "تابعنا على وسائل التواصل",
+    "legal": "قانوني",
+    "importantLinks": "المصادر",
+    "aboutUs": "من نحن",
+    "footerPargraph": "في النشر والتصميم الجرافيكي، لوريم إيبسوم هو نص افتراضي يُستخدم لعرض الشكل البصري للمستند",
+    "rights": " جميع الحقوق محفوظة ©"
+  },
+  "errors": {
+    "fromError": "يرجى اختيار مدينة المغادرة",
+    "toError": "يرجى اختيار مدينة الوجهة.",
+    "requiredFields": "يرجى ملء جميع الحقول المطلوبة للبحث عن الفنادق.",
+    "hotelErrorFetchingCountries": "حدث خطأ أثناء جلب الدول:",
+    "hotelErrorFetchingcities": "حدث خطأ أثناء جلب المدن:",
+    "hotelSearchAlert": "يرجى اختيار المدينة وتواريخ تسجيل الوصول والمغادرة."
+  }
+}
