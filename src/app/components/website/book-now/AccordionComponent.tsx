@@ -3,26 +3,28 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import React from "react";
 
 interface AccordionItemProps {
   title: React.ReactNode;
   children: React.ReactNode;
   value: string;
-  isOpen: boolean;
-  onToggle: (value: string) => void;
+  isOpen?: boolean;
+  onToggle?: (value: string) => void;
 }
 
 export const CustomAccordionItem = ({
   title,
   children,
   value,
-  isOpen,
+  isOpen = false,
   onToggle,
 }: AccordionItemProps) => {
   return (
     <div className="border-b">
       <button
-        onClick={() => onToggle(value)}
+        type="button"
+        onClick={() => onToggle?.(value)}
         className="w-full flex items-center bg-greenGradient text-slate-100 justify-between rounded-lg p-4 font-medium text-left transition-all"
       >
         <div className="text-slate-200">{title}</div>
@@ -43,6 +45,8 @@ export const CustomAccordionItem = ({
 interface AccordionProps {
   type: "single" | "multiple";
   defaultValue?: string[];
+  value?: string[]; // controlled value
+  onValueChange?: (val: string[]) => void; // controlled handler
   children: React.ReactElement<AccordionItemProps>[];
   className?: string;
 }
@@ -50,19 +54,31 @@ interface AccordionProps {
 export const CustomAccordion = ({
   type = "single",
   defaultValue = [],
+  value,
+  onValueChange,
   children,
   className = "",
 }: AccordionProps) => {
-  const [openItems, setOpenItems] = useState<string[]>(defaultValue);
+  // if parent passes `value`, we are controlled; otherwise, use internal state
+  const [internalValue, setInternalValue] = useState<string[]>(defaultValue);
+  const openItems = value ?? internalValue;
 
-  const handleToggle = (value: string) => {
-    if (type === "single") {
-      setOpenItems((prev) => (prev[0] === value ? [] : [value]));
+  const setOpenItems = (newItems: string[]) => {
+    if (onValueChange) {
+      onValueChange(newItems); // controlled
     } else {
-      setOpenItems((prev) =>
-        prev.includes(value)
-          ? prev.filter((item) => item !== value)
-          : [...prev, value]
+      setInternalValue(newItems); // uncontrolled
+    }
+  };
+
+  const handleToggle = (val: string) => {
+    if (type === "single") {
+      setOpenItems(openItems[0] === val ? [] : [val]);
+    } else {
+      setOpenItems(
+        openItems.includes(val)
+          ? openItems.filter((item) => item !== val)
+          : [...openItems, val]
       );
     }
   };
@@ -70,16 +86,10 @@ export const CustomAccordion = ({
   return (
     <div className={twMerge("w-full", className)}>
       {children.map((child) =>
-        typeof child === "object"
-          ? {
-              ...child,
-              props: {
-                ...child.props,
-                isOpen: openItems.includes(child.props.value),
-                onToggle: handleToggle,
-              },
-            }
-          : child
+        React.cloneElement(child, {
+          isOpen: openItems.includes(child.props.value),
+          onToggle: handleToggle,
+        })
       )}
     </div>
   );

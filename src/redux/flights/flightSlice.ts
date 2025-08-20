@@ -20,11 +20,11 @@ interface FlightSegment {
   date: Date | null;
 }
 
-interface FlightFormData {
+export interface FlightFormData {
   origin: string;
   destination: string;
-  departure: Date;
-  returnDate: Date;
+  departure: Date | null;
+  returnDate: Date | null;
   travelers: { adults: number; children: number; infants: number; };
   flightClass: string;
   flightType: string;

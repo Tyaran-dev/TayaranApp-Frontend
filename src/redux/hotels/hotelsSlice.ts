@@ -3,6 +3,7 @@ import actGetHotels from "./act/actGetHotels";
 import actGetHotelDetails from "./act/actGetHotelDetails";
 import actBookingHotel from "./act/actBookingHotel";
 import { Room } from "@/app/components/website/hotel-details/RoomChoices";
+
 // types/hotel.ts
 export interface Hotel {
   HotelCode: string;
@@ -18,93 +19,76 @@ export interface Hotel {
   FaxNumber: string;
   Map: string;
   HotelRating: number;
+  MinHotelPrice: number;
   CityName: string;
   CountryCode: string;
   CheckInTime: string;
   CheckOutTime: string;
 }
 
-export interface HotelProps {
-  hotel: Hotel;
+export interface Pagination {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
 }
 
-export interface ImageGalleryProps {
-  images: string[];
+export interface HotelsApiResponse {
+  success: boolean;
+  data: Hotel[];
+  pagination: Pagination;
 }
 
-export interface HotelFacilitiesProps {
-  facilities: string[];
-}
-
-export interface HotelInterface {
-  HotelCode: string;
-  HotelName: string;
-  Description: string;
-  HotelFacilities: string[];
-  Attractions?: Record<string, string>;
-  Images?: string[];
-  Address: string;
-  PinCode: string;
-  CityId: string;
-  CountryName: string;
-  PhoneNumber: string;
-  FaxNumber: string;
-  Map: string; // You can split into latitude & longitude if needed
-  HotelRating: number;
-  CityName: string;
-  CountryCode: string;
-  CheckInTime: string;
-  CheckOutTime: string;
+export interface HotelDetailsResponse {
+  success: boolean;
+  data: {
+    hotel: Hotel[];
+    availableRooms: Room[];
+  };
 }
 
 export interface HotelSearchData {
-  CityCode: string;
-  CheckIn: string; // Format: YYYY-MM-DD
-  CheckOut: string; // Format: YYYY-MM-DD
-  HotelCodes: string[]; // Array of hotel codes
-  GuestNationality: string; // ISO country code (e.g., "US")
-  PreferredCurrencyCode: string; // Currency code (e.g., "SAR")
-  PaxRooms: PaxRoom[];
-  ResponseTime: number; // e.g., 23.0
-  IsDetailedResponse: boolean;
-  Filters: SearchFilters;
-  page?: string | number;
   Language: string;
+  page: number;
+  CityCode?: string | undefined;
+  CheckIn?: string | undefined;
+  CheckOut?: string | undefined;
+  HotelCodes?: string[] | undefined;
+  GuestNationality?: string | undefined;
+  PreferredCurrencyCode?: string | undefined;
+  PaxRooms?: PaxRoom[] | undefined;
+  ResponseTime?: number | undefined;
+  IsDetailedResponse?: boolean | undefined;
+  Filters?: SearchFilters | undefined;
 }
 
 export interface PaxRoom {
   Adults: number;
   Children: number;
-  ChildrenAges: number[]; // Ages of each child (if any)
+  ChildrenAges: number[];
 }
 
 export interface SearchFilters {
   Refundable: boolean;
-  NoOfRooms: "All" | string; // can also be a number if filtered
-  MealType:
-    | "All"
-    | "Breakfast"
-    | "HalfBoard"
-    | "FullBoard"
-    | "RoomOnly"
-    | string;
+  NoOfRooms: "All" | string;
+  MealType: "All" | "Breakfast" | "HalfBoard" | "FullBoard" | "RoomOnly" | string;
 }
 
 interface HotelDataState {
-  hotels: HotelInterface[]; // This is where the flight data will be stored
-  hotel: HotelInterface | null; // This is where the single hotel data will be stored
-  selectedRoom: Room | {};
-  slectedHotel: HotelInterface[] | null;
+  hotels: HotelsApiResponse | null;
+  hotel: HotelDetailsResponse | null;
+  selectedRoom: Room | null;
+  selectedHotel: Hotel | null;
   searchParamsData: HotelSearchData | null;
   loading: "pending" | "succeeded" | "failed" | null;
   error: string | null;
 }
 
 const initialState: HotelDataState = {
-  hotels: [],
+  hotels: null,
   hotel: null,
-  selectedRoom: {},
-  slectedHotel: null,
+  selectedRoom: null,
+  selectedHotel: null,
   searchParamsData: null,
   loading: null,
   error: null,
@@ -115,18 +99,21 @@ export const hotelDataSlice = createSlice({
   initialState,
   reducers: {
     clearHotels: (state) => {
-      state.hotels = [];
+      state.hotels = null;
       state.loading = null;
       state.error = null;
     },
-    setHotelSearchData: (state, action: PayloadAction<any>) => {
+    setHotelSearchData: (state, action: PayloadAction<HotelSearchData>) => {
       state.searchParamsData = action.payload;
     },
-    setHotels: (state, action: PayloadAction<any[]>) => {
+    setHotels: (state, action: PayloadAction<HotelsApiResponse>) => {
       state.hotels = action.payload;
     },
-    setSelectedRoom: (state, action: PayloadAction<any>) => {
+    setSelectedRoom: (state, action: PayloadAction<Room>) => {
       state.selectedRoom = action.payload;
+    },
+    setSelectedHotel: (state, action: PayloadAction<Hotel>) => {
+      state.selectedHotel = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -136,16 +123,11 @@ export const hotelDataSlice = createSlice({
     });
     builder.addCase(actGetHotels.fulfilled, (state, action) => {
       state.loading = "succeeded";
-      // Assuming the API returns flight data in action.payload
-      state.hotels = action.payload; // Update state with fetched flight data
+      state.hotels = action.payload; // Store the entire API response
     });
     builder.addCase(actGetHotels.rejected, (state, action) => {
       state.loading = "failed";
-      if (typeof action.payload === "string") {
-        state.error = action.payload;
-      } else {
-        state.error = "Unknown error occurred";
-      }
+      state.error = typeof action.payload === "string" ? action.payload : "Unknown error occurred";
     });
 
     builder.addCase(actGetHotelDetails.pending, (state) => {
@@ -154,38 +136,33 @@ export const hotelDataSlice = createSlice({
     });
     builder.addCase(actGetHotelDetails.fulfilled, (state, action) => {
       state.loading = "succeeded";
-      // Assuming the API returns flight data in action.payload
-      state.hotel = action.payload; // Update state with fetched flight data
+      state.hotel = action.payload;
     });
     builder.addCase(actGetHotelDetails.rejected, (state, action) => {
       state.loading = "failed";
-      if (typeof action.payload === "string") {
-        state.error = action.payload;
-      } else {
-        state.error = "Unknown error occurred";
-      }
+      state.error = typeof action.payload === "string" ? action.payload : "Unknown error occurred";
     });
 
     builder.addCase(actBookingHotel.pending, (state) => {
       state.loading = "pending";
       state.error = null;
     });
-    builder.addCase(actBookingHotel.fulfilled, (state, action) => {
+    builder.addCase(actBookingHotel.fulfilled, (state) => {
       state.loading = "succeeded";
-      // Assuming the API returns flight data in action.payload
-      // state.hotel = action.payload; // Update state with fetched flight data
     });
     builder.addCase(actBookingHotel.rejected, (state, action) => {
       state.loading = "failed";
-      if (typeof action.payload === "string") {
-        state.error = action.payload;
-      } else {
-        state.error = "Unknown error occurred";
-      }
+      state.error = typeof action.payload === "string" ? action.payload : "Unknown error occurred";
     });
   },
 });
 
-export const { clearHotels, setHotelSearchData, setHotels, setSelectedRoom } =
-  hotelDataSlice.actions;
+export const {
+  clearHotels,
+  setHotelSearchData,
+  setHotels,
+  setSelectedRoom,
+  setSelectedHotel
+} = hotelDataSlice.actions;
+
 export default hotelDataSlice.reducer;

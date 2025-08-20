@@ -6,7 +6,7 @@ import { clearHotels } from "@/redux/hotels/hotelsSlice";
 import { useTranslations, useLocale } from "next-intl";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import Section from "@/app/components/shared/section";
-import { HotelInterface } from "@/redux/hotels/hotelsSlice";
+import { Hotel as HotelInterface } from "@/redux/hotels/hotelsSlice";
 import Hotel from "@/app/components/website/hotel-search/Hotel";
 import Pagination from "@/app/components/shared/Pagination";
 import HotelSearch from "@/app/components/website/home/components/hotel-search-form";
@@ -14,35 +14,42 @@ import Stepper from "@/app/components/shared/Feedback/Stepper";
 import CustomProgressBar from "@/app/components/shared/progress-bar";
 import HotelCardSkeleton from "@/app/components/shared/Feedback/HotelCardSkeleton";
 
+// Rename the type to avoid confusion with the Pagination component
+type Paging = {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+};
+
+type HotelsData = {
+  hotels: HotelInterface[];
+  pagination: Paging;
+};
+
+const DEFAULT_PAGING: Paging = {
+  page: 1,
+  perPage: 50,
+  total: 0,
+  totalPages: 0,
+};
+
 export default function Page() {
   const dispatch = useAppDispatch();
   const [currentStep, setCurrentStep] = useState(1);
   const locale = useLocale();
-  const t = useTranslations("hotelSearchPage"); // 👈 namespace (adjust as needed)
+  const t = useTranslations("hotelSearchPage");
 
   const { searchParamsData, hotels, loading } = useAppSelector(
     (state) => state.hotelData
   );
 
-  console.log(loading,"loading hereeeeeeeeeeeeeeeeeeeeeeee")
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [hotelsData, setHotelsData] = useState<{
-    hotels: HotelInterface[];
-    pagination: {
-      page: number;
-      perPage: number;
-      total: number;
-      totalPages: number;
-    };
-  }>({
+
+  // Local, flattened state that the UI can rely on
+  const [hotelsData, setHotelsData] = useState<HotelsData>({
     hotels: [],
-    pagination: {
-      page: 1,
-      perPage: 50,
-      total: 0,
-      totalPages: 0,
-    },
+    pagination: DEFAULT_PAGING,
   });
 
   const fullParams = useMemo(() => {
@@ -54,28 +61,50 @@ export default function Page() {
     };
   }, [searchParamsData, currentPage, locale]);
 
+  // Fetch on params change
   useEffect(() => {
-    if (!fullParams) return;
-    console.log(loading, "loading 1");
+    if (!fullParams?.CityCode || !fullParams?.CheckIn || !fullParams?.CheckOut) {
+      return; // don't fire until params are ready
+    }
 
     dispatch(clearHotels());
     dispatch(actGetHotels(fullParams));
-    console.log(loading, "loading 2");
-  }, [fullParams, dispatch, locale]);
+  }, [fullParams, dispatch]);
 
   useEffect(() => {
-    if (hotels) {
-      setHotelsData({
-        hotels: hotels.data || [],
-        pagination: hotels.pagination || {
-          page: 1,
-          perPage: 50,
-          total: 0,
-          totalPages: 0,
-        },
-      });
-    }
+    if (!hotels) return;
+
+    console.log("🔥 RAW HOTELS FROM REDUX:", JSON.stringify(hotels, null, 2));
   }, [hotels]);
+
+  useEffect(() => {
+    if (!hotels) return;
+
+    console.log("RAW HOTELS FROM REDUX:", JSON.stringify(hotels, null, 2));
+
+    const h: any = hotels;
+    const normalizedHotels: HotelInterface[] = Array.isArray(h)
+      ? h
+      : Array.isArray(h?.data)
+        ? h.data
+        : h?.data?.hotels ?? h?.hotels ?? [];
+
+    const normalizedPagination: Paging =
+      h?.data?.pagination ?? h?.pagination ?? DEFAULT_PAGING;
+
+    setHotelsData({
+      hotels: normalizedHotels,
+      pagination: normalizedPagination,
+    });
+  }, [hotels]);
+
+
+  // Debug
+  console.log(hotelsData.hotels, "normalized hotels");
+  console.log(hotelsData.pagination, "normalized pagination");
+
+  const noResults =
+    loading === "succeeded" && hotelsData.hotels.length === 0;
 
   return (
     <Section className="py-5">
@@ -91,15 +120,17 @@ export default function Page() {
 
       {loading === "succeeded" && (
         <>
-          {!hotelsData.hotels.length && (
+          {noResults && (
             <div className="min-h-[50vh] flex items-center justify-center">
               <p className="text-center text-gray-500">{t("noHotelsFound")}</p>
             </div>
           )}
-          <Hotel hotels={hotelsData.hotels} />
+
+          {!noResults && <Hotel hotels={hotelsData.hotels} />}
+
           <Pagination
             currentPage={currentPage}
-            totalPages={hotelsData.pagination.totalPages}
+            totalPages={hotelsData.pagination.totalPages || 0}
             onPageChange={(page) => setCurrentPage(page)}
           />
         </>

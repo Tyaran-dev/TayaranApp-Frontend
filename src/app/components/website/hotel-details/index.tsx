@@ -32,9 +32,7 @@ const HotelDetails = ({ hotel, availableRooms }: HotelDetailsProps) => {
     images: [i1, i2, i3, i4, i5],
     // featureImages: [f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6],
   };
-
-
-  console.log(hotel,"Hotellllllllllllllllllll")
+  console.log(hotel, "hotelllllllllllllllllll here")
 
   const tabs = [
     { id: "photos", label: "Photos" },

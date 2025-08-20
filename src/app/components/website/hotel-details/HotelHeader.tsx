@@ -11,19 +11,23 @@ import { MdStar } from "react-icons/md";
 import { useTranslations } from "next-intl";
 
 type HotelHeaderProps = {
-  data: {
+  data?: {
     HotelName: string;
-    HotelRating: string;
+    HotelRating: number;
     Address: string;
   };
 };
+
+
+
+
 
 const HotelHeader = ({ data }: HotelHeaderProps) => {
   const [fav, setfav] = useState(false);
   const router = useRouter();
   const t = useTranslations("hotelDetails");
 
-  const hotelRating = parseFloat(data?.HotelRating) || 0;
+  const hotelRating = data?.HotelRating ?? 0; // ✅ fixed
 
   return (
     <div className="flex items-center px-4 py-6 justify-between flex-wrap rounded-lg">

@@ -10,7 +10,7 @@ import { changeTripType, setSearchData, clearFlightData } from "@/redux/flights/
 import { useDispatch, useSelector } from "react-redux";
 import useSearchflights from "@/hooks/useSearchflights";
 import { v4 as uuidv4 } from 'uuid';
-
+import { FlightFormData } from "@/redux/flights/flightSlice";
 export const tripTypes = ["roundtrip", "oneway", "multiCities"] as const;
 
 interface FlightSegment {
@@ -25,7 +25,7 @@ const FlightSearchForm = () => {
   const locale = useLocale();
   const dispatch = useDispatch();
   const tripType = useSelector((state: any) => state.flightData.tripType);
-  
+
   const {
     flights,
     loading,
@@ -71,8 +71,8 @@ const FlightSearchForm = () => {
   }, [tripType, segments]);
 
   const handleAddSegment = () => {
-    setMultiCitySegments([...multiCitySegments, 
-      { id: uuidv4(), origin: "", destination: "", date: null }
+    setMultiCitySegments([...multiCitySegments,
+    { id: uuidv4(), origin: "", destination: "", date: null }
     ]);
   };
 
@@ -112,15 +112,15 @@ const FlightSearchForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateInputs()) return;
 
     dispatch(clearFlightData());
-    
-    const searchData = {
+
+    const searchData : FlightFormData = {
       origin: tripType === "multiCities" ? multiCitySegments[0].origin : origin,
-      destination: tripType === "multiCities" 
-        ? multiCitySegments[multiCitySegments.length - 1].destination 
+      destination: tripType === "multiCities"
+        ? multiCitySegments[multiCitySegments.length - 1].destination
         : destination,
       departure: tripType === "multiCities" ? multiCitySegments[0].date : departure,
       returnDate,
@@ -158,12 +158,11 @@ const FlightSearchForm = () => {
             key={type}
             type="button"
             onClick={() => dispatch(changeTripType(type))}
-            className={`px-4 py-2 font-medium text-base rounded-lg ${
-              tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
-            }`}
+            className={`px-4 py-2 font-medium text-base rounded-lg ${tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
+              }`}
           >
-            {type === "roundtrip" ? t("tripTypes.roundtrip") : 
-             type === "oneway" ? t("tripTypes.oneway") : t("tripTypes.multiplecities")}
+            {type === "roundtrip" ? t("tripTypes.roundtrip") :
+              type === "oneway" ? t("tripTypes.oneway") : t("tripTypes.multiplecities")}
           </button>
         ))}
       </div>

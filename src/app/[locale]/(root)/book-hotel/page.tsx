@@ -29,7 +29,8 @@ interface CustomerName {
   Type: CustomerType;
 }
 
-interface CustomerDetail {
+export interface CustomerDetail {
+  RoomIndex: number;
   CustomerNames: CustomerName[];
 }
 
@@ -294,7 +295,8 @@ export default function BookingPage() {
 
     return {
       BookingCode: selectedRoom?.BookingCode || "",
-      CustomerDetails: roomsGuestData.map((room) => ({
+      CustomerDetails: roomsGuestData.map((room, idx) => ({
+        RoomIndex: idx,
         CustomerNames: [
           ...room.adults.map((adult) => ({
             Title: adult.title as Title,
@@ -323,8 +325,9 @@ export default function BookingPage() {
   const handleSubmitBooking = useBookingHandler(
     formatGuestDataForAPI,
     isValidForm,
-    searchParamsData
-  );
+    searchParamsData ? searchParamsData : (() => {
+      throw new Error('Search parameters are missing');
+    })());
 
   // Effects
   useEffect(() => {
@@ -393,15 +396,14 @@ export default function BookingPage() {
       return (
         <div
           key={`${guestKey}`}
-          className={`space-y-4 p-4 border rounded-lg ${
-            validationErrors[`${guestKey}-firstName`] ||
+          className={`space-y-4 p-4 border rounded-lg ${validationErrors[`${guestKey}-firstName`] ||
             validationErrors[`${guestKey}-lastName`] ||
             (isLeadGuest &&
               (validationErrors[`${guestKey}-email`] ||
                 validationErrors[`${guestKey}-phone`]))
-              ? "border-red-300 bg-red-50"
-              : "border-gray-200 bg-gray-50"
-          }`}
+            ? "border-red-300 bg-red-50"
+            : "border-gray-200 bg-gray-50"
+            }`}
         >
           <h4 className="font-medium text-gray-900">{guestLabel}</h4>
 
@@ -421,11 +423,10 @@ export default function BookingPage() {
                     title
                   )
                 }
-                className={`px-4 py-2 text-sm rounded-lg ${
-                  guest.title === title
-                    ? "bg-greenGradient text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 text-sm rounded-lg ${guest.title === title
+                  ? "bg-greenGradient text-white"
+                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
               >
                 {title}
               </button>
@@ -621,9 +622,8 @@ export default function BookingPage() {
                                 ({roomData.adults.length} Adult
                                 {roomData.adults.length > 1 ? "s" : ""}
                                 {roomData.children.length > 0
-                                  ? `, ${roomData.children.length} Child${
-                                      roomData.children.length > 1 ? "ren" : ""
-                                    }`
+                                  ? `, ${roomData.children.length} Child${roomData.children.length > 1 ? "ren" : ""
+                                  }`
                                   : ""}
                                 )
                               </span>
@@ -637,10 +637,9 @@ export default function BookingPage() {
                                 roomIndex,
                                 "adults",
                                 adultIndex,
-                                `Guest ${adultIndex + 1} (Adult)${
-                                  roomIndex === 0 && adultIndex === 0
-                                    ? " - Lead Guest *"
-                                    : ""
+                                `Guest ${adultIndex + 1} (Adult)${roomIndex === 0 && adultIndex === 0
+                                  ? " - Lead Guest *"
+                                  : ""
                                 }`
                               )
                             )}
@@ -653,8 +652,7 @@ export default function BookingPage() {
                                 roomIndex,
                                 "children",
                                 childIndex,
-                                `Guest ${
-                                  roomData.adults.length + childIndex + 1
+                                `Guest ${roomData.adults.length + childIndex + 1
                                 } (Child) - Age ${childAge} Yrs *`
                               );
                             })}
@@ -679,24 +677,24 @@ export default function BookingPage() {
                     <div className="space-y-4">
                       {extractFeesAndExtras(preBookedRoom.RateConditions)
                         .mandatory && (
-                        <div
-                          dangerouslySetInnerHTML={
-                            extractFeesAndExtras(preBookedRoom.RateConditions)
-                              .mandatory
-                          }
-                          className="text-sm text-gray-600 space-y-2"
-                        />
-                      )}
+                          <div
+                            dangerouslySetInnerHTML={
+                              extractFeesAndExtras(preBookedRoom.RateConditions)
+                                .mandatory
+                            }
+                            className="text-sm text-gray-600 space-y-2"
+                          />
+                        )}
                       {extractFeesAndExtras(preBookedRoom.RateConditions)
                         .optional && (
-                        <div
-                          dangerouslySetInnerHTML={
-                            extractFeesAndExtras(preBookedRoom.RateConditions)
-                              .optional
-                          }
-                          className="text-sm text-gray-600 space-y-2"
-                        />
-                      )}
+                          <div
+                            dangerouslySetInnerHTML={
+                              extractFeesAndExtras(preBookedRoom.RateConditions)
+                                .optional
+                            }
+                            className="text-sm text-gray-600 space-y-2"
+                          />
+                        )}
                       <p className="text-base text-gray-500 mt-4">
                         The above list may not be comprehensive. Fees and
                         deposits may not include tax and are subject to change.
@@ -736,11 +734,10 @@ export default function BookingPage() {
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                   <button
                     disabled={!isValidForm || loading === "pending"}
-                    className={`bg-greenGradient w-full p-4 rounded-lg text-slate-200 transition-opacity duration-300 ${
-                      !isValidForm || loading === "pending"
-                        ? "opacity-50 cursor-not-allowed"
-                        : "opacity-100 hover:opacity-90"
-                    }`}
+                    className={`bg-greenGradient w-full p-4 rounded-lg text-slate-200 transition-opacity duration-300 ${!isValidForm || loading === "pending"
+                      ? "opacity-50 cursor-not-allowed"
+                      : "opacity-100 hover:opacity-90"
+                      }`}
                     onClick={async () => {
                       if (!isValidForm) {
                         // Open all accordions to show errors
@@ -751,7 +748,11 @@ export default function BookingPage() {
                       try {
                         await handleSubmitBooking();
                       } catch (error) {
-                        alert(error.message);
+                        if (error instanceof Error) {
+                          alert(error.message);
+                        } else {
+                          alert("An unexpected error occurred");
+                        }
                       }
                     }}
                   >

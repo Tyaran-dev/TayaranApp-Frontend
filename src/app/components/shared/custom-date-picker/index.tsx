@@ -9,8 +9,8 @@ interface CustomDatePickerProps {
     className?: string;
     placeholder?: string;
     value: Date | null;
-    minDate?: Date |  undefined ;
-    maxDate?: Date;
+    minDate?: Date | null;  // Changed from Date | undefined
+    maxDate?: Date | null;  // Also updated for consistency
     onChange: (date: Date | null) => void;
 }
 
@@ -53,7 +53,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             >
                 <p className="font-medium text-sm text-black">
                     {value
-                        ?   new Date(value).toLocaleDateString("en-US", {
+                        ? new Date(value).toLocaleDateString("en-US", {
                             month: "long",
                             day: "numeric",
                             year: "numeric",
@@ -68,8 +68,8 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
                         selected={tempDate || value} // Use tempDate for month/year navigation
                         onChange={handleDayClick} // Handle day selection
                         inline
-                        minDate={minDate}
-                        maxDate={maxDate}
+                        minDate={minDate || undefined}   // ✅ ensures it's Date | undefined
+                        maxDate={maxDate || undefined}
                         calendarStartDay={1}
                         onMonthChange={handleMonthChange} // Handle month change without selecting a date
                         onYearChange={handleMonthChange} // Handle year change without selecting a date

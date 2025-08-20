@@ -4,7 +4,7 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 import { ArrowUp, DayFilter } from '@/app/svg';
 import PriceRange from '../../shared/filter/price-range';
 import CheckboxGroup from '../../shared/filter/filter-checkbox-group';
-import { AirlineCarrier } from '@/app/[locale]/(root)/flight-search/page';
+import { AirlineCarrier } from '@/hooks/useSearchflights';
 import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
 
@@ -68,10 +68,10 @@ const FlightFilter: React.FC<FlightFilterProps> = ({
     ];
 
     const stopsOptions = [
-        { name: t("stops.any"), code :  "Any number of stops" },
-        { name: t("stops.direct"),  code : "Direct flights only" },
-        { name: t("stops.one"), code :  "1 stop" },
-        { name: t("stops.two_or_more"), code : "2 stops or more"  },
+        { name: t("stops.any"), code: "Any number of stops" },
+        { name: t("stops.direct"), code: "Direct flights only" },
+        { name: t("stops.one"), code: "1 stop" },
+        { name: t("stops.two_or_more"), code: "2 stops or more" },
     ];
 
     const baggageOptions = [

@@ -11,9 +11,10 @@ import Link from "next/link";
 import Filters from "./Filters";
 import Pagination from "../../shared/Pagination";
 import { useTranslations } from "next-intl";
+import { Hotel as HotelType } from "@/redux/hotels/hotelsSlice";
 
 interface Props {
-  hotels: any[];
+  hotels: { data: HotelType[] } | HotelType[];
 }
 
 const starRatingMap: { [key: string]: number } = {
@@ -42,7 +43,7 @@ const filterHotels = (
   selectedStarRatingOptions: string[],
   selectedGuestRatingOptions: string[]
 ) => {
-  return hotels.filter((hotel) => {
+  return hotels?.filter((hotel) => {
     // Filter by price range (only if price range is not the default)
     const price = hotel.MinHotelPrice || 0;
     const isInPriceRange =
@@ -50,13 +51,15 @@ const filterHotels = (
         ? true
         : price >= priceRange[0] && price <= priceRange[1];
 
-    // rating
+    // Convert filter options to the correct format for comparison
+    const convertedStarRatings = selectedStarRatingOptions.map(
+      option => starRatingMapFiltering[option]
+    );
+
+    // Filter by star rating (if any options are selected)
     const isStarRatingMatch =
       selectedStarRatingOptions.length === 0 ||
-      selectedStarRatingOptions.some((option) => {
-        const ratingKey = starRatingMap[option]; // Map "5 stars" to "FiveStar"
-        return ratingKey === hotel.HotelInfo?.Rating;
-      });
+      convertedStarRatings.includes(hotel.HotelInfo?.Rating);
 
     // Filter by guest rating (if any options are selected)
     const guestRating = parseFloat(hotel.HotelInfo?.TripAdvisorRating || "0");
@@ -73,6 +76,9 @@ const filterHotels = (
 };
 
 const Hotel = ({ hotels }: Props) => {
+
+  console.log(hotels, "here is the hotelsssssssss")
+  const hotelData = Array.isArray(hotels) ? hotels : hotels.data;
   const t = useTranslations("HotelPage");
   const [priceRange, setPriceRange] = useState<[number, number]>([10, 1000]);
   const [selectedHotelOptions, setSelectedHotelOptions] = useState<string[]>([]);
@@ -82,16 +88,16 @@ const Hotel = ({ hotels }: Props) => {
   const [hotelsPerPage] = useState(50);
 
   const filteredHotels = filterHotels(
-    hotels,
+    hotelData,
     priceRange,
     selectedStarRatingOptions,
     selectedGuestRatingOptions
   );
 
-  const totalPages = Math.ceil(filteredHotels.length / hotelsPerPage);
+  const totalPages = Math.ceil(filteredHotels?.length / hotelsPerPage);
   const indexOfLastHotel = currentPage * hotelsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
-  const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  const currentHotels = filteredHotels?.slice(indexOfFirstHotel, indexOfLastHotel);
 
   return (
     <div className="py-5">
@@ -107,7 +113,7 @@ const Hotel = ({ hotels }: Props) => {
           onGuestRatingOptionsChange={setSelectedGuestRatingOptions}
         />
 
-        {!hotels.length && (
+        {!hotelData?.length && (
           <p className="text-center text-gray-500">{t("noHotelsFound")}</p>
         )}
 
@@ -115,11 +121,11 @@ const Hotel = ({ hotels }: Props) => {
           <div className="flex flex-col gap-5">
             <span className="font-medium">
               {t("showing")}{" "}
-              <span className="text-orange">{filteredHotels.length}</span>{" "}
+              <span className="text-orange">{filteredHotels?.length}</span>{" "}
               {t("places")}
             </span>
 
-            {currentHotels.map((hotel, i) => (
+            {currentHotels?.map((hotel, i) => (
               <div
                 key={i}
                 className="flex mb-4 items-center shadow-xl border p-8 gap-4 w-full rounded-lg"

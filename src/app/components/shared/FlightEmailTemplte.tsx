@@ -285,7 +285,17 @@ export default function FlightEmailTemplate() {
               </div>
 
               {travelers.map((traveler, index) => (
-                <div key={traveler.id} style={{ padding: '1rem 1.5rem', display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '1rem', fontSize: '0.875rem', borderBottom: '1px solid #f3f4f6', lastChild: { borderBottom: 'none' } }}>
+                <div
+                  key={traveler.id}
+                  style={{
+                    padding: '1rem 1.5rem',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+                    gap: '1rem',
+                    fontSize: '0.875rem',
+                    borderBottom: index === travelers.length - 1 ? 'none' : '1px solid #f3f4f6'
+                  }}
+                >
                   <div style={{ fontWeight: '500', color: '#1f2937' }}>
                     {traveler.name.firstName} {traveler.name.lastName}
                   </div>
@@ -293,6 +303,7 @@ export default function FlightEmailTemplate() {
                   <div style={{ color: '#4b5563' }}>065-3705552{67 + index}</div>
                 </div>
               ))}
+
             </div>
           </div>
         </div>

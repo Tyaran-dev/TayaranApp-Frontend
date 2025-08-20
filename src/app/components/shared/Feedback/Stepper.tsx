@@ -35,7 +35,7 @@ export default function Stepper({ currentStep, stepsType }: StepperProps) {
     return (
         <div className="relative bg-white border-2 border-stone-200 rounded-3xl px-8 py-6 mb-8">
             {/* Curved border design - decorative only */}
-            <div className="absolute inset-0 rounded-[3rem] border-2 border-transparent bg-gradient-to-r from-gray-100 via-transparent to-gray-100 opacity-50"></div>
+            <div className="absolute inset-0 rounded-[3rem] border-2 border-transparent "></div>
 
             <div className="relative flex items-center justify-between">
                 {steps?.map((step, index) => {

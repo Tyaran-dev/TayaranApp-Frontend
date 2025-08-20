@@ -13,7 +13,7 @@ interface FlightSegment {
   date: Date | null;
 }
 
-interface AirlineCarrier {
+export interface AirlineCarrier {
   airLineCode: string;
   airLineName: string;
   airlineNameAr: string;

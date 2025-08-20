@@ -3,8 +3,8 @@ import axios from "axios";
 import axiosErrorHandler from "@/utils/axiosErrorHandler";
 
 interface HotelData {
-  Hotelcodes: string;
-  searchParamsData: Record<string, any>;
+  HotelCodes: string | string[];
+  searchParamsData: Record<string, any> | null; // ✅ allow null
   Language?: string;
 }
 
