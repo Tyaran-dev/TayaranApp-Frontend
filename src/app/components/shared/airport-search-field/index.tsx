@@ -149,11 +149,12 @@ const AirportSearchField: React.FC<Props> = ({
     return (
         <div>
             <div ref={selectRef} className="flex flex-col w-full">
-                        {label && <label className=" block text-[#12121299] mb-2">{label}</label>}
+                {label && <label className=" block text-[#12121299] mb-2">{label}</label>}
                 <div className="relative">
-                    <div className={`cursor-pointer text-grey1 text-md bg-transparent outline-none w-full py-1.5 px-2 flex justify-between items-center ${className} ${isOpen ? "border-green" : ""}`}>
+                    <div className={`cursor-pointer text-grey1 text-md bg-transparent border outline-none w-full  px-2 flex justify-between items-center ${className} ${isOpen ? "border-green" : ""}`}>
                         <input
                             // lang="en"
+                            placeholder={placeholder}
                             type="text"
                             ref={inputRef}
                             value={selectedItem && !searchTerm ? ` ${selectedItem.name}` : searchTerm}
@@ -162,7 +163,7 @@ const AirportSearchField: React.FC<Props> = ({
                                 if (e.target.value === "") setSelectedItem(null);
                             }}
                             // placeholder={defaultValue ? defaultValue : placeholder}
-                            className="w-full outline-none placeholder:text-black notranslate"
+                            className="w-full outline-none placeholder:text-[#12121299] notranslate"
                             onFocus={handleFocus}
                         />
                         {icon ? (

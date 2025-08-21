@@ -80,7 +80,7 @@ const FlightFilter: React.FC<FlightFilterProps> = ({
     ];
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-4 w-full max-w-md">
+        <div className="w-full max-w-xs h-screen sticky top-4 overflow-y-auto p-4 mt-4 border rounded-lg shadow-md bg-white">
 
             {/* Departure Time Filter */}
             <div className="py-3">
@@ -103,7 +103,7 @@ const FlightFilter: React.FC<FlightFilterProps> = ({
                         {departureTimeOptions.map((time) => (
                             <div
                                 key={time.key}
-                                className={`border px-2 py-4 rounded-md flex flex-col items-center cursor-pointer hover:shadow transition ${filterDepartureTime === time.key ? 'bg-[#98FFC80A]' : ''
+                                className={`border px-2 py-4 rounded-lg flex flex-col items-center gap-2 cursor-pointer hover:shadow transition ${filterDepartureTime === time.key ? 'bg-[#98FFC80A]' : ''
                                     }`}
                                 onClick={() => onDepartureTimeChange(time.key)}
                             >

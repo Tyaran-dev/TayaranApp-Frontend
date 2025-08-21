@@ -92,7 +92,7 @@ const Travelers: React.FC<TravelersProps> = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="py-3 px-2 w-full flex items-center justify-between  rounded-2xl"
+        className="py-2.5 border-1 px-2 w-full flex items-center justify-between border-borderColor  rounded-lg border-green"
       >
         <span className='text-sm'>{adults + children + infants} {t("travlers.buttonLabel")}</span>
         <IoIosArrowDown className="text-sm" />

@@ -12,6 +12,8 @@ import useSearchflights from "@/hooks/useSearchflights";
 import { v4 as uuidv4 } from 'uuid';
 import { FlightFormData } from "@/redux/flights/flightSlice";
 export const tripTypes = ["roundtrip", "oneway", "multiCities"] as const;
+import fromImg from "/public/assets/from.png";
+import toImg from "/public/assets/to.png";
 
 interface FlightSegment {
   id: string;
@@ -117,7 +119,7 @@ const FlightSearchForm = () => {
 
     dispatch(clearFlightData());
 
-    const searchData : FlightFormData = {
+    const searchData: FlightFormData = {
       origin: tripType === "multiCities" ? multiCitySegments[0].origin : origin,
       destination: tripType === "multiCities"
         ? multiCitySegments[multiCitySegments.length - 1].destination
@@ -150,7 +152,7 @@ const FlightSearchForm = () => {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4  rounded-3xl border shadow-sm py-4 px-6 w-full mx-auto">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-1  rounded-lg  border shadow-sm  py-4 px-6 w-full mx-auto">
       {/* Trip Type Selector */}
       <div className="flex gap-4 flex-wrap w-full">
         {tripTypes.map((type) => (
@@ -181,7 +183,7 @@ const FlightSearchForm = () => {
         </div>
         <div className="lg:w-1/5">
           <select
-            className="h-full w-full border border-borderColor rounded-lg px-4 py-2"
+            className="  w-full border border-borderColor rounded-lg px-4 py-2.5"
             value={flightClass}
             onChange={(e) => setFlightClass(e.target.value)}
           >
@@ -203,6 +205,7 @@ const FlightSearchForm = () => {
               defaultValue={origin}
               onSelect={setOrigin}
               className="border rounded-lg py-2 !border-borderColor"
+              icon={fromImg}
             />
           </div>
 
@@ -224,6 +227,8 @@ const FlightSearchForm = () => {
               defaultValue={destination}
               onSelect={setDestination}
               className="border rounded-lg py-2 !border-borderColor"
+              icon={toImg}
+
             />
           </div>
 
@@ -277,12 +282,18 @@ const FlightSearchForm = () => {
                   className="px-4 py-2 w-full rounded-lg text-sm border border-borderColor"
                 />
               </div>
-
+              <button
+                type="button"
+                onClick={handleAddSegment}
+                className="flex items-center bg-emerald-700 text-white rounded-lg p-2 gap-2"
+              >
+                <Plus className="h-4 w-4" />
+              </button>
               {multiCitySegments.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleRemoveSegment(index)}
-                  className="bg-red-500 text-white py-4 px-3 rounded-lg"
+                  className="bg-red-500 text-white p-2  rounded-lg"
                 >
                   <Minus className="h-4 w-4" />
                 </button>
@@ -290,13 +301,7 @@ const FlightSearchForm = () => {
             </div>
           ))}
 
-          <button
-            type="button"
-            onClick={handleAddSegment}
-            className="flex items-center bg-emerald-700 text-white rounded-lg p-4 gap-2"
-          >
-            <Plus className="h-4 w-4" />
-          </button>
+
         </div>
       )}
 

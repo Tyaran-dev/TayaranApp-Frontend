@@ -19,6 +19,7 @@ import FlightTicketSkeletonGrid from "@/app/components/shared/Feedback/FlightTic
 import { getPersistedFlightData } from '@/utils/flightStorage';
 import useSearchflights from "@/hooks/useSearchflights"
 import Stepper from "@/app/components/shared/Feedback/Stepper";
+import logo from "/public/assets/logo/ras.png";
 
 
 interface FlightPrice {
@@ -75,6 +76,33 @@ const Page: React.FC = () => {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const getCheapestFlight = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+    return flights.reduce((min, flight) =>
+      flight.price < min.price ? flight : min
+    );
+  };
+
+  const getShortestFlight = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+    return flights.reduce((min, flight) =>
+      flight.totalDuration < min.totalDuration ? flight : min
+    );
+  };
+
+  const formatDuration = (minutes: number) => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m}m`;
+  };
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -179,6 +207,9 @@ const Page: React.FC = () => {
     );
   });
 
+
+  const cheapestFlight = getCheapestFlight(filteredFlights);
+  const shortestFlight = getShortestFlight(filteredFlights);
   // Handle different sorting options
   const handleSortChange = (sortType: string) => {
     let updatedSorts = [...selectedSorts];
@@ -206,30 +237,20 @@ const Page: React.FC = () => {
             break;
           case "shortest":
             sortedList = sortedList.sort((a, b) => {
-              const durationA = a.itineraries.reduce(
-                (total: any, itinerary: any) =>
-                  total +
-                  parseInt(
-                    calculateTotalDurationShortNew(itinerary.segments).replace(
-                      /[^0-9]/g,
-                      ""
-                    ),
-                    10
-                  ),
-                0
-              );
-              const durationB = b.itineraries.reduce(
-                (total: any, itinerary: any) =>
-                  total +
-                  parseInt(
-                    calculateTotalDurationShortNew(itinerary.segments).replace(
-                      /[^0-9]/g,
-                      ""
-                    ),
-                    10
-                  ),
-                0
-              );
+              const getDurationInMinutes = (flight: any) => {
+                return flight.itineraries.reduce((total: number, itinerary: any) => {
+                  const firstSegment = itinerary.segments[0];
+                  const lastSegment = itinerary.segments[itinerary.segments.length - 1];
+                  const departure = new Date(firstSegment.departure.at).getTime();
+                  const arrival = new Date(lastSegment.arrival.at).getTime();
+                  const diffMinutes = (arrival - departure) / (1000 * 60);
+                  return total + diffMinutes; // add per itinerary
+                }, 0);
+              };
+
+              const durationA = getDurationInMinutes(a);
+              const durationB = getDurationInMinutes(b);
+
               return durationA - durationB;
             });
             break;
@@ -266,8 +287,8 @@ const Page: React.FC = () => {
   // Highlight active buttons
   const getButtonClass = (sortType: string) => {
     return selectedSorts.includes(sortType)
-      ? "bg-greenGradient text-white"
-      : "border border-borderColor";
+      ? "border-emerald-600"
+      : "";
   };
 
   const calculateStops = (flightSegments: any[]) => {
@@ -276,6 +297,7 @@ const Page: React.FC = () => {
       flightSegments?.length > 1 ? flightSegments?.length - 1 : 0;
     return numberOfStops;
   };
+
 
 
 
@@ -321,10 +343,10 @@ const Page: React.FC = () => {
     <Section className="">
       <div className="py-5">
         {/* Stepper */}
-        <Stepper currentStep={currentStep} stepsType="flight"/>
+        <Stepper currentStep={currentStep} stepsType="flightSteps" />
         <FlightSearchForm />
         <div className="flex flex-wrap justify-between gap-5 py-10">
-          <div className="lg:w-1/4 w-full ">
+          <div className="lg:w-1/4 w-full p-2 border rounded-lg ">
             <div className="flex justify-between flex-wrap px-3 items-center gap-5 ">
               <h2 className="lg:text-xl font-semibold">{t("heading")}</h2>
               <h2 className="lg:text-xl font-semibold">
@@ -359,38 +381,55 @@ const Page: React.FC = () => {
           <div className={`lg:w-[72%] w-full space-y-6`}>
             <div className="flex items-center whitespace-nowrap flex-wrap sm:flex-nowrap justify-between gap-2 w-full">
               <button
-                className={`rounded-2xl p-2 w-full ${getButtonClass(
-                  "cheapest"
-                )}`}
+                className={`rounded-lg p-2 w-full  h-20 border-2 ${getButtonClass("cheapest")}`}
                 onClick={() => handleSortChange("cheapest")}
               >
-                {t("cheapest")}
+                <div className="flex flex-col items-center">
+                  <span>{t("cheapest")}</span>
+                  {cheapestFlight && (
+                    <span className={`text-sm flex text-gray-600 ${getButtonClass("cheapest")}`}>
+                      {cheapestFlight?.currency == "SAR" ? <Image
+                        src={logo}
+                        alt="sar"
+                        width={18}
+                        height={18}
+                        unoptimized
+                        className="m-1 object-contain"
+                      /> : cheapestFlight?.currency} {cheapestFlight.basePrice}
+                    </span>
+                  )}
+                </div>
               </button>
+
               <button
-                className={`rounded-2xl p-2 w-full ${getButtonClass(
-                  "shortest"
-                )}`}
+                className={`rounded-lg p-2 w-full  h-20 border-2  ${getButtonClass("shortest")}`}
                 onClick={() => handleSortChange("shortest")}
               >
-                {t("shortest")}
+                <div className="flex flex-col items-center">
+                  <span>{t("shortest")}</span>
+                  {shortestFlight && (
+                    <span className="text-sm text-gray-600">
+                      ₺{shortestFlight.price} • {shortestFlight.totalDuration}
+                    </span>
+                  )}
+                </div>
               </button>
+
               <button
-                className={`rounded-2xl p-2 w-full ${getButtonClass(
-                  "earliest-takeoff"
-                )}`}
+                className={`rounded-lg p-2 w-full  h-20 border-2 ${getButtonClass("earliest-takeoff")}`}
                 onClick={() => handleSortChange("earliest-takeoff")}
               >
                 {t("earliesttakeoff")}
               </button>
+
               <button
-                className={`rounded-2xl p-2 w-full ${getButtonClass(
-                  "earliest-arrival"
-                )}`}
+                className={`rounded-lg p-2 w-full  h-20 border-2  ${getButtonClass("earliest-arrival")}`}
                 onClick={() => handleSortChange("earliest-arrival")}
               >
                 {t("earliestarrival")}
               </button>
             </div>
+
             {loading && (
               <>
                 <CustomProgressBar />
@@ -457,7 +496,7 @@ const Page: React.FC = () => {
 
       {isSideMenuOpen &&
         slectedData.map((selectedFlight: Flight, index: number) => (
-          <div key={index} className="fixed inset-0 flex items-center justify-end top-0 z-[99] bg-[#00000099] h-full">
+          <div key={index} className="fixed inset-0 flex items-center justify-start top-0 z-[99] bg-[#00000099] h-full">
             <div
               className={`flex flex-col p-5 justify-between h-full w-[50%] bg-white shadow-lg transform ${isSideMenuOpen ? "translate-x-0" : "translate-x-full"
                 } transition-transform duration-300 ease-in-out`}

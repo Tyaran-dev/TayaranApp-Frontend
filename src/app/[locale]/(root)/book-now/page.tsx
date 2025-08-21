@@ -124,7 +124,7 @@ const Page = () => {
                     type="button"
                     onClick={() => setCurrentStep(3)}
                     disabled={!allTravelersCompleted}
-                    className={`w-full sm:w-auto border bg-greenGradient border-gray-300 hover:border-gray-400 text-white transition py-3 px-6 rounded-xl font-semibold ${
+                    className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${
                       !allTravelersCompleted
                         ? "opacity-50 cursor-not-allowed"
                         : ""

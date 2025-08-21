@@ -2,6 +2,9 @@
 import React from "react";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+import Image from "next/image";
+import logo from "/public/assets/logo/ras.png";
+
 
 interface PriceRangeProps {
     title?: string; // Optional title for the slider
@@ -58,8 +61,26 @@ const PriceRange: React.FC<PriceRangeProps> = ({
                 />
             </div>
             <div className="flex items-center text-sm justify-between mt-2">
-                <span>{`${rangeValues[0]} ${unit}`}</span>
-                <span>{`${rangeValues[1]} ${unit}`}</span>
+                <p className="flex gap-1"><span className="text-md">
+                    {`${rangeValues[0]} `}
+                </span><Image
+                        src={logo}
+                        alt="ras"
+                        width={18}
+                        height={18}
+                        unoptimized
+                        className="rounded-2xl object-contain"
+                    /></p>
+                <p className="flex gap-1"><span className="text-md">
+                    {`${rangeValues[1]} `}
+                </span><Image
+                        src={logo}
+                        alt="ras"
+                        width={18}
+                        height={18}
+                        unoptimized
+                        className="rounded-2xl object-contain"
+                    /></p>
             </div>
         </div>
     );

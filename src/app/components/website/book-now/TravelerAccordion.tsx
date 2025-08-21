@@ -151,9 +151,9 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                         )}
                         <div className="max-h-48 overflow-y-auto">
                             {Array.isArray(filteredOptions) && typeof filteredOptions[0] === 'object'
-                                ? (filteredOptions as Array<{ value: string; label: string }>).map((option) => (
+                                ? (filteredOptions as Array<{ value: string; label: string }>).map((option,indx) => (
                                     <div
-                                        key={option.value}
+                                        key={indx}
                                         className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
                                         onClick={() => {
                                             onChange(option.value);
@@ -188,18 +188,18 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
             {travelers.map((traveler: any, index: number) => (
                 <div key={traveler.travelerId} className="border border-stone-200 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                     <div
-                        className="flex items-center justify-between p-4 text-white bg-greenGradient cursor-pointer hover:from-stone-100 hover:to-stone-200 transition-all duration-200"
+                        className="flex items-center justify-between p-4 rounded-lg text-white bg-emerald-800 cursor-pointer hover:from-stone-100 hover:to-stone-200 transition-all duration-200"
                         onClick={() => handleToggle(index)}
                     >
                         <div className="flex items-center space-x-3">
                             <div className={`w-8 h-8 rounded-2xl flex items-center justify-center transition-all duration-200 mx-2 ${traveler.isCompleted
                                 ? "bg-gradient-to-r from-green-500 to-green-600 shadow-lg"
-                                : "bg-gradient-to-r from-stone-300 to-stone-400"
+                                : "bg-white"
                                 }`}>
                                 {traveler.isCompleted ? (
                                     <Check className="w-4 h-4 text-white" />
                                 ) : (
-                                    <span className="text-sm font-medium text-white">{index + 1}</span>
+                                    <span className="text-md  text-emerald-800 font-bold">{index + 1}</span>
                                 )}
                             </div>
                             <div>
@@ -233,8 +233,8 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                                         <button
                                             key={title}
                                             type="button"
-                                            className={`px-6 py-3 rounded-2xl font-medium transition-all duration-200 ${traveler.title === title
-                                                ? "bg-greenGradient text-white shadow-lg transform scale-105"
+                                            className={`px-6 py-2 rounded-lg font-medium transition-all duration-200 ${traveler.title === title
+                                                ? "bg-emerald-800 text-white shadow-lg transform scale-105"
                                                 : "bg-white border-2 border-stone-200 text-stone-700 hover:border-[#1C1466] hover:shadow-md"
                                                 }`}
                                             onClick={() => updateTravelerData(index, "title", title)}

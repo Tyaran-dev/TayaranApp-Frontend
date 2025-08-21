@@ -257,7 +257,7 @@ const HeroSection = () => {
                   // ✅ Your existing multiCities layout (unchanged)
                   <div className="space-y-4">
                     {flightFormData.segments?.map((segment, index) => (
-                      <div key={segment.id} className="border rounded-xl border-bordered gap-4 py-4 !mt-6 px-4">
+                      <div key={segment.id} className=" rounded-xl border-2 border-bordered gap-4 py-4 !mt-6 px-4">
                         <div className="flex justify-between gap-4 mb-2">
                           <div className="w-full lg:w-1/2">
                             <AirportSearchField
@@ -282,7 +282,7 @@ const HeroSection = () => {
                           </div>
                         </div>
 
-                        <div className="mb-2">
+                        <div className="mb-2 flex gap-2 items-end">
                           <CustomDatePicker
                             label={t("heroSection.searchForm.DatePicker")}
                             placeholder={t("heroSection.searchForm.DatePicker")}
@@ -295,28 +295,30 @@ const HeroSection = () => {
                             }
                             onChange={(date) => handleSegmentChange(index, "date", date)}
                           />
-                        </div>
-
-                        <div className="flex items-center mx-4 self-end">
+                          <button
+                            onClick={addFlightSegment}
+                            className="flex items-center bg-emerald-900 rounded-lg justify-between h-[40px] p-2 gap-2 capitalize"
+                          >
+                            <IoMdAdd color={"#fff"} />
+                          </button>
                           {flightFormData.segments!.length > 1 && (
                             <button
                               type="button"
                               onClick={() => removeFlightSegment(index)}
-                              className="bg-red-500 py-2 px-2 rounded-lg text-md flex justify-between items-center gap-2 mt-2"
+                              className="bg-red-500 py-2 px-2 rounded-lg text-md flex justify-between items-center h-[40px] gap-2 mt-2"
                             >
                               <MdDelete color={"#fff"} />
                             </button>
                           )}
                         </div>
+
+                        {/* <div className="flex items-center mx-4 self-end">
+
+                        </div> */}
                       </div>
                     ))}
 
-                    <button
-                      onClick={addFlightSegment}
-                      className="flex items-center bg-emerald-900 rounded-lg justify-between p-4 gap-2 capitalize"
-                    >
-                      <IoMdAdd color={"#fff"} />
-                    </button>
+
                   </div>
                 ) : (
                   // ✅ Updated layout for oneway/roundtrip to match multiCities

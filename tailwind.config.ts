@@ -32,7 +32,7 @@ const config: Config = {
         almarai: ["var(--font-almarai)", "sans-serif"],
       },
       backgroundImage: {
-        heroFligthsBanner: "url('/assets/images/hero-flights.webp')",
+        heroFligthsBanner: "url('/assets/images/hero-flights.jpeg')",
         heroHotelsBanner: "url('/assets/images/hero-hotels.jpg')",
         greenGradient:
           "linear-gradient(58.16deg, #016733 -6.21%, #1C1466 103.2%)",

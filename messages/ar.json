@@ -211,7 +211,10 @@
     "duration": "المدة",
     "departureTitle": "الإقلاع",
     "flightDetails": "تفاصيل الرحلة",
-    "baggageIncluded": "الأمتعة مشمولة"
+    "baggageIncluded": "الأمتعة مشمولة",
+    "checking": "جاري التحقق...",
+    "bookNow": "احجز الآن",
+    "select": " اختر الرحلة"
   },
   "HotelPage": {
     "noHotelsFound": "لم يتم العثور على فنادق بناءً على المعايير المحددة.",

@@ -48,7 +48,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
         <div className="custom-date-picker w-full text-grayText relative">
             {label && <label className="block mb-2 text-sm ">{label}</label>}
             <div
-                className={`flex items-center justify-between px-3 w-full mx-auto text-base text-grayText cursor-pointer ${className}`}
+                className={`flex items-center justify-between px-3 w-full mx-auto py-2.5 text-base text-grayText cursor-pointer ${className}`}
                 onClick={toggleDatePicker} // Toggle on click
             >
                 <p className="font-medium text-sm text-black">

@@ -33,11 +33,11 @@ export default function Stepper({ currentStep, stepsType }: StepperProps) {
     const steps = stepsType == "flightSteps" ? flightSteps : hotelSteps;
 
     return (
-        <div className="relative bg-white border-2 border-stone-200 rounded-3xl px-8 py-6 mb-8">
-            {/* Curved border design - decorative only */}
-            <div className="absolute inset-0 rounded-[3rem] border-2 border-transparent "></div>
+        <div className="relative   rounded-3xl px-8 py-6 mb-8">
+            {/* Curved border design - decorative only */} 
+            <div className="absolute inset-0 rounded-[3rem] border-2 border-transparent  "></div>
 
-            <div className="relative flex items-center justify-between">
+            <div className="relative flex  gap-2">
                 {steps?.map((step, index) => {
                     const stepNumber = index + 1;
                     const isCompleted = stepNumber < currentStep;
@@ -75,7 +75,7 @@ export default function Stepper({ currentStep, stepsType }: StepperProps) {
                             </div>
 
                             {/* Connecting Line */}
-                            {index < steps.length - 1 && (
+                          
                                 <div className="flex-1 mx-4">
                                     <div
                                         className={`h-0.5 transition-colors duration-300 ${isCompleted
@@ -84,7 +84,7 @@ export default function Stepper({ currentStep, stepsType }: StepperProps) {
                                             }`}
                                     ></div>
                                 </div>
-                            )}
+                          
                         </div>
                     );
                 })}
