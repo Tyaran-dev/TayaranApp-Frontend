@@ -139,9 +139,8 @@ const FlightSearchForm = () => {
     }
 
     // Trigger the search after state updates
-    setTimeout(() => {
-      triggerSearch();
-    }, 0);
+    triggerSearch(searchData);
+
   };
 
   const flightClassOptions = [
@@ -154,13 +153,13 @@ const FlightSearchForm = () => {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-1  rounded-lg  border shadow-sm  py-4 px-6 w-full mx-auto">
       {/* Trip Type Selector */}
-      <div className="flex gap-4 flex-wrap w-full">
+      <div className="flex gap-2 md:gap-4 justify-between md:justify-normal w-full">
         {tripTypes.map((type) => (
           <button
             key={type}
             type="button"
             onClick={() => dispatch(changeTripType(type))}
-            className={`px-4 py-2 font-medium text-base rounded-lg ${tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
+            className={`px-2 md:px-4 py-2 text-sm font-medium md:text-base rounded-lg ${tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
               }`}
           >
             {type === "roundtrip" ? t("tripTypes.roundtrip") :
@@ -188,7 +187,7 @@ const FlightSearchForm = () => {
             onChange={(e) => setFlightClass(e.target.value)}
           >
             {flightClassOptions.map((item) => (
-              <option key={item.value} value={item.value}>
+              <option className="text-[10px] md:text-base flex justify-center" key={item.value} value={item.value}>
                 {item.label}
               </option>
             ))}

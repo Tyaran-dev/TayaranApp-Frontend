@@ -149,8 +149,8 @@ const AirportSearchField: React.FC<Props> = ({
     return (
         <div>
             <div ref={selectRef} className="flex flex-col w-full">
-                {label && <label className=" block text-[#12121299] mb-2">{label}</label>}
-                <div className="relative">
+                {label && <label className="hidden md:block text-[#12121299] mb-2">{label}</label>}
+                <div className="relative ">
                     <div className={`cursor-pointer text-grey1 text-md bg-transparent border outline-none w-full  px-2 flex justify-between items-center ${className} ${isOpen ? "border-green" : ""}`}>
                         <input
                             // lang="en"

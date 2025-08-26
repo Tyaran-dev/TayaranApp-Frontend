@@ -114,7 +114,7 @@ const HotelSearch = () => {
     };
 
     dispatch(setHotelSearchData(searchParams)); // ✅ store it
-    router.push("/hotel-search"); // ✅ navigate to search result page
+    router.push(`/${locale}/hotel-search`); // ✅ navigate to search result page
   };
 
   const [open, setOpen] = useState(false);
@@ -176,12 +176,12 @@ const HotelSearch = () => {
   )} Child${rooms.reduce((sum, r) => sum + r.Children, 0) !== 1 ? "ren" : ""}`;
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
-      <h2 className="text-lg font-semibold mb-4">Search Hotels</h2>
+    <div className="p-4 max-w-3xl mx-auto ">
+      {/* <h2 className="text-lg font-semibold mb-4">Search Hotels</h2> */}
       {/* Country & City */}
-      <div className="flex justify-between gap-4">
-        <div className="mb-4 w-1/2">
-          <label className="block mb-2 text-sm text-[#12121299]">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
+        <div className="mb-2 md:w-1/2">
+          <label className="hidden md:block mb-2 text-sm text-[#12121299]">
             Select Country
           </label>
           <select
@@ -200,8 +200,8 @@ const HotelSearch = () => {
           </select>
         </div>
 
-        <div className="mb-4 w-1/2">
-          <label className="block mb-2 text-[#12121299] text-sm">
+        <div className="mb-4 md:w-1/2">
+          <label className="hidden md:block mb-2 text-[#12121299] text-sm">
             Select City
           </label>
           <select
@@ -220,8 +220,8 @@ const HotelSearch = () => {
       </div>
 
       {/* Dates */}
-      <div className="flex justify-between gap-4">
-        <div className="mb-4 w-1/2">
+      <div className="flex flex-col md:flex-row justify-between mb-4 gap-2">
+        <div className=" md:w-1/2">
           <CustomDatePicker
             label="Check-In Date"
             placeholder="Check-In Date"
@@ -232,7 +232,7 @@ const HotelSearch = () => {
           />
         </div>
 
-        <div className="mb-4 w-1/2">
+        <div className="mb-1 md:w-1/2">
           <CustomDatePicker
             label="Check-Out Date"
             placeholder="Check-Out Date"
@@ -371,7 +371,7 @@ const HotelSearch = () => {
         <div className="w-[50%]">
           <button
             onClick={handleSearch}
-            className="bg-greenGradient text-white px-4 py-3 rounded w-full"
+            className="bg-greenGradient text-white px-2 py-3 rounded-lg w-full"
             disabled={loading}
           >
             {loading ? "Searching..." : "Search Hotels"}

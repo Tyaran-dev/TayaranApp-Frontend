@@ -20,6 +20,8 @@ import { getPersistedFlightData } from '@/utils/flightStorage';
 import useSearchflights from "@/hooks/useSearchflights"
 import Stepper from "@/app/components/shared/Feedback/Stepper";
 import logo from "/public/assets/logo/ras.png";
+import { FaChevronDown } from "react-icons/fa6";
+import { FaChevronUp } from "react-icons/fa6";
 
 
 interface FlightPrice {
@@ -54,6 +56,7 @@ const Page: React.FC = () => {
   const locale = useLocale();
   const t = useTranslations("filters");
   const [currentStep, setCurrentStep] = useState(1);
+  const [isOpen, setIsOpen] = useState(true);
 
 
   const searchParamsData = useSelector((state: any) => state.flightData.searchParamsData);
@@ -77,60 +80,6 @@ const Page: React.FC = () => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const getCheapestFlight = (flights: any[]) => {
-    if (!flights || flights.length === 0) return null;
-    return flights.reduce((min, flight) =>
-      flight.price < min.price ? flight : min
-    );
-  };
-
-  const getShortestFlight = (flights: any[]) => {
-    if (!flights || flights.length === 0) return null;
-    return flights.reduce((min, flight) =>
-      flight.totalDuration < min.totalDuration ? flight : min
-    );
-  };
-
-  const formatDuration = (minutes: number) => {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return `${h}h ${m}m`;
-  };
-
-  const formatTime = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-
-
-  useEffect(() => {
-    if (!hasHydrated) return;
-
-    const persistedData = getPersistedFlightData();
-    if (persistedData?.searchParamsData) {
-      dispatch(setSearchData({
-        ...persistedData.searchParamsData,
-        departure: new Date(persistedData.searchParamsData.departure).toISOString(),
-      }));
-    }
-  }, [dispatch, hasHydrated]);
-
-
-  useEffect(() => {
-    return () => {
-      dispatch(clearFlightData()); // ✅ Dispatch cleanup during unmount
-    };
-  }, []);
-
-  useEffect(() => {
-    const isOneWayOrRoundTrip = searchParamsData?.origin && searchParamsData?.destination;
-    const isMultiCity = Array.isArray(searchParamsData?.segments) && searchParamsData.segments.length > 0;
-
-    if (isOneWayOrRoundTrip || isMultiCity) {
-      getFlights();
-    }
-  }, [searchParamsData]);
 
   // Filter Flights Function
   const filteredFlights = flights?.filter((flight) => {
@@ -138,7 +87,7 @@ const Page: React.FC = () => {
     if (!flight?.price || !flight?.itineraries) return false;
 
     // Filter by price
-    const price = parseFloat(flight.price);
+    const price = parseFloat(flight.basePrice);
     const isPriceValid = price <= filters.price;
 
     const isStopsValid =
@@ -207,9 +156,124 @@ const Page: React.FC = () => {
     );
   });
 
+  const getCheapestFlight = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+    return flights.reduce((min, flight) =>
+      flight.basePrice < min.basePrice ? flight : min
+    );
+  };
 
-  const cheapestFlight = getCheapestFlight(filteredFlights);
-  const shortestFlight = getShortestFlight(filteredFlights);
+  // helper function to convert "1h 50m" into minutes
+  const parseDurationToMinutes = (duration: string): number => {
+    const hoursMatch = duration.match(/(\d+)h/);
+    const minutesMatch = duration.match(/(\d+)m/);
+
+    const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : 0;
+    const minutes = minutesMatch ? parseInt(minutesMatch[1], 10) : 0;
+
+    return hours * 60 + minutes;
+  };
+
+  const getShortestFlight = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+
+    return flights.reduce((min, flight) => {
+      const minDuration = parseDurationToMinutes(min.itineraries[0].duration);
+      const currentDuration = parseDurationToMinutes(flight.itineraries[0].duration);
+
+      return currentDuration < minDuration ? flight : min;
+    });
+  };
+
+  const getEarliestTakeoff = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+
+    return flights.reduce((earliest, flight) => {
+      // assuming first segment is the takeoff
+      const earliestDeparture = new Date(earliest.itineraries[0].segments[0].departure.at).getTime();
+      const currentDeparture = new Date(flight.itineraries[0].segments[0].departure.at).getTime();
+
+      return currentDeparture < earliestDeparture ? flight : earliest;
+    });
+  };
+
+  const getEarliestArrival = (flights: any[]) => {
+    if (!flights || flights.length === 0) return null;
+
+    return flights.reduce((earliest, flight) => {
+      const earliestSegments = earliest.itineraries[0].segments;
+      const currentSegments = flight.itineraries[0].segments;
+      // last segment arrival = arrival of destination
+      const earliestArrival = new Date(
+        earliestSegments[earliestSegments.length - 1].arrival.at
+      ).getTime();
+
+      const currentArrival = new Date(
+        currentSegments[currentSegments.length - 1].arrival.at
+      ).getTime();
+
+      return currentArrival < earliestArrival ? flight : earliest;
+    });
+  };
+
+
+
+  const cheapestFlight = getCheapestFlight(filteredFlights),
+    shortestFlight = getShortestFlight(filteredFlights),
+    earlistFlight = getEarliestTakeoff(filteredFlights),
+    earlistArrival = getEarliestArrival(filteredFlights);
+
+
+  console.log(earlistArrival, "earlistArrival earlistArrival")
+
+
+
+  // const formatDuration = (minutes: number) => {
+  //   const h = Math.floor(minutes / 60);
+  //   const m = minutes % 60;
+  //   return `${h}h ${m}m`;
+  // };
+
+  const formatTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString([], {
+      hour: "2-digit", minute: "2-digit", hour12: true,
+    });
+  };
+
+
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    const persistedData = getPersistedFlightData();
+    if (persistedData?.searchParamsData) {
+      dispatch(setSearchData({
+        ...persistedData.searchParamsData,
+        departure: new Date(persistedData.searchParamsData.departure).toISOString(),
+      }));
+    }
+  }, [dispatch, hasHydrated]);
+
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearFlightData()); // ✅ Dispatch cleanup during unmount
+    };
+  }, []);
+
+  useEffect(() => {
+    const isOneWayOrRoundTrip = searchParamsData?.origin && searchParamsData?.destination;
+    const isMultiCity = Array.isArray(searchParamsData?.segments) && searchParamsData.segments.length > 0;
+
+    if (isOneWayOrRoundTrip || isMultiCity) {
+      getFlights();
+    }
+  }, [searchParamsData]);
+
+
+
+
   // Handle different sorting options
   const handleSortChange = (sortType: string) => {
     let updatedSorts = [...selectedSorts];
@@ -232,7 +296,7 @@ const Page: React.FC = () => {
         switch (type) {
           case "cheapest":
             sortedList = sortedList.sort(
-              (a, b) => a.price - b.price
+              (a, b) => a.basePrice - b.basePrice
             );
             break;
           case "shortest":
@@ -299,8 +363,6 @@ const Page: React.FC = () => {
   };
 
 
-
-
   // Function to calculate the stop duration between segments
   const calculateStopDuration = (
     arrivalTime: string,
@@ -339,94 +401,161 @@ const Page: React.FC = () => {
   //@ts-ignore
   displayFlightDetails(flights[0]?.segments);
 
+
   return (
     <Section className="">
-      <div className="py-5">
+      <div className="py-5  ">
         {/* Stepper */}
-        <Stepper currentStep={currentStep} stepsType="flightSteps" />
-        <FlightSearchForm />
-        <div className="flex flex-wrap justify-between gap-5 py-10">
-          <div className="lg:w-1/4 w-full p-2 border rounded-lg ">
-            <div className="flex justify-between flex-wrap px-3 items-center gap-5 ">
-              <h2 className="lg:text-xl font-semibold">{t("heading")}</h2>
-              <h2 className="lg:text-xl font-semibold">
-                ({filteredFlights && filteredFlights.length})
-              </h2>
-            </div>
-            <FlightFilter
-              filterPrice={filters.price}
-              filterStops={filters.stops}
-              airlines={Object.values(carriers)} // here is airlines
-              filterDepartureTime={filters.departureTime}
-              onPriceChange={(newPrice) =>
-                setFilters({ ...filters, price: newPrice })
-              }
-              onStopsChange={(newStops) =>
-                setFilters({ ...filters, stops: newStops })
-              }
-              onDepartureTimeChange={(newTime) =>
-                setFilters({ ...filters, departureTime: newTime })
-              }
-              onAirlinesChange={(newAirlines) =>
-                setFilters({ ...filters, airlines: newAirlines })
-              }
-              filterAirlines={filters.airlines}
-              filterBaggage={[]} // Add baggage filter functionality if needed
-              onBaggageChange={(baggage: string[]) => {
-                console.log("Baggage updated:", baggage);
+        <div className="hidden md:block">
+
+
+          <Stepper currentStep={currentStep} stepsType="flightSteps" />
+        </div>
+        <div className=" p-4">
+          <FlightSearchForm />
+        </div>
+        <div className="flex items-center md:items-start  flex-nowrap flex-col md:flex-row justify-center md:justify-between gap-2 py-10">
+          <div className="lg:w-1/4 w-[90%] border   rounded-lg md:sticky md:top-20 md:h-[calc(100vh-5rem)] flex flex-col items-center">
+            {/* Header Section - stays fixed inside */}
+            <div
+              className="flex justify-between flex-wrap px-3 py-2 w-full items-center gap-5 cursor-pointer lg:cursor-default border-b"
+              onClick={() => {
+                if (window.innerWidth < 1024) setIsOpen(!isOpen);
               }}
-            />
+            >
+              <h2 className="lg:text-xl font-semibold">{t("heading")}</h2>
+              <div className="flex items-center gap-2">
+                <h2 className="lg:text-xl font-semibold">
+                  ({filteredFlights && filteredFlights.length})
+                </h2>
+                <span className="lg:hidden">
+                  {isOpen ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
+                </span>
+              </div>
+            </div>
+
+            {/* Accordion Body - scrollable area */}
+            <div
+              className={`transition-all flex justify-center w-full duration-300 lg:block flex-1 overflow-y-auto px-3 scrollbar-hide ${isOpen
+                ? "max-h-[1000px] opacity-100"
+                : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"
+                }`}
+            >
+              <FlightFilter
+                filterPrice={filters.price}
+                filterStops={filters.stops}
+                airlines={Object.values(carriers)}
+                filterDepartureTime={filters.departureTime}
+                onPriceChange={(newPrice: any) =>
+                  setFilters({ ...filters, price: newPrice })
+                }
+                onStopsChange={(newStops: any) =>
+                  setFilters({ ...filters, stops: newStops })
+                }
+                onDepartureTimeChange={(newTime: any) =>
+                  setFilters({ ...filters, departureTime: newTime })
+                }
+                onAirlinesChange={(newAirlines: any) =>
+                  setFilters({ ...filters, airlines: newAirlines })
+                }
+                filterAirlines={filters.airlines}
+                filterBaggage={[]}
+                onBaggageChange={(baggage: string[]) => {
+                  console.log("Baggage updated:", baggage);
+                }}
+              />
+            </div>
           </div>
 
+
           <div className={`lg:w-[72%] w-full space-y-6`}>
-            <div className="flex items-center whitespace-nowrap flex-wrap sm:flex-nowrap justify-between gap-2 w-full">
+            <div className="flex items-center whitespace-nowrap flex-wrap sm:flex-nowrap justify-center md:justify-between gap-2 w-full">
               <button
-                className={`rounded-lg p-2 w-full  h-20 border-2 ${getButtonClass("cheapest")}`}
+                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("cheapest")}`}
                 onClick={() => handleSortChange("cheapest")}
               >
                 <div className="flex flex-col items-center">
                   <span>{t("cheapest")}</span>
                   {cheapestFlight && (
-                    <span className={`text-sm flex text-gray-600 ${getButtonClass("cheapest")}`}>
-                      {cheapestFlight?.currency == "SAR" ? <Image
+                    <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                      {cheapestFlight.basePrice} {cheapestFlight?.currency == "SAR" ? <Image
                         src={logo}
                         alt="sar"
                         width={18}
                         height={18}
                         unoptimized
                         className="m-1 object-contain"
-                      /> : cheapestFlight?.currency} {cheapestFlight.basePrice}
+                      /> : cheapestFlight?.currency}  -- {cheapestFlight.itineraries[0].duration}
                     </span>
                   )}
                 </div>
               </button>
 
               <button
-                className={`rounded-lg p-2 w-full  h-20 border-2  ${getButtonClass("shortest")}`}
+                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2  ${getButtonClass("shortest")}`}
                 onClick={() => handleSortChange("shortest")}
               >
                 <div className="flex flex-col items-center">
                   <span>{t("shortest")}</span>
                   {shortestFlight && (
-                    <span className="text-sm text-gray-600">
-                      ₺{shortestFlight.price} • {shortestFlight.totalDuration}
+                    <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                      {shortestFlight.basePrice} {shortestFlight?.currency == "SAR" ? <Image
+                        src={logo}
+                        alt="sar"
+                        width={18}
+                        height={18}
+                        unoptimized
+                        className="m-1 object-contain"
+                      /> : shortestFlight?.currency}  -- {shortestFlight.itineraries[0].duration}
                     </span>
                   )}
                 </div>
               </button>
 
               <button
-                className={`rounded-lg p-2 w-full  h-20 border-2 ${getButtonClass("earliest-takeoff")}`}
+                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("earliest-takeoff")}`}
                 onClick={() => handleSortChange("earliest-takeoff")}
               >
-                {t("earliesttakeoff")}
+                <span>
+                  {t("earliesttakeoff")}
+                </span>
+                {earlistFlight && (
+                  <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("earlistFlight")}`}>
+                    {earlistFlight.basePrice} {earlistFlight?.currency == "SAR" ? <Image
+                      src={logo}
+                      alt="sar"
+                      width={18}
+                      height={18}
+                      unoptimized
+                      className="m-1 object-contain"
+                    /> : earlistFlight?.currency}  -- {earlistFlight.itineraries[0].segments[0].departure_time}
+                  </span>
+                )}
               </button>
 
               <button
-                className={`rounded-lg p-2 w-full  h-20 border-2  ${getButtonClass("earliest-arrival")}`}
+                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2  ${getButtonClass("earliest-arrival")}`}
                 onClick={() => handleSortChange("earliest-arrival")}
               >
-                {t("earliestarrival")}
+                <span>
+                  {t("earliestarrival")}
+                </span>
+                {earlistArrival && (
+                  <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                    {earlistArrival.basePrice} {earlistArrival?.currency == "SAR" ? <Image
+                      src={logo}
+                      alt="sar"
+                      width={18}
+                      height={18}
+                      unoptimized
+                      className="m-1 object-contain"
+                    /> : earlistArrival?.currency}  --  {
+                      earlistArrival.itineraries[0].segments[
+                        earlistArrival.itineraries[0].segments.length - 1
+                      ].arrival_time
+                    }
+                  </span>
+                )}
               </button>
             </div>
 
@@ -498,7 +627,7 @@ const Page: React.FC = () => {
         slectedData.map((selectedFlight: Flight, index: number) => (
           <div key={index} className="fixed inset-0 flex items-center justify-start top-0 z-[99] bg-[#00000099] h-full">
             <div
-              className={`flex flex-col p-5 justify-between h-full w-[50%] bg-white shadow-lg transform ${isSideMenuOpen ? "translate-x-0" : "translate-x-full"
+              className={`flex flex-col p-5 justify-between h-full w-full md:w-[50%] bg-white shadow-lg transform ${isSideMenuOpen ? "translate-x-0" : "translate-x-full"
                 } transition-transform duration-300 ease-in-out`}
             >
               <div className="flex justify-between items-center border-b border-b-slate-300 pb-2">

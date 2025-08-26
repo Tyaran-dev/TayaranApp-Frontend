@@ -8,7 +8,7 @@ const Section = ({
     className?: string;
 }) => {
     return (
-        <div className={`xl:max-w-[1800px] lg:px-16 mx-auto px-5 ${className || ""}`}>
+        <div className={`xl:max-w-[1800px] lg:px-12 mx-auto md:px-5 ${className || ""}`}>
             {children}
         </div>
     );

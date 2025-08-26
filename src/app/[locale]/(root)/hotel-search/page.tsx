@@ -13,7 +13,8 @@ import HotelSearch from "@/app/components/website/home/components/hotel-search-f
 import Stepper from "@/app/components/shared/Feedback/Stepper";
 import CustomProgressBar from "@/app/components/shared/progress-bar";
 import HotelCardSkeleton from "@/app/components/shared/Feedback/HotelCardSkeleton";
-
+import Heading from "@/app/components/shared/heading";
+import Image from "next/image";
 // Rename the type to avoid confusion with the Pagination component
 type Paging = {
   page: number;
@@ -104,12 +105,32 @@ export default function Page() {
   console.log(hotelsData.pagination, "normalized pagination");
 
   const noResults =
-    loading === "succeeded" && hotelsData.hotels.length === 0;
+    loading === "succeeded" && hotelsData.hotels.length === 0 || loading === "failed";
+
+  console.log(noResults)
 
   return (
     <Section className="py-5">
-      <Stepper currentStep={currentStep} stepsType="hotelSteps" />
+      <div className="hidden md:block">
+        <Stepper currentStep={currentStep} stepsType="hotelSteps" />
+      </div>
       <HotelSearch className="lg:grid-cols-4 grid-cols-2 bg-white rounded-3xl shadow-lg p-8 border" />
+
+
+
+      {loading === "failed" && (
+        <>
+            <div className="min-h-screen w-full flex-col flex justify-center items-center">
+              <Heading>No Hotels Found</Heading>
+              <Image
+                src={"/no-flight.svg"}
+                width={400}
+                height={400}
+                alt=""
+              />
+            </div>
+        </>
+      )}
 
       {loading === "pending" && (
         <>

@@ -78,7 +78,7 @@ const RoomSelection: React.FC<RoomSelectionProps> = ({ rooms, setRooms }) => {
     };
 
     return (
-        <div className="relative  w-80">
+        <div className="relative  md:w-80">
             <label>Guests</label>
 
             <div

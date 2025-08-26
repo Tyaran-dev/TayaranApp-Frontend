@@ -44,15 +44,15 @@ const Footer = () => {
 
     return (
         <div className='bg-footerBanner bg-no-repeat bg-cover pt-16 pb-6'>
-            <Section>
-                <div className=' grid lg:grid-cols-7 sm:grid-cols-5  grid-cols-1 gap-16 bg-cover bg-no-repeat h-full w-full'>
-                    <div className='flex flex-col sm:col-span-2 items-start gap-4'>
+            <Section className=' flex flex-col'>
+                <div className=' grid lg:grid-cols-7 sm:grid-cols-5  grid-cols-1 gap-8 bg-cover bg-no-repeat h-full w-full'>
+                    <div className='flex flex-col text-center items-center sm:col-span-2  gap-4'>
                         <Image alt='' src={logo} />
                         <p className='text-lightGray font-thin'>
                             In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document
                         </p>
                     </div>
-                    <div className='col-span-1 flex flex-col gap-2' >
+                    <div className='col-span-1 flex items-center flex-col gap-2' >
                         <p className='text-white font-medium'>About Us</p>
                         {
                             Abouts.map((e, i) => (
@@ -60,7 +60,7 @@ const Footer = () => {
                             ))
                         }
                     </div>
-                    <div className='col-span-1 flex flex-col gap-2' >
+                    <div className='col-span-1 flex items-center flex-col gap-2' >
                         <p className='text-white font-medium'>Resources</p>
                         {
                             Resources.map((e, i) => (
@@ -68,15 +68,15 @@ const Footer = () => {
                             ))
                         }
                     </div>
-                    <div className='col-span-1 flex flex-col gap-2' >
+                    <div className='col-span-1 flex  items-center flex-col gap-2' >
                         <p className='text-white font-medium'>Legal</p>
                         {
                             Legal.map((e, i) => (
-                                <Link key={i} href={e.src} className='text-lightGray hover:text-white font-thin ' >{e.label}</Link>
+                                <Link key={i} href={e.src} className='text-lightGray hover:text-white font-thin text-sm ' >{e.label}</Link>
                             ))
                         }
                     </div>
-                    <div className='lg:col-span-2 sm:col-span-5 flex lg:flex-col sm:flex-row flex-col lg:justify-normal justify-between w-fit items-end ' >
+                    <div className='lg:col-span-2 sm:col-span-5 flex  w-full items-center lg:flex-col sm:flex-row flex-col lg:justify-normal justify-between ' >
                         <div className='flex flex-col items-end'>
                             <p className='text-white font-medium'>Contact Us</p>
                             <p className='text-lightGray font-thin'>Fake@gmail.com</p>

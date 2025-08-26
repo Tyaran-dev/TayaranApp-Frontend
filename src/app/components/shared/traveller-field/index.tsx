@@ -99,7 +99,7 @@ const Travelers: React.FC<TravelersProps> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute min-w-64 bg-white p-4 left-0 rounded-2xl shadow-2xl z-10 mt-2">
+        <div className="absolute md:min-w-64 bg-white p-4 left-0 rounded-2xl shadow-2xl z-10 mt-2">
           <h2 className="text-xs font-semibold mb-4">{t("travlers.travlers")}</h2>
 
           {([

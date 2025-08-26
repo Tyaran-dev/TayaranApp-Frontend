@@ -590,7 +590,9 @@ export default function BookingPage() {
   // Main render
   return (
     <Section className="py-10">
-      <Stepper currentStep={currentStep} stepsType="hotelSteps" />
+      <div className="hidden md:block">
+        <Stepper currentStep={currentStep} stepsType="hotelSteps" />
+      </div>
       <div className="min-h-screen py-2">
         <div className="mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

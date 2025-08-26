@@ -199,25 +199,25 @@ const HeroSection = () => {
   }, [searchTermFrom, searchTermTo]);
 
   return (
-    <div className={`w-full ${isHotel ? "bg-heroHotelsBanner" : "bg-heroFligthsBanner"} min-h-screen 2xl:min-h-auto py-20 lg:py-32 flex items-center bg-bottom bg-no-repeat bg-cover`}>
+    <div className={`w-full ${isHotel ? "bg-heroHotelsBanner" : "bg-heroFligthsBanner"} min-h-screen 2xl:min-h-auto py-20 lg:py-32 flex md:items-center bg-bottom bg-no-repeat bg-cover`}>
       <Section className="">
-        <div className="  gap-8 flex flex-col lg:flex-row justify-center items-center ">
+        <div className="gap-4  flex flex-col lg:flex-row justify-center items-center ">
           <div className="w-full text-white flex flex-col text-center gap-6">
-            <h1 className="font-cairo font-bold lg:text-7xl text-5xl">
+            <h1 className=" font-bold lg:text-7xl text-3xl">
               {t("heroSection.mainHeading")}
             </h1>
-            <p className="font-montserrat font-bold text-lg">
+            <p className="font-montserrat font-bold text-md md:text-xl block">
               {t("heroSection.subHeading")}
             </p>
           </div>
 
-          <div className=" relative bg-white rounded-2xl py-6  bg-top-right lg:h-full px-5 h-auto bg-no-repeat bg-contain min-w-[50%]">
+          <div className=" relative bg-white w-[80%] md:w-[660px] min-h-[500px] md:min-h-[460px]  rounded-2xl py-6  bg-top-right  px-3 md:px-5  bg-no-repeat bg-contain min-w-[50%]">
             {/* form header */}
-            <div className={` flex justify-between gap-4 w-full py-2 ${isHotel ? "flex-row-reverse" : ""}`}>
-              <div className="flex items-center gap-2 justify-between w-full">
-                <div className="flex items-center gap-2">
+            <div className={`flex justify-between gap-4  md:justify-between md:gap-4 w-full  `}>
+              <div className="flex items-center justify-between   gap-3  w-full">
+                <div className="flex items-center gap-2 ">
                   {isHotel ? <BedIcon color={"#000"} /> : <AiroplanIcon color={"#121212"} />}
-                  <h1 className="text-xl font-[400]">
+                  <h1 className="text-md font-[400]">
                     {isHotel ? t("heroSection.searchForm.formTypeHotels") : t("heroSection.searchForm.formTypeFlights")}
                   </h1>
                 </div>
@@ -227,7 +227,7 @@ const HeroSection = () => {
               </div>
 
               <button
-                className="w-64 py-4 px-4 md:text-lg text-base font-semibold rounded-2xl text-white bg-greenGradient justify-center flex gap-1 items-center hover:scale-105 duration-300 transition-all"
+                className="w-52 md:w-64 py-4 md:px-4 md:text-lg text-sm font-semibold rounded-2xl text-white bg-greenGradient justify-center flex gap-1 items-center hover:scale-105 duration-300 transition-all"
                 onClick={toggleHotlFlight}
               >
                 {isHotel ? <AiroplanIcon color={"#fff"} /> : <BedIcon color={"#fff"} />}
@@ -237,7 +237,7 @@ const HeroSection = () => {
 
             {!isHotel ? (
               <div className="pb-5">
-                <div className="flex items-center flex-wrap lg:gap-7 gap-4 py-3 lg:py-3 px-6">
+                <div className="flex items-center justify-center md:justify-normal  lg:gap-7 gap-4 py-3 lg:py-3 md:px-6">
                   {tripTypes?.map((type) => (
                     <div className="flex items-center gap-2 text-sm md:text-md" key={type}>
                       <input
@@ -257,8 +257,8 @@ const HeroSection = () => {
                   // ✅ Your existing multiCities layout (unchanged)
                   <div className="space-y-4">
                     {flightFormData.segments?.map((segment, index) => (
-                      <div key={segment.id} className=" rounded-xl border-2 border-bordered gap-4 py-4 !mt-6 px-4">
-                        <div className="flex justify-between gap-4 mb-2">
+                      <div key={segment.id} className=" rounded-xl border-1 border-bordered gap-4 py-4 md:!mt-1 px-4">
+                        <div className="flex  justify-between gap-4 mb-4">
                           <div className="w-full lg:w-1/2">
                             <AirportSearchField
                               error={index === 0 ? fromError : undefined}
@@ -308,6 +308,7 @@ const HeroSection = () => {
                               className="bg-red-500 py-2 px-2 rounded-lg text-md flex justify-between items-center h-[40px] gap-2 mt-2"
                             >
                               <MdDelete color={"#fff"} />
+                              
                             </button>
                           )}
                         </div>
@@ -322,8 +323,8 @@ const HeroSection = () => {
                   </div>
                 ) : (
                   // ✅ Updated layout for oneway/roundtrip to match multiCities
-                  <div className=" rounded-xl border-bordered gap-4 py-4 !mt-6 px-4 space-y-4">
-                    <div className="flex justify-between gap-4 mb-2">
+                  <div className=" rounded-xl border-bordered gap-4 py-4 md:!mt-1 px-4 space-y-4">
+                    <div className="flex flex-col md:flex-row justify-between gap-4 mb-2">
                       <div className="w-full lg:w-1/2">
                         <AirportSearchField
                           error={fromError}
@@ -347,7 +348,7 @@ const HeroSection = () => {
                       </div>
                     </div>
 
-                    <div className="mb-2 flex gap-4">
+                    <div className="mb-2 flex flex-col md:flex-row  gap-4">
                       <CustomDatePicker
                         label={t("heroSection.searchForm.DatePicker")}
                         placeholder={t("heroSection.searchForm.DatePicker")}
@@ -371,7 +372,8 @@ const HeroSection = () => {
                   </div>
                 )}
 
-                <div className=" border-bordered gap-12 py-4 mt-2 grid lg:grid-cols-4 px-4">
+                <div className=" border-bordered gap-2 md:gap-12 md:py-4 mt-2 grid lg:grid-cols-4 px-4">
+                                  
                   <Travelers
                     label={t("heroSection.searchForm.travelersLabel")}
                     adults={flightFormData.travelers.adults}
@@ -407,7 +409,7 @@ const HeroSection = () => {
                 </div>
               </div>
             ) : (
-              <div >
+              <div className="">
                 <HotelSearch />
               </div>
             )}

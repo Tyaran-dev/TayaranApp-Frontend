@@ -108,7 +108,11 @@ const Page = () => {
       </Head>
 
       <Section className="py-10">
-        <Stepper currentStep={currentStep} stepsType="flightSteps" />
+        <div className="hidden md:block">
+
+
+          <Stepper currentStep={currentStep} stepsType="flightSteps" />
+        </div>
         <div className="w-full flex items-start lg:flex-row flex-col gap-4 mt-6 mb-16">
           {/* ✅ Right section */}
           <div className="lg:w-[65%] w-full flex flex-col gap-4">
@@ -124,11 +128,10 @@ const Page = () => {
                     type="button"
                     onClick={() => setCurrentStep(3)}
                     disabled={!allTravelersCompleted}
-                    className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${
-                      !allTravelersCompleted
+                    className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${!allTravelersCompleted
                         ? "opacity-50 cursor-not-allowed"
                         : ""
-                    }`}
+                      }`}
                   >
                     {t("payment.continueToPayment")}
                   </button>

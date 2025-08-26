@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useLocale } from "next-intl";
 import { getPersistedFlightData } from "@/utils/flightStorage";
-import { setSearchData } from "@/redux/flights/flightSlice";
+import { FlightFormData } from "@/redux/flights/flightSlice";
 
 interface FlightSegment {
   id: string;
@@ -23,72 +23,78 @@ export interface AirlineCarrier {
 const useSearchflights = () => {
   const locale = useLocale();
   const dispatch = useDispatch();
-  const searchParamsData = useSelector(
-    (state: any) => state.flightData.searchParamsData
-  );
+  const reduxSearchParams = useSelector((state: any) => state.flightData.searchParamsData);
   const hasHydrated = useSelector((state: any) => state._persist?.rehydrated);
 
   const [flights, setFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [abortController, setAbortController] =
-    useState<AbortController | null>(null);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [searchTriggered, setSearchTriggered] = useState(false);
+  const [pendingSearchParams, setPendingSearchParams] = useState<FlightFormData | null>(null);
 
+  // local UI state (keeps existing behaviour for fields)
   const [origin, setOrigin] = useState("");
   const [destination, setDestination] = useState("");
   const [departure, setDeparture] = useState<Date | null>(null);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
-  const [travelers, setTravelers] = useState({
-    adults: 1,
-    children: 0,
-    infants: 0,
-  });
+  const [travelers, setTravelers] = useState({ adults: 1, children: 0, infants: 0 });
   const [flightType, setFlightType] = useState("oneway");
   const [flightClass, setFlightClass] = useState("ECONOMY");
   const [segments, setSegments] = useState<FlightSegment[]>([]);
   const [carriers, setCarriers] = useState<AirlineCarrier[]>([]);
 
-  // populate local state from redux
+  // keep local UI state in sync with Redux (this is fine — but we will use passed params when triggering search)
   useEffect(() => {
-    if (searchParamsData) {
-      console.log("Redux searchParamsData:", searchParamsData);
-      setOrigin(searchParamsData.origin || "");
-      setDestination(searchParamsData.destination || "");
-      setDeparture(
-        searchParamsData.departure ? new Date(searchParamsData.departure) : null
-      );
-      setReturnDate(
-        searchParamsData.returnDate
-          ? new Date(searchParamsData.returnDate)
-          : null
-      );
-      setTravelers(
-        searchParamsData.travelers || { adults: 1, children: 0, infants: 0 }
-      );
-      setFlightType(searchParamsData.flightType || "oneway");
-      setFlightClass(searchParamsData.flightClass || "ECONOMY");
-      setSegments(searchParamsData.segments || []);
+    if (reduxSearchParams) {
+      setOrigin(reduxSearchParams.origin || "");
+      setDestination(reduxSearchParams.destination || "");
+      setDeparture(reduxSearchParams.departure ? new Date(reduxSearchParams.departure) : null);
+      setReturnDate(reduxSearchParams.returnDate ? new Date(reduxSearchParams.returnDate) : null);
+      setTravelers(reduxSearchParams.travelers || { adults: 1, children: 0, infants: 0 });
+      setFlightType(reduxSearchParams.flightType || "oneway");
+      setFlightClass(reduxSearchParams.flightClass || "ECONOMY");
+      setSegments(reduxSearchParams.segments || []);
     }
-  }, [searchParamsData]);
+  }, [reduxSearchParams]);
 
-  // hydrate from persisted storage
+  // hydrate from persisted storage (unchanged)
   useEffect(() => {
     if (!hasHydrated) return;
     const persistedData = getPersistedFlightData();
-    console.log("Persisted flight data:", persistedData);
     if (persistedData?.searchParamsData) {
-      dispatch(setSearchData(persistedData.searchParamsData));
+      // this will update redux and then the effect above will sync local UI state
+      dispatch({ type: "flights/setSearchData", payload: persistedData.searchParamsData });
     }
   }, [dispatch, hasHydrated]);
 
   useEffect(() => {
+    // cleanup on unmount
     return () => {
-      if (abortController) {
-        abortController.abort();
-      }
+      if (abortController) abortController.abort();
     };
   }, [abortController]);
+
+  // Build "effective" params: priority -> overrideArg | pendingSearchParams | reduxSearchParams | local UI state
+  const buildEffectiveParams = (override?: FlightFormData): FlightFormData | null => {
+    if (override) return override;
+    if (pendingSearchParams) return pendingSearchParams;
+    if (reduxSearchParams) return reduxSearchParams;
+    // fallback to local UI state if nothing else (rare)
+    if (origin || destination || departure) {
+      return {
+        origin,
+        destination,
+        departure,
+        returnDate,
+        travelers,
+        flightType,
+        flightClass,
+        segments,
+      } as FlightFormData;
+    }
+    return null;
+  };
 
   const convertToISO8601 = (date: Date | string | null): string => {
     if (!date) return "";
@@ -96,162 +102,125 @@ const useSearchflights = () => {
     return parsedDate.toISOString().split("T")[0];
   };
 
-  const getFlights = useCallback(async () => {
-    if (abortController) {
-      abortController.abort();
-    }
-
-    const controller = new AbortController();
-    setAbortController(controller);
-    setError(null);
-    setLoading(true);
-    setFlights([]);
-    setSearchTriggered(false); // reset
-
-    try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-      console.log("Base URL:", baseUrl);
-
-      // validation
-      if (flightType === "oneway" && (!origin || !destination || !departure)) {
-        console.warn("One-way missing params:", { origin, destination, departure });
-        setError("Please provide origin, destination, and departure date.");
-        setLoading(false);
-        return;
+  const getFlights = useCallback(
+    async (overrideParams?: FlightFormData) => {
+      if (abortController) {
+        abortController.abort();
       }
-      if (
-        flightType === "roundtrip" &&
-        (!origin || !destination || !departure || !returnDate)
-      ) {
-        console.warn("Round-trip missing params:", {
-          origin,
-          destination,
-          departure,
-          returnDate,
-        });
-        setError("Please provide all required fields for round-trip.");
-        setLoading(false);
-        return;
-      }
-      if (
-        flightType === "multiCities" &&
-        segments.some((s) => !s.origin || !s.destination || !s.date)
-      ) {
-        console.warn("Multi-city missing params:", { segments });
-        setError("Please complete all segments for multi-city search.");
-        setLoading(false);
-        return;
-      }
+      const controller = new AbortController();
+      setAbortController(controller);
+      setError(null);
+      setLoading(true);
+      setFlights([]);
 
-      // build destinations payload
-      const destinations =
-        flightType === "multiCities"
-          ? segments.map((segment, index) => ({
+      try {
+        const params = buildEffectiveParams(overrideParams);
+        console.log("Searching flights with params:", params, { overrideParams, pendingSearchParams, reduxSearchParams });
+
+        if (!params) {
+          setError("Missing search parameters.");
+          setLoading(false);
+          setSearchTriggered(false);
+          return;
+        }
+
+        const { origin: pOrigin, destination: pDestination, departure: pDeparture, returnDate: pReturn, travelers: pTrav, flightType: pType, flightClass: pClass, segments: pSegments } = params as any;
+
+        // validation
+        if (pType === "oneway" && (!pOrigin || !pDestination || !pDeparture)) {
+          setError("Please provide origin, destination, and departure date.");
+          setLoading(false);
+          setSearchTriggered(false);
+          return;
+        }
+        if (pType === "roundtrip" && (!pOrigin || !pDestination || !pDeparture || !pReturn)) {
+          setError("Please provide return date for round-trip.");
+          setLoading(false);
+          setSearchTriggered(false);
+          return;
+        }
+        if (pType === "multiCities" && (!pSegments || pSegments.length === 0 || pSegments.some((s: any) => !s.origin || !s.destination || !s.date))) {
+          setError("Please complete all multi-city segments.");
+          setLoading(false);
+          setSearchTriggered(false);
+          return;
+        }
+
+        // build destinations payload
+        const destinations =
+          pType === "multiCities"
+            ? (pSegments || []).map((segment: any, index: number) => ({
               id: (index + 1).toString(),
               from: segment.origin,
               to: segment.destination,
               date: convertToISO8601(segment.date),
             }))
-          : flightType === "roundtrip"
-          ? [
-              {
-                id: "1",
-                from: origin,
-                to: destination,
-                date: convertToISO8601(departure),
-              },
-              {
-                id: "2",
-                from: destination,
-                to: origin,
-                date: convertToISO8601(returnDate),
-              },
-            ]
-          : [
-              {
-                id: "1",
-                from: origin,
-                to: destination,
-                date: convertToISO8601(departure),
-              },
-            ];
+            : pType === "roundtrip"
+              ? [
+                { id: "1", from: pOrigin, to: pDestination, date: convertToISO8601(pDeparture) },
+                { id: "2", from: pDestination, to: pOrigin, date: convertToISO8601(pReturn) },
+              ]
+              : [{ id: "1", from: pOrigin, to: pDestination, date: convertToISO8601(pDeparture) }];
 
-      // API call
-      const response = await axios.post(
-        `${baseUrl}/flights/flight-search`,
-        {
-          destinations,
-          adults: travelers.adults,
-          children: travelers.children,
-          infants: travelers.infants,
-          cabinClass: flightClass,
-          directFlight: false,
-          calendarSearch: false,
-        },
-        {
-          signal: controller.signal,
-          headers: {
-            "Content-Type": "application/json",
-            lng: locale,
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+        const response = await axios.post(
+          `${baseUrl}/flights/flight-search`,
+          {
+            destinations,
+            adults: pTrav?.adults ?? 1,
+            children: pTrav?.children ?? 0,
+            infants: pTrav?.infants ?? 0,
+            cabinClass: pClass ?? "ECONOMY",
+            directFlight: false,
+            calendarSearch: false,
           },
-        }
-      );
+          {
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+              lng: locale,
+            },
+          }
+        );
 
-      if (!controller.signal.aborted) {
-        setFlights(
-          response?.data?.data?.map((flight: any) => ({
+        if (!controller.signal.aborted) {
+          const mapped = response?.data?.data?.map((flight: any) => ({
             ...flight,
             itineraries: [...(flight?.itineraries_formated || [])],
-          })) || []
-        );
-        setCarriers(response?.data?.filters?.carriers || []);
+          })) || [];
+          setFlights(mapped);
+          setCarriers(response?.data?.filters?.carriers || []);
+          console.log("Flights response length:", mapped.length);
+        }
+      } catch (err: any) {
+        if (!axios.isCancel(err)) {
+          console.error("Error fetching flights:", err);
+          setError(err.message || "Failed to fetch flights");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+          setPendingSearchParams(null);
+          setSearchTriggered(false);
+        }
       }
-    } catch (error: any) {
-      if (!axios.isCancel(error)) {
-        console.error("Error fetching flights:", error);
-        setError(error.message || "Failed to fetch flights");
-      }
-    } finally {
-      if (!controller.signal.aborted) {
-        setLoading(false);
-      }
-    }
-  }, [
-    origin,
-    destination,
-    departure,
-    returnDate,
-    travelers,
-    flightType,
-    flightClass,
-    segments,
-    locale,
-    abortController,
-  ]);
+    },
+    [reduxSearchParams, locale]
 
-  // auto-trigger only if params are valid
+  );
+
+  // when searchTriggered flips, run getFlights (it will prefer override param if set)
   useEffect(() => {
     if (searchTriggered) {
-      if (
-        (flightType === "oneway" && origin && destination && departure) ||
-        (flightType === "roundtrip" &&
-          origin &&
-          destination &&
-          departure &&
-          returnDate) ||
-        (flightType === "multiCities" &&
-          segments.length > 0 &&
-          segments.every((s) => s.origin && s.destination && s.date))
-      ) {
-        getFlights();
-      } else {
-        console.warn("Search triggered but missing required params");
-        setError("Missing required search parameters.");
-        setLoading(false);
-        setSearchTriggered(false);
-      }
+      getFlights(); // will use pendingSearchParams OR reduxSearchParams OR local state
     }
-  }, [searchTriggered, getFlights, origin, destination, departure, returnDate, segments, flightType]);
+  }, [searchTriggered, getFlights]);
+
+  // Expose triggerSearch that accepts optional params to avoid race conditions
+  const triggerSearch = (params?: FlightFormData) => {
+    if (params) setPendingSearchParams(params);
+    setSearchTriggered(true);
+  };
 
   return {
     flights,
@@ -275,7 +244,7 @@ const useSearchflights = () => {
     setFlightType,
     setFlightClass,
     setSegments,
-    triggerSearch: () => setSearchTriggered(true),
+    triggerSearch,
     hasHydrated,
   };
 };

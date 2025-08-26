@@ -12,8 +12,8 @@ const AminitiesSection = ({ aminities, count }: { aminities: string[], count?: n
     const visibleAminities = showMore ? aminities : aminities?.slice(0, count || 5);
 
     return (
-        <div className='flex flex-col items-center my-10'>
-            <h2 className="lg:text-5xl md:text-3xl tet-2xl text-center my-10 font-bold">
+        <div className='flex flex-col items-center my-4'>
+            <h2 className="lg:text-5xl md:text-3xl tet-2xl text-center my-4 font-bold">
                 Amenities
             </h2>
 

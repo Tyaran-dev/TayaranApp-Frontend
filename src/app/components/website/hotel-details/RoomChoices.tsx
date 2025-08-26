@@ -40,15 +40,15 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
+    <div className="flex flex-col items-center justify-center py-4">
       <h2 className="lg:text-5xl md:text-3xl text-2xl font-bold">
         Room Choices
       </h2>
 
       {/* Tab Buttons */}
-      <div className="flex gap-6 my-8 mb-16">
+      <div className="flex gap-2 md:gap-6 my-4 md:mb-12 p-2 text-xs md:text-base">
         <button
-          className={`px-4 py-2 rounded-2xl font-medium ${
+          className={`px-4 py-2 rounded-lg  w-28 md:w-44 ${
             activeTab === "all"
               ? "bg-orange text-white"
               : "border border-gray2 text-gray2"
@@ -58,7 +58,7 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
           All Rooms
         </button>
         <button
-          className={`px-4 py-2 rounded-2xl font-medium ${
+          className={`px-4 py-2 rounded-lg  w-28  md:w-44 ${
             activeTab === "free-cancellation"
               ? "bg-orange text-white"
               : "border border-gray2 text-gray2"
@@ -68,7 +68,7 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
           Free Cancellation
         </button>
         <button
-          className={`px-4 py-2 rounded-2xl font-medium ${
+          className={`px-4 py-2 rounded-lg  w-28  md:w-44 ${
             activeTab === "breakfast-included"
               ? "bg-orange text-white"
               : "border border-gray2 text-gray2"

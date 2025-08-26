@@ -80,7 +80,7 @@ const FlightFilter: React.FC<FlightFilterProps> = ({
     ];
 
     return (
-        <div className="w-full max-w-xs h-screen sticky top-4 overflow-y-auto p-4 mt-4 border rounded-lg shadow-md bg-white">
+        <div className="w-full scrollbar-hide max-w-xs max-h-screen sticky top-4 overflow-y-auto p-4 mt-4 border rounded-lg shadow-md bg-white">
 
             {/* Departure Time Filter */}
             <div className="py-3">

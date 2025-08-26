@@ -147,9 +147,9 @@ const FlightCard = ({
   };
 
   return (
-    <div key={flight?.id}>
-      <div className="border bg-white p-5 font-cairo text-black border-[#C0C0C0] flex flex-col justify-between gap-5 rounded-xl">
-        <div className="flex justify-between items-center text-sm lg:text-base gap-5 flex-wrap">
+    <div className=" p-2" key={flight?.id}>
+      <div className="border p-2  bg-white  font-cairo text-black border-[#C0C0C0] flex flex-col justify-between md:gap-5 rounded-xl">
+        <div className="flex  justify-between items-center text-sm lg:text-base gap-2 md:gap-5 flex-wrap">
           <div className="lg:w-3/4 w-full bg-[#98FFC80A] p-5 text-center md:text-start">
             {flight?.itineraries_formated?.map(
               (itinerary: any, index: number) => (

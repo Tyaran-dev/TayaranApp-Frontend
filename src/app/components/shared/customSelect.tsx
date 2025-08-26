@@ -29,7 +29,6 @@ const CustomSelect: React.FC<SelectInputProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const selectRef = useRef<HTMLDivElement>(null);
 
-  console.log(value)
 
   const handleSelect = (selectedValue: string) => {
     if (onChange) {
@@ -64,7 +63,7 @@ const CustomSelect: React.FC<SelectInputProps> = ({
           <IoIosArrowDown className="text-lg" />
         </div>
         {isOpen && (
-          <div className="absolute min-w-48 z-10 w-full bg-white border border-bordered shadow-lg rounded-lg mt-0.5">
+          <div className="absolute min-w-48 right-2 z-10 bg-white w-full border border-bordered shadow-lg rounded-lg mt-0.5">
             {options.map((option, i) => (
               <div
                 key={option.value}

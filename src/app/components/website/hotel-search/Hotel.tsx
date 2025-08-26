@@ -12,6 +12,7 @@ import Filters from "./Filters";
 import Pagination from "../../shared/Pagination";
 import { useTranslations } from "next-intl";
 import { Hotel as HotelType } from "@/redux/hotels/hotelsSlice";
+import Section from "../../shared/section";
 
 interface Props {
   hotels: { data: HotelType[] } | HotelType[];
@@ -100,122 +101,136 @@ const Hotel = ({ hotels }: Props) => {
   const currentHotels = filteredHotels?.slice(indexOfFirstHotel, indexOfLastHotel);
 
   return (
-    <div className="py-5">
-      <div className="w-full flex items-start gap-6 my-8">
-        <Filters
-          priceRange={priceRange}
-          onPriceRangeChange={setPriceRange}
-          selectedHotelOptions={selectedHotelOptions}
-          onHotelOptionsChange={setSelectedHotelOptions}
-          selectedStarRatingOptions={selectedStarRatingOptions}
-          onStarRatingOptionsChange={setSelectedStarRatingOptions}
-          selectedGuestRatingOptions={selectedGuestRatingOptions}
-          onGuestRatingOptionsChange={setSelectedGuestRatingOptions}
-        />
+    <Section>
+      <div className=" p-2">
+        <div className="w-full flex flex-col md:flex-row items-center gap-6 my-8">
+          <Filters
+            priceRange={priceRange}
+            onPriceRangeChange={setPriceRange}
+            selectedHotelOptions={selectedHotelOptions}
+            onHotelOptionsChange={setSelectedHotelOptions}
+            selectedStarRatingOptions={selectedStarRatingOptions}
+            onStarRatingOptionsChange={setSelectedStarRatingOptions}
+            selectedGuestRatingOptions={selectedGuestRatingOptions}
+            onGuestRatingOptionsChange={setSelectedGuestRatingOptions}
+          />
 
-        {!hotelData?.length && (
-          <p className="text-center text-gray-500">{t("noHotelsFound")}</p>
-        )}
+          {!hotelData?.length && (
+            <p className="text-center text-gray-500">{t("noHotelsFound")}</p>
+          )}
 
-        <div className="w-[75%]">
-          <div className="flex flex-col gap-5">
-            <span className="font-medium">
-              {t("showing")}{" "}
-              <span className="text-orange">{filteredHotels?.length}</span>{" "}
-              {t("places")}
-            </span>
+          <div className="w-full">
+            <div className="flex flex-col items-center w-full p-2 gap-2 ">
+              <span className="font-medium">
+                {t("showing")}{" "}
+                <span className="text-orange">{filteredHotels?.length}</span>{" "}
+                {t("places")}
+              </span>
 
-            {currentHotels?.map((hotel, i) => (
-              <div
-                key={i}
-                className="flex mb-4 items-center shadow-xl border p-8 gap-4 w-full rounded-lg"
-                style={{ boxShadow: "0px 4px 16px 0px #1122110D" }}
-              >
-                <div className="w-[25%] h-60">
-                  {hotel?.Images ? (
-                    <img
-                      src={hotel.Images[0]}
-                      className="w-full h-full object-cover rounded-xl"
-                      alt={hotel?.HotelName}
-                    />
-                  ) : (
-                    <Image
-                      alt={t("noImage")}
-                      src={emptyImg}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  )}
-                </div>
-                <div className="w-full flex-1 flex flex-col p-2 items-center justify-center">
-                  <div className="flex items-start gap-3 justify-between p-4 mb-4 w-full">
-                    <div>
-                      <h2 className="text-2xl font-bold mb-3">
-                        {hotel?.HotelName}
-                      </h2>
-                      <div className="flex items-center gap-1 mb-3">
-                        <FaLocationDot />
-                        <p className="text-base text-[#12121299]">
-                          {hotel?.Address}
-                        </p>
-                      </div>
-                      <div className="flex justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1 font-medium text-base text-grayText">
-                            {[...Array(Math.floor(parseFloat(hotel?.HotelRating) || 0))].map((_, index) => (
-                              <MdStar
-                                className="text-[#FF7300] text-xl"
-                                key={index}
-                              />
-                            ))}
-                          </div>
-                          <p className="text-sm font-medium text-[#12121299]">
-                            {hotel?.HotelRating || 0} {t("starHotel")}
+              {currentHotels?.map((hotel, i) => (
+                <div
+                  key={i}
+                  className="flex flex-col md:flex-row mb-4 items-stretch shadow-xl border p-4 md:p-6 bg-white gap-4 w-full rounded-lg"
+                  style={{ boxShadow: "0px 4px 16px 0px #1122110D" }}
+                >
+                  {/* Hotel Image */}
+                  <div className="w-full md:w-[25%] h-48 md:h-60 flex-shrink-0">
+                    {hotel?.Images ? (
+                      <img
+                        src={hotel.Images[0]}
+                        className="w-full h-full object-cover rounded-xl"
+                        alt={hotel?.HotelName}
+                      />
+                    ) : (
+                      <Image
+                        alt={t("noImage")}
+                        src={emptyImg}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    )}
+                  </div>
+
+                  {/* Hotel Content */}
+                  <div className="w-full flex-1 flex flex-col justify-between">
+                    {/* Top Section */}
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4 w-full">
+                      <div className="flex-1 min-w-0">
+                        {/* Hotel Name */}
+                        <h2 className="text-lg md:text-2xl font-bold mb-2 md:mb-3 line-clamp-2">
+                          {hotel?.HotelName}
+                        </h2>
+
+                        {/* Address */}
+                        <div className="flex items-start gap-1 mb-2 md:mb-3">
+                          <FaLocationDot className="text-red-500 mt-1 flex-shrink-0" />
+                          <p className="text-sm md:text-base text-gray-700 line-clamp-2 md:line-clamp-none">
+                            {hotel?.Address}
                           </p>
                         </div>
-                        <div className="text-sm text-[#12121299]">
-                          20+ {t("amenities")}
+
+                        {/* Rating + Amenities */}
+                        <div className="flex flex-col sm:flex-row justify-between gap-2">
+                          <div className="flex flex-col items-center sm:items-start gap-2">
+                            <div className="flex items-center gap-1 font-medium text-base text-grayText">
+                              {[...Array(Math.floor(parseFloat(hotel?.HotelRating) || 0))].map(
+                                (_, index) => (
+                                  <MdStar
+                                    className="text-[#FF7300] text-base md:text-xl"
+                                    key={index}
+                                  />
+                                )
+                              )}
+                            </div>
+                            <p className="text-xs md:text-sm font-medium text-[#12121299]">
+                              {hotel?.HotelRating || 0} {t("starHotel")}
+                            </p>
+                          </div>
+                          <div className="text-xs md:text-sm text-[#12121299]">
+                            20+ {t("amenities")}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="text-xs text-[#12121299]">
-                      <p>{t("startingFrom")}</p>
-                      <h2 className="text-base font-bold gap-1 flex">
-                        <span className="text-2xl  text-black">
+
+                      {/* Price Section */}
+                      <div className="text-center md:text-right flex-shrink-0 w-full md:w-auto">
+                        <p className="text-xs text-[#12121299]">{t("startingFrom")}</p>
+                        <h2 className="text-lg md:text-2xl text-black font-bold">
                           {hotel?.MinHotelPrice?.toFixed()}$
-                        </span>
-                        /{t("night")}
-                      </h2>
-                      <p className="text-[10px] text-end mt-1">
-                        {t("excludingTax")}
-                      </p>
+                          <span className="text-xs md:text-sm font-normal text-[#12121299]">
+                            /{t("night")}
+                          </span>
+                        </h2>
+                        <p className="text-[10px] text-[#12121299]">{t("excludingTax")}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="w-full border-[#12121299] flex justify-center border-t py-3">
-                    <div className="flex justify-end w-full pt-5">
+
+                    {/* CTA */}
+                    <div className="w-full border-t pt-3 flex justify-center md:justify-end">
                       <Link
                         href={`/hotel-details/${hotel.HotelCode}`}
-                        className="text-white bg-greenGradient py-3 px-4 rounded-xl text-center"
+                        className="text-white bg-greenGradient py-2 md:py-3 px-6 md:px-4 rounded-xl text-center text-sm md:text-base w-full md:w-auto"
                       >
                         {t("viewPlace")}
                       </Link>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
 
-            {/* Optional Pagination */}
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            )}
+              ))}
+
+              {/* Optional Pagination */}
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Section>
   );
 };
 

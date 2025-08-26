@@ -125,7 +125,7 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
         return (
             <div className={`relative ${className}`}>
                 <div
-                    className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-colors hover:border-stone-400 flex items-center justify-between"
+                    className="w-full  py-1 text-sm px-4 md:py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-colors hover:border-stone-400 flex items-center justify-between"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     <span className={value ? 'text-stone-900' : 'text-stone-500'}>
@@ -135,9 +135,9 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                 </div>
 
                 {isOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-stone-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-stone-300 rounded-lg shadow-lg max-h-60 md:overflow-hidden">
                         {searchable && (
-                            <div className="p-2 border-b border-stone-200">
+                            <div className="p-2 border-b w-48 bg-white border-stone-200">
                                 <input
                                     type="text"
                                     placeholder="Search..."
@@ -149,12 +149,12 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                                 />
                             </div>
                         )}
-                        <div className="max-h-48 overflow-y-auto">
+                        <div className="max-h-48 w-48  overflow-y-auto bg-white">
                             {Array.isArray(filteredOptions) && typeof filteredOptions[0] === 'object'
-                                ? (filteredOptions as Array<{ value: string; label: string }>).map((option,indx) => (
+                                ? (filteredOptions as Array<{ value: string; label: string }>).map((option, indx) => (
                                     <div
                                         key={indx}
-                                        className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
+                                        className="px-4  py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
                                         onClick={() => {
                                             onChange(option.value);
                                             setIsOpen(false);

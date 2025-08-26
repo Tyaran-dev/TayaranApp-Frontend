@@ -87,7 +87,7 @@ const Navbar = () => {
         </div>
       </nav>
 
-      <div className={`bg-primary absolute left-0 top-20 block lg:hidden w-full px-10 z-40 py-10 transition-all ease-in-out lg:min-h-0 min-h-screen duration-500 transform ${isModalOpen
+      <div className={`bg-white absolute left-0  top-15 block lg:hidden w-full px-10 z-40 py-10 transition-all ease-in-out lg:min-h-0 min-h-screen duration-500 transform ${isModalOpen
         ? "translate-y-0 opacity-100"
         : "-translate-y-[110vh] opacity-40"
         }`}>
