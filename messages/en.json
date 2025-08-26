@@ -214,7 +214,8 @@
     "baggageIncluded": "Baggage Included",
     "checking": "Checking...",
     "bookNow": "Book Now",
-    "select": "Select Flight"
+    "select": "Select Flight",
+    "priceWithoutTax" : "* Price excludes taxes"
   },
   "HotelPage": {
     "noHotelsFound": "No hotels found for the provided criteria.",

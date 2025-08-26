@@ -214,7 +214,8 @@
     "baggageIncluded": "الأمتعة مشمولة",
     "checking": "جاري التحقق...",
     "bookNow": "احجز الآن",
-    "select": " اختر الرحلة"
+    "select": " اختر الرحلة",
+    "priceWithoutTax": "* السعر لا يشمل الضريبة"
   },
   "HotelPage": {
     "noHotelsFound": "لم يتم العثور على فنادق بناءً على المعايير المحددة.",

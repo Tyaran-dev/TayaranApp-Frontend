@@ -147,9 +147,9 @@ const FlightCard = ({
   };
 
   return (
-    <div className=" p-2" key={flight?.id}>
-      <div className="border p-2  bg-white  font-cairo text-black border-[#C0C0C0] flex flex-col justify-between md:gap-5 rounded-xl">
-        <div className="flex  justify-between items-center text-sm lg:text-base gap-2 md:gap-5 flex-wrap">
+    <div className="p-2" key={flight?.id}>
+      <div className="border p-2 bg-white font-cairo text-black border-[#C0C0C0] flex flex-col justify-between md:gap-5 rounded-xl">
+        <div className="flex justify-between items-center text-sm lg:text-base gap-2 md:gap-5 flex-wrap">
           <div className="lg:w-3/4 w-full bg-[#98FFC80A] p-5 text-center md:text-start">
             {flight?.itineraries_formated?.map(
               (itinerary: any, index: number) => (
@@ -171,9 +171,13 @@ const FlightCard = ({
                   </div>
                   <div
                     key={index}
-                    className={`grid lg:grid-cols-3 justify-between grid-cols-1 gap-5 ${index !== flight.itineraries.length - 1 ? "mb-16" : "mb-4"
-                      }`}
+                    className={`grid lg:grid-cols-3 justify-between grid-cols-1 gap-5 ${
+                      index !== flight.itineraries.length - 1
+                        ? "mb-16"
+                        : "mb-4"
+                    }`}
                   >
+                    {/* Departure */}
                     <div className="flex flex-col">
                       <div className="py-1">
                         <p className="text-sm">
@@ -199,6 +203,7 @@ const FlightCard = ({
                       </div>
                     </div>
 
+                    {/* Route */}
                     <div className="flex flex-col justify-center items-center relative">
                       <p className="py-0">{itinerary.duration}</p>
                       <Image src={route} alt="Flight Route" />
@@ -212,6 +217,7 @@ const FlightCard = ({
                       </div>
                     </div>
 
+                    {/* Arrival */}
                     <div className="flex flex-col lg:justify-center lg:items-center">
                       <div className="py-1">
                         <span className="flex items-center gap-2">
@@ -262,18 +268,31 @@ const FlightCard = ({
             )}
           </div>
 
+          {/* Price + Banner */}
           <div className="flex lg:w-1/5 w-full items-center gap-5 flex-col">
-            < div className="py-2 flex">
-              {flight?.currency == "SAR" ? <Image
-                src={logo}
-                alt="sar"
-                width={30}
-                height={30}
-                unoptimized
-                className="m-1 object-contain"
-              /> : flight?.currency} <p className="text-2xl font-bold ">{flight?.basePrice}
-              </p>
+            <div className="py-2 flex flex-col items-center">
+              <div className="flex items-center">
+                {flight?.currency == "SAR" ? (
+                  <Image
+                    src={logo}
+                    alt="sar"
+                    width={30}
+                    height={30}
+                    unoptimized
+                    className="m-1 object-contain"
+                  />
+                ) : (
+                  flight?.currency
+                )}
+                <p className="text-2xl font-bold ml-2">{flight?.basePrice}</p>
+              </div>
+
+              {/* 🚩 Banner */}
+              <div className="w-full text-xs text-center bg-yellow-100 text-yellow-800  font-semibold p-2 rounded-lg mt-1 ">
+                {t("priceWithoutTax")}
+              </div>
             </div>
+
             {from === "card" && (
               <button
                 onClick={() => {
@@ -290,8 +309,9 @@ const FlightCard = ({
               onClick={() => setIsOpenDetails(!isOpenDetails)}
             >
               <div
-                className={`transform transition-transform duration-300 ${isOpenDetails ? "rotate-180" : ""
-                  }`}
+                className={`transform transition-transform duration-300 ${
+                  isOpenDetails ? "rotate-180" : ""
+                }`}
               >
                 <IoIosArrowDown size={20} color="green" />
               </div>
@@ -301,6 +321,8 @@ const FlightCard = ({
             </div>
           </div>
         </div>
+
+        {/* Bottom features */}
         <div className="flex justify-between font-medium items-center gap-5 flex-wrap">
           <p className="py-2">{flight.numberOfBookableSeats} seats remaining</p>
           <div className="flex items-center gap-4">
@@ -312,6 +334,7 @@ const FlightCard = ({
           </div>
         </div>
 
+        {/* Flight Details Section */}
         {isOpenDetails && (
           <div className="p-5 bg-gray-50 space-y-5 shadow-lg">
             {flight.itineraries?.map((itinerary: any, index: number) => (
