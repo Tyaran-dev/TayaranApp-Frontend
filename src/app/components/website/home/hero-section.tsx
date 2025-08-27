@@ -211,7 +211,7 @@ const HeroSection = () => {
             </p>
           </div>
 
-          <div className=" relative bg-white w-[80%] md:w-[660px] min-h-[500px] md:min-h-[460px]  rounded-2xl py-6  bg-top-right  px-3 md:px-5  bg-no-repeat bg-contain min-w-[50%]">
+          <div className=" relative bg-white w-[90%] md:w-[660px] min-h-[500px] md:min-h-[460px]  rounded-2xl py-6  bg-top-right  px-3 md:px-5  bg-no-repeat bg-contain min-w-[50%]">
             {/* form header */}
             <div className={`flex justify-between gap-4  md:justify-between md:gap-4 w-full  `}>
               <div className="flex items-center justify-between   gap-3  w-full">

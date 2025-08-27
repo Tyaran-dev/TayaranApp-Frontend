@@ -154,11 +154,24 @@ const Hotel = ({ hotels }: Props) => {
                   <div className="w-full flex-1 flex flex-col justify-between">
                     {/* Top Section */}
                     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4 w-full">
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 w-full">
                         {/* Hotel Name */}
-                        <h2 className="text-lg md:text-2xl font-bold mb-2 md:mb-3 line-clamp-2">
-                          {hotel?.HotelName}
-                        </h2>
+                        <div className="flex justify-between items-center mb-2  w-full">
+                          <h2 className="text-base md:text-2xl flex-1 font-bold mb-2 md:mb-3 ">
+                            {hotel?.HotelName}
+                          </h2>
+                          {/* Price Section */}
+                          <div className="text-center  md:text-right   md:w-auto">
+                            <p className="text-[10px] text-[#12121299]">{t("excludingTax")}</p>
+                            <h2 className="text-lg md:text-2xl text-black font-bold">
+                              {hotel?.MinHotelPrice?.toFixed()}$
+                              <span className="text-xs md:text-sm font-normal text-[#12121299]">
+                                /{t("night")}
+                              </span>
+                            </h2>
+                            <p className="text-xs text-[#12121299]">{t("startingFrom")}</p>
+                          </div>
+                        </div>
 
                         {/* Address */}
                         <div className="flex items-start gap-1 mb-2 md:mb-3">
@@ -169,7 +182,7 @@ const Hotel = ({ hotels }: Props) => {
                         </div>
 
                         {/* Rating + Amenities */}
-                        <div className="flex flex-col sm:flex-row justify-between gap-2">
+                        <div className="flex items-center my-4 sm:flex-row justify-between gap-2">
                           <div className="flex flex-col items-center sm:items-start gap-2">
                             <div className="flex items-center gap-1 font-medium text-base text-grayText">
                               {[...Array(Math.floor(parseFloat(hotel?.HotelRating) || 0))].map(
@@ -191,17 +204,7 @@ const Hotel = ({ hotels }: Props) => {
                         </div>
                       </div>
 
-                      {/* Price Section */}
-                      <div className="text-center md:text-right flex-shrink-0 w-full md:w-auto">
-                        <p className="text-xs text-[#12121299]">{t("startingFrom")}</p>
-                        <h2 className="text-lg md:text-2xl text-black font-bold">
-                          {hotel?.MinHotelPrice?.toFixed()}$
-                          <span className="text-xs md:text-sm font-normal text-[#12121299]">
-                            /{t("night")}
-                          </span>
-                        </h2>
-                        <p className="text-[10px] text-[#12121299]">{t("excludingTax")}</p>
-                      </div>
+
                     </div>
 
                     {/* CTA */}

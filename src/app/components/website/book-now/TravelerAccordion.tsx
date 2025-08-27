@@ -135,21 +135,21 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                 </div>
 
                 {isOpen && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border border-stone-300 rounded-lg shadow-lg max-h-60 md:overflow-hidden">
+                    <div className="absolute z-50 w-full mt-1 bg-white border  border-stone-300 rounded-lg shadow-lg max-h-60 md:overflow-hidden">
                         {searchable && (
-                            <div className="p-2 border-b w-48 bg-white border-stone-200">
+                            <div className="p-2 border-b w-full  bg-white border-stone-200">
                                 <input
                                     type="text"
                                     placeholder="Search..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    className="w-full  px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                     onClick={(e) => e.stopPropagation()}
                                     required={required}
                                 />
                             </div>
                         )}
-                        <div className="max-h-48 w-48  overflow-y-auto bg-white">
+                        <div className="max-h-48 w-full overflow-y-auto bg-white">
                             {Array.isArray(filteredOptions) && typeof filteredOptions[0] === 'object'
                                 ? (filteredOptions as Array<{ value: string; label: string }>).map((option, indx) => (
                                     <div
@@ -298,7 +298,11 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({ travelers, onTrav
                                     <CustomSelect
                                         value={traveler.nationality}
                                         required={true}
-                                        onChange={(value) => updateTravelerData(index, "nationality", value)}
+                                        onChange={(value) => {
+                                            updateTravelerData(index, "nationality", value);
+                                            console.log(value, "nationalty")
+
+                                        }}
                                         options={nationalityOptions}
                                         placeholder={t("personalDetails.nationality")}
                                         searchable={true}

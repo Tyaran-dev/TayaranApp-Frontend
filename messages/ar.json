@@ -124,6 +124,7 @@
   },
   "filters": {
     "heading": "الرحلات",
+    "sortby": "الترتيب حسب",
     "earliestarrival": "أقرب وقت وصول",
     "earliesttakeoff": "أقرب وقت إقلاع",
     "shortest": "أقصر الرحلات",

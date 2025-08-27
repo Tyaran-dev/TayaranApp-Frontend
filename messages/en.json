@@ -124,6 +124,7 @@
   },
   "filters": {
     "heading": "Flights",
+    "sortby": "Sort By",
     "earliestarrival": "Earliest Arrival",
     "earliesttakeoff": "Earliest Takeoff",
     "shortest": "Shortest Flights",
@@ -215,7 +216,7 @@
     "checking": "Checking...",
     "bookNow": "Book Now",
     "select": "Select Flight",
-    "priceWithoutTax" : "* Price excludes taxes"
+    "priceWithoutTax": "* Price excludes taxes"
   },
   "HotelPage": {
     "noHotelsFound": "No hotels found for the provided criteria.",

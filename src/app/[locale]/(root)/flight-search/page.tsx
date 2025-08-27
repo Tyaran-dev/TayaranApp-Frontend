@@ -56,7 +56,9 @@ const Page: React.FC = () => {
   const locale = useLocale();
   const t = useTranslations("filters");
   const [currentStep, setCurrentStep] = useState(1);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // 🔹 Separate state for sort accordions
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
 
   const searchParamsData = useSelector((state: any) => state.flightData.searchParamsData);
@@ -415,12 +417,12 @@ const Page: React.FC = () => {
           <FlightSearchForm />
         </div>
         <div className="flex items-center md:items-start  flex-nowrap flex-col md:flex-row justify-center md:justify-between gap-2 py-10">
-          <div className="lg:w-1/4 w-[90%] border   rounded-lg md:sticky md:top-20 md:h-[calc(100vh-5rem)] flex flex-col items-center">
+          <div className="lg:w-1/4 w-[90%]  border   rounded-lg md:sticky md:top-20 md:h-[calc(100vh-5rem)] flex flex-col items-center">
             {/* Header Section - stays fixed inside */}
             <div
-              className="flex justify-between flex-wrap px-3 py-2 w-full items-center gap-5 cursor-pointer lg:cursor-default border-b"
+              className="flex justify-between bg-greenGradient text-slate-200 rounded-lg flex-wrap px-3 py-2 w-full items-center gap-5 cursor-pointer lg:cursor-default border-b"
               onClick={() => {
-                if (window.innerWidth < 1024) setIsOpen(!isOpen);
+                if (window.innerWidth < 1024) setIsFilterOpen(!isFilterOpen);
               }}
             >
               <h2 className="lg:text-xl font-semibold">{t("heading")}</h2>
@@ -429,14 +431,14 @@ const Page: React.FC = () => {
                   ({filteredFlights && filteredFlights.length})
                 </h2>
                 <span className="lg:hidden">
-                  {isOpen ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
+                  {isFilterOpen ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
                 </span>
               </div>
             </div>
 
             {/* Accordion Body - scrollable area */}
             <div
-              className={`transition-all flex justify-center w-full duration-300 lg:block flex-1 overflow-y-auto px-3 scrollbar-hide ${isOpen
+              className={`transition-all flex justify-center w-full duration-300 lg:block flex-1 overflow-y-auto px-3 scrollbar-hide ${isFilterOpen
                 ? "max-h-[1000px] opacity-100"
                 : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"
                 }`}
@@ -468,95 +470,111 @@ const Page: React.FC = () => {
           </div>
 
 
-          <div className={`lg:w-[72%] w-full space-y-6`}>
-            <div className="flex items-center whitespace-nowrap flex-wrap sm:flex-nowrap justify-center md:justify-between gap-2 w-full">
-              <button
-                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("cheapest")}`}
-                onClick={() => handleSortChange("cheapest")}
+          <div className={`lg:w-[72%] w-full space-y-2`}>
+            <div className="w-[90%] md:w-full mx-auto">
+              {/* Accordion Header */}
+              <div
+                className="flex mx-auto justify-between bg-greenGradient md:hidden text-slate-200 rounded-lg flex-wrap px-3 py-2 w-full items-center gap-5 cursor-pointer lg:cursor-default border-b"
+                onClick={() => {
+                  if (window.innerWidth < 1024) setIsSortOpen(!isSortOpen);
+                }}
               >
-                <div className="flex flex-col items-center">
-                  <span>{t("cheapest")}</span>
-                  {cheapestFlight && (
-                    <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
-                      {cheapestFlight.basePrice} {cheapestFlight?.currency == "SAR" ? <Image
-                        src={logo}
-                        alt="sar"
-                        width={18}
-                        height={18}
-                        unoptimized
-                        className="m-1 object-contain"
-                      /> : cheapestFlight?.currency}  -- {cheapestFlight.itineraries[0].duration}
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              <button
-                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2  ${getButtonClass("shortest")}`}
-                onClick={() => handleSortChange("shortest")}
-              >
-                <div className="flex flex-col items-center">
-                  <span>{t("shortest")}</span>
-                  {shortestFlight && (
-                    <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
-                      {shortestFlight.basePrice} {shortestFlight?.currency == "SAR" ? <Image
-                        src={logo}
-                        alt="sar"
-                        width={18}
-                        height={18}
-                        unoptimized
-                        className="m-1 object-contain"
-                      /> : shortestFlight?.currency}  -- {shortestFlight.itineraries[0].duration}
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              <button
-                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("earliest-takeoff")}`}
-                onClick={() => handleSortChange("earliest-takeoff")}
-              >
-                <span>
-                  {t("earliesttakeoff")}
+                <h2 className="lg:text-xl font-semibold">{t("sortby")}</h2>
+                <span className="lg:hidden">
+                  {isSortOpen ? <FaChevronUp size={15} /> : <FaChevronDown size={15} />}
                 </span>
-                {earlistFlight && (
-                  <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("earlistFlight")}`}>
-                    {earlistFlight.basePrice} {earlistFlight?.currency == "SAR" ? <Image
-                      src={logo}
-                      alt="sar"
-                      width={18}
-                      height={18}
-                      unoptimized
-                      className="m-1 object-contain"
-                    /> : earlistFlight?.currency}  -- {earlistFlight.itineraries[0].segments[0].departure_time}
-                  </span>
-                )}
-              </button>
+              </div>
 
-              <button
-                className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2  ${getButtonClass("earliest-arrival")}`}
-                onClick={() => handleSortChange("earliest-arrival")}
+              {/* Accordion Body */}
+              <div
+                className={`transition-all duration-300 overflow-hidden ${isSortOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 lg:max-h-none lg:opacity-100"
+                  }`}
               >
-                <span>
-                  {t("earliestarrival")}
-                </span>
-                {earlistArrival && (
-                  <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("cheapest")}`}>
-                    {earlistArrival.basePrice} {earlistArrival?.currency == "SAR" ? <Image
-                      src={logo}
-                      alt="sar"
-                      width={18}
-                      height={18}
-                      unoptimized
-                      className="m-1 object-contain"
-                    /> : earlistArrival?.currency}  --  {
-                      earlistArrival.itineraries[0].segments[
-                        earlistArrival.itineraries[0].segments.length - 1
-                      ].arrival_time
-                    }
-                  </span>
-                )}
-              </button>
+                <div className=" py-2 flex items-center whitespace-nowrap flex-wrap sm:flex-nowrap justify-center md:justify-between gap-2 w-full">
+                  {/* Cheapest */}
+                  <button
+                    className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("cheapest")}`}
+                    onClick={() => handleSortChange("cheapest")}
+                  >
+                    <div className="flex flex-col items-center">
+                      <span>{t("cheapest")}</span>
+                      {cheapestFlight && (
+                        <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                          {cheapestFlight.basePrice}{" "}
+                          {cheapestFlight?.currency == "SAR" ? (
+                            <Image src={logo} alt="sar" width={18} height={18} unoptimized className="m-1 object-contain" />
+                          ) : (
+                            cheapestFlight?.currency
+                          )}{" "}
+                          -- {cheapestFlight.itineraries[0].duration}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Shortest */}
+                  <button
+                    className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("shortest")}`}
+                    onClick={() => handleSortChange("shortest")}
+                  >
+                    <div className="flex flex-col items-center">
+                      <span>{t("shortest")}</span>
+                      {shortestFlight && (
+                        <span className={`text-sm flex items-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                          {shortestFlight.basePrice}{" "}
+                          {shortestFlight?.currency == "SAR" ? (
+                            <Image src={logo} alt="sar" width={18} height={18} unoptimized className="m-1 object-contain" />
+                          ) : (
+                            shortestFlight?.currency
+                          )}{" "}
+                          -- {shortestFlight.itineraries[0].duration}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Earliest Takeoff */}
+                  <button
+                    className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("earliest-takeoff")}`}
+                    onClick={() => handleSortChange("earliest-takeoff")}
+                  >
+                    <span>{t("earliesttakeoff")}</span>
+                    {earlistFlight && (
+                      <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("earlistFlight")}`}>
+                        {earlistFlight.basePrice}{" "}
+                        {earlistFlight?.currency == "SAR" ? (
+                          <Image src={logo} alt="sar" width={18} height={18} unoptimized className="m-1 object-contain" />
+                        ) : (
+                          earlistFlight?.currency
+                        )}{" "}
+                        -- {earlistFlight.itineraries[0].segments[0].departure_time}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Earliest Arrival */}
+                  <button
+                    className={`rounded-lg p-2 w-[40%] md:w-full  h-20 border-2 ${getButtonClass("earliest-arrival")}`}
+                    onClick={() => handleSortChange("earliest-arrival")}
+                  >
+                    <span>{t("earliestarrival")}</span>
+                    {earlistArrival && (
+                      <span className={`text-sm flex items-center justify-center text-gray-600 ${getButtonClass("cheapest")}`}>
+                        {earlistArrival.basePrice}{" "}
+                        {earlistArrival?.currency == "SAR" ? (
+                          <Image src={logo} alt="sar" width={18} height={18} unoptimized className="m-1 object-contain" />
+                        ) : (
+                          earlistArrival?.currency
+                        )}{" "}
+                        --{" "}
+                        {earlistArrival.itineraries[0].segments[
+                          earlistArrival.itineraries[0].segments.length - 1
+                        ].arrival_time}
+                      </span>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {loading && (

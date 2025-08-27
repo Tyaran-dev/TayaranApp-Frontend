@@ -36,12 +36,12 @@ const Filters: React.FC<FiltersProps> = ({
     >
       {/* Mobile Header */}
       <div
-        className="flex justify-between  items-center cursor-pointer md:cursor-default px-4 py-3 md:p-0"
+        className="flex justify-between bg-greenGradient text-slate-200 rounded-lg items-center cursor-pointer md:cursor-default px-4 py-3 md:p-0"
         onClick={() => {
           if (window.innerWidth < 768) setIsOpen(!isOpen);
         }}
       >
-        <h1 className="font-semibold text-lg">Filters</h1>
+        <h2 className="font-semibold text-lg">Filters</h2>
         <span className="md:hidden">
           {isOpen ? (
             <MdKeyboardArrowDown className="text-2xl rotate-180" />
@@ -53,7 +53,7 @@ const Filters: React.FC<FiltersProps> = ({
 
       {/* Accordion Body (hidden on mobile until opened) */}
       <div
-        className={`overflow-hidden p-4 transition-all duration-300 ${
+        className={`overflow-hidden    transition-all duration-300 ${
           isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 md:max-h-none md:opacity-100'
         }`}
       >
