@@ -5,7 +5,6 @@ import { AiroplanIcon, ArrowCircleIcon, BedIcon } from "@/app/svg";
 import { LuSearch } from "react-icons/lu";
 import Section from "../../shared/section";
 import AirportSearchField from "../../shared/airport-search-field";
-
 import fromImg from "/public/assets/from.png";
 import toImg from "/public/assets/to.png";
 import Travelers from "../../shared/traveller-field";

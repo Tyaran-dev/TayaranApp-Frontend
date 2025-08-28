@@ -114,21 +114,18 @@ export default function Page() {
       <div className="hidden md:block">
         <Stepper currentStep={currentStep} stepsType="hotelSteps" />
       </div>
-      <HotelSearch className="lg:grid-cols-4 grid-cols-2 bg-white rounded-3xl shadow-lg p-8 border" />
-
-
-
+      <HotelSearch className="lg:grid-cols-4 grid-cols-2 bg-white rounded-3xl shadow-md p-8 border " />
       {loading === "failed" && (
         <>
-            <div className="min-h-screen w-full flex-col flex justify-center items-center">
-              <Heading>No Hotels Found</Heading>
-              <Image
-                src={"/no-flight.svg"}
-                width={400}
-                height={400}
-                alt=""
-              />
-            </div>
+          <div className="min-h-screen w-full flex-col flex justify-center items-center">
+            <Heading>No Hotels Found</Heading>
+            <Image
+              src={"/no-flight.svg"}
+              width={400}
+              height={400}
+              alt=""
+            />
+          </div>
         </>
       )}
 

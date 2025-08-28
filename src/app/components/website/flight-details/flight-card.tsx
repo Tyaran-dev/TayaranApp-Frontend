@@ -148,7 +148,7 @@ const FlightCard = ({
 
   return (
     <div className="p-2" key={flight?.id}>
-      <div className="border p-5 bg-white font-cairo text-black border-[#C0C0C0] flex flex-col justify-between md:gap-5 rounded-xl">
+      <div className="border p-5  bg-slate-50 font-cairo text-black border-[#C0C0C0] flex flex-col justify-between md:gap-5 rounded-xl">
         {/* Mobile Layout */}
         <div className="md:hidden">
           {flight?.itineraries_formated?.map(
@@ -170,7 +170,7 @@ const FlightCard = ({
                 </div>
 
                 {/* Compact Flight Row */}
-                <div className="grid grid-cols-3 items-center gap- py-2 px-2">
+                <div className="grid grid-cols-3 items-center gap-   py-2 px-2">
                   {/* Departure */}
                   <div className="text-left">
                     <div className="text-base  text-gray-900">
