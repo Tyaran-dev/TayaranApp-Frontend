@@ -392,7 +392,7 @@ const HeroSection = () => {
                   <button
                     disabled={loading}
                     onClick={handleFlightSubmit}
-                    className="py-3 px-4 w-full md:text-xl mt-2 justify-center text-base rounded-3xl text-white bg-greenGradient flex gap-2 items-center hover:scale-105 duration-300 transition-all col-span-2"
+                    className="py-3 px-4 w-full md:text-xl mt-2 justify-center text-base rounded-lg text-white bg-greenGradient flex gap-2 items-center hover:scale-105 duration-300 transition-all col-span-2"
                   >
                     {loading ? (
                       <>

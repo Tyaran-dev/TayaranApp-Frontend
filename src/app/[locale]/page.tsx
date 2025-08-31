@@ -10,6 +10,7 @@ import MobileAppSection from "../components/website/home/mobile-app-section";
 import Navbar from "../components/shared/navbar";
 import { Toaster } from "react-hot-toast";
 import { useTranslations } from "next-intl";
+import Milecoin from "../components/website/home/Milecoin";
 
 export default function Home() {
   const t = useTranslations("HomePage");
@@ -25,8 +26,9 @@ export default function Home() {
         </div>
         <HeroSection />
         {/* <HotelSearch/> */}
-        <BestOffer t={t} />
+        <Milecoin />
         <TopHotels t={t} />
+        <BestOffer t={t} />
         <TopDeals t={t} />
         <TopFlights t={t} />
         <MobileAppSection t={t} />

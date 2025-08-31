@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, Share2, Bed, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import Button from './Button';
@@ -40,6 +40,8 @@ const RoomListing = ({
   const dispatch = useDispatch();
   const router = useRouter();
 
+
+
   const groupRoomsByName = (rooms: Room[]) => {
     const grouped: { [key: string]: Room[] } = {};
     rooms.forEach(room => {
@@ -63,13 +65,22 @@ const RoomListing = ({
       [roomName]: !prev[roomName]
     }));
   };
+  // ✅ Open all sections by default
+  useEffect(() => {
+    const initialExpanded: Record<string, boolean> = {};
+    Object.keys(groupedRooms).forEach(roomName => {
+      initialExpanded[roomName] = true;
+    });
+    setExpandedSections(initialExpanded);
+  }, [data]);
+
 
   return (
     <div className="w-full flex flex-col gap-4">
       {Object.entries(groupedRooms).map(([roomName, roomOptions], i) => (
         <div key={i} className="w-full border border-gray-200 rounded-xl overflow-hidden bg-white">
           {/* Room Header - Accordion Toggle */}
-          <div 
+          <div
             className="p-4 bg-white sticky top-0 z-10 border-b cursor-pointer"
             onClick={() => toggleSection(roomName)}
           >

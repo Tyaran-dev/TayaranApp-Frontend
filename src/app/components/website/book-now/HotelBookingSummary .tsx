@@ -221,7 +221,7 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
             <div className="p-4 border-t border-gray-200 flex justify-end">
               <button
                 onClick={() => setShowCancellationPolicy(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                className="px-4 py-2 bg-greenGradient text-slate-200 text-sm"
               >
                 I Understand
               </button>
@@ -365,9 +365,7 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
             <p>Check-out: {checkOutTime}</p>
           </div>
 
-          <button className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white py-3 mt-4 rounded">
-            Continue
-          </button>
+
         </div>
       </div>
     </div>

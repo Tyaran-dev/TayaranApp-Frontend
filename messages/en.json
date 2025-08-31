@@ -45,6 +45,53 @@
         "hotelCheckOutDate": "Check-Out"
       }
     },
+    "milecoin": {
+      "nav": {
+        "home": "Home",
+        "about": "About MileCoin",
+        "learnMore": "Learn More"
+      },
+      "hero": {
+        "title": "Welcome to the Future of",
+        "subtitle": "Cryptocurrency",
+        "description": "Discover innovative blockchain solutions that revolutionize how we think about digital currency and everyday activities."
+      },
+      "intro": {
+        "title": "Introducing MileCoin",
+        "description": "The world's first cryptocurrency that rewards your everyday travel and movement",
+        "tag": "Revolutionary Mining Concept",
+        "heading": "Mine Cryptocurrency with Every Mile You Travel",
+        "content": "MileCoin introduces a groundbreaking approach to cryptocurrency mining. Instead of energy-intensive computing, mine coins simply by traveling, walking, driving, or moving. Every mile you cover contributes to your MileCoin wallet.",
+        "features": {
+          "eco": "Eco-friendly mining process",
+          "rewards": "Rewards active lifestyle",
+          "accessible": "Accessible to everyone"
+        },
+        "cta": "Explore MileCoin"
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "steps": {
+          "1": "Travel or move around in your daily activities",
+          "2": "Our app tracks your distance automatically",
+          "3": "Earn MileCoins based on miles traveled",
+          "4": "Trade or use your earned MileCoins"
+        }
+      },
+      "stats": {
+        "miles": "Miles Mined Daily",
+        "miners": "Active Miners",
+        "footprint": "Carbon Footprint"
+      },
+      "cta": {
+        "title": "Ready to Start Mining with Miles?",
+        "description": "Join thousands of users who are already earning MileCoins through their daily activities",
+        "button": "Get Started Today"
+      },
+      "footer": {
+        "copyright": "© 2025 MileCoin. Revolutionizing cryptocurrency through movement."
+      }
+    },
     "bestOffer": {
       "bestOfferHeading": "Best Offer",
       "bestOfferText": "Members save 10% or more on over 100,000 hotels worldwide when signed in",

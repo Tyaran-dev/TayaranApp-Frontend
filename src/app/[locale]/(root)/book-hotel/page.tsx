@@ -95,7 +95,7 @@ const extractCheckInInstructions = (
   content = content
     .replace(/&lt;ul&gt;/g, "")
     .replace(/&lt;\/ul&gt;/g, "")
-    .replace(/&lt;li&gt;/g, "<li>• ")
+    .replace(/&lt;li&gt;/g, "<li>")
     .replace(/&lt;\/li&gt;/g, "")
     .replace(/-vib-dip/g, "")
     .replace(/-dip-dip/g, "")
@@ -124,7 +124,7 @@ const extractFeesAndExtras = (
     let content = feeContent
       .replace(/&lt;ul&gt;/g, "")
       .replace(/&lt;\/ul&gt;/g, "")
-      .replace(/&lt;li&gt;/g, "<li>• ")
+      .replace(/&lt;li&gt;/g, "<li>")
       .replace(/&lt;\/li&gt;/g, "")
       .replace(/&lt;p&gt;/g, "<p>")
       .replace(/&lt;\/p&gt;/g, "</p>");

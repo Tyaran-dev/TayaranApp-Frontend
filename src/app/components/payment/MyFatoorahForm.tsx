@@ -90,8 +90,8 @@ export default function PaymentPage({
         });
 
         if (res.data?.paymentUrl) {
-          window.open(res.data.paymentUrl, "_blank");
-          alert("Please complete the payment in the opened window.");
+          window.location.href = res.data.paymentUrl;
+          // alert("Please complete the payment in the opened window.");
         } else {
           alert("Could not start payment.");
         }
