@@ -2,71 +2,74 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import FlightCard from "@/app/components/website/book-now/DepartureCard";
+import FlightBookingThankYou from "@/app/components/website/after-booking/BookingConfirm";
+import BookingFailed from "@/app/components/website/after-booking/BookingFaield";
+import OrderProgress from "@/app/components/website/after-booking/OrderProgress";
 
 export default function ThankYouPage() {
-    const searchParams = useSearchParams();
-    const paymentId = searchParams.get("paymentId");
+  const searchParams = useSearchParams();
+  const paymentId = searchParams.get("paymentId");
 
-    const [status, setStatus] = useState<"PENDING" | "CONFIRMED" | "FAILED">("PENDING");
-    const [order, setOrder] = useState<any>(null);
+  const [status, setStatus] = useState<"PENDING" | "CONFIRMED" | "FAILED">(
+    "PENDING"
+  );
+  const [order, setOrder] = useState<any>(null);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    useEffect(() => {
-        if (!paymentId) return;
+  console.log(order, "order");
 
-        const interval = setInterval(async () => {
-            try {
-                console.log("check")
-                const res = await axios.post(`${baseUrl}/payment/bookingStatus`, {
-                    paymentId,
-                });
+  useEffect(() => {
+    if (!paymentId) return;
 
-                if (res.data.status === "CONFIRMED") {
-                    setStatus("CONFIRMED");
-                    setOrder(res.data.order);
-                    clearInterval(interval); // ✅ stop polling
-                } else if (res.data.status === "FAILED") {
-                    setStatus("FAILED");
-                    clearInterval(interval);
-                }
-            } catch (err) {
-                console.error("Error fetching booking status", err);
-            }
-        }, 8000); // poll every 8 seconds
+    const interval = setInterval(async () => {
+      try {
+        const res = await axios.post(`${baseUrl}/payment/bookingStatus`, {
+          paymentId,
+        });
+        console.log(res.data, "check");
 
-        return () => clearInterval(interval);
-    }, [paymentId]);
+        if (res.data.status === "CONFIRMED") {
+          setStatus("CONFIRMED");
+          setOrder(res.data.order);
+          clearInterval(interval); // ✅ stop polling
+        } else if (res.data.status === "FAILED") {
+          setStatus("FAILED");
+          clearInterval(interval);
+        }
+      } catch (err) {
+        console.error("Error fetching booking status", err);
+      }
+    }, 8000); // poll every 8 seconds
 
-    return (
-        <div className="p-8 text-center h-svh">
-            {status === "PENDING" && (
-                <div>
-                    <h1 className="text-2xl font-bold">Processing your order...</h1>
-                    <p>Please wait while we confirm your payment and booking.</p>
-                </div>
-            )}
+    return () => clearInterval(interval);
+  }, [paymentId]);
 
-            {status === "CONFIRMED" && (
-                <div>
-                    <h1 className="text-2xl font-bold text-green-600">Order Confirmed 🎉</h1>
-                    <p>Thank you! Your booking has been successfully created.</p>
-                    {order && (
-                        <div className="mt-4">
-                            <p><strong>Booking ID:</strong> {order._id}</p>
-                            <p><strong>Invoice:</strong> {order.invoiceId}</p>
-                            {/* Show more order details */}
-                        </div>
-                    )}
-                </div>
-            )}
-
-            {status === "FAILED" && (
-                <div>
-                    <h1 className="text-2xl font-bold text-red-600">Payment Failed ❌</h1>
-                    <p>We could not process your booking. Please try again.</p>
-                </div>
-            )}
+  return (
+    <div className=" text-center min-h-svh">
+      {status === "PENDING" && (
+        <div>
+          <OrderProgress />
         </div>
-    );
+      )}
+
+      {status === "CONFIRMED" && (
+        <div>
+          {order && (
+            <div>
+              <FlightBookingThankYou order={order} />
+              {/* Show more order details */}
+            </div>
+          )}
+        </div>
+      )}
+
+      {status === "FAILED" && (
+        <div>
+          <BookingFailed />
+        </div>
+      )}
+    </div>
+  );
 }
