@@ -1,0 +1,92 @@
+// request = 
+{
+    "mapping":"CAI-RUH|2025-04-29|MS-649",
+    "contact_info":{
+        "name":"Omar Abulkhair",
+        "email":"omarabulkhair@icloud.com",
+        "phone":"01007100255",
+        "country_calling_code":"20"
+    },
+    "travellers":[
+        {
+            "UserType":"ADT", // CH , INF
+            "firstName":"Omar",
+            "lastName":"Helal",
+            "gender":"MALE", // FEMALE , MALE
+        
+            "dateOfBirth":"1999-08-08",
+            "document":{
+                "birthPlace":"Cairo",
+                "issuanceLocation":"Cairo",
+                "number":"P-712312113",
+                "issuanceDate":"2024-01-01",
+                "expiryDate":"2028-01-01",
+                "issuanceCountry":"EG",
+                "nationality":"EG"
+            }
+
+        }
+    ],
+
+    "currencyCode":"SAR",
+    "destinations":[
+        {
+            "id": "1",
+            "from": "CAI",
+            "to": "RUH",
+            "date": "2025-04-29"
+        }  
+    ],
+    "adults":1,
+    "children":0,
+    "infants":0,
+    "cabinClass":"Economy",
+    "directFlight":false,
+    "calendarSearch":false
+
+
+}
+
+// response = 
+{
+  "status": "success",
+  "reference": "FS-1745846695",
+  "invoice_url": "https://demo2.MyFatoorah.com/KWT/ia/050723467551852963-04e13b58",
+  "search": {
+    "mapping": "CAI-RUH|2025-04-29|MS-649",
+    "contact_info": {
+      "name": "Omar Abulkhair",
+      "email": "omarabulkhair@icloud.com",
+      "phone": "01007100255",
+      "country_calling_code": "20"
+    },
+    "travellers": [
+      {
+        "UserType": "ADT",
+        "firstName": "Omar",
+        "lastName": "Helal",
+        "gender": "MALE",
+        "dateOfBirth": "1999-08-08",
+        "document": {
+          "birthPlace": "Cairo",
+          "issuanceLocation": "Cairo",
+          "number": "P-712312113",
+          "issuanceDate": "2024-01-01",
+          "expiryDate": "2028-01-01",
+          "issuanceCountry": "EG",
+          "nationality": "EG"
+        }
+      }
+    ],
+    "currencyCode": "SAR",
+    "destinations": [
+      { "id": "1", "from": "CAI", "to": "RUH", "date": "2025-04-29" }
+    ],
+    "adults": 1,
+    "children": 0,
+    "infants": 0,
+    "cabinClass": "Economy",
+    "directFlight": false,
+    "calendarSearch": false
+  }
+}

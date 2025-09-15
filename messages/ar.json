@@ -1,0 +1,443 @@
+{
+  "header": {
+    "navItems": {
+      "home": "الرئيسية",
+      "milecoin": "مايل كوين",
+      "aboutUs": "من نحن",
+      "packages": "الباقات",
+      "tayyranBusiness": "طيّران بزنس",
+      "corporate": "الشركات"
+    },
+    "registerButton": "إنشاء حساب"
+  },
+  "Stepper": {
+    "flightSteps": {
+      "chooseFlight": "اختر رحلتك",
+      "enterDetails": "أدخل بياناتك",
+      "upgradeExperience": "حسّن تجربتك",
+      "finalDetails": "التفاصيل النهائية"
+    },
+    "hotelSteps": {
+      "selectHotel": "اختر الفندق",
+      "selectRoom": "اختر الغرفة",
+      "enterDetails": "أدخل بياناتك",
+      "finalDetails": "التفاصيل النهائية"
+    }
+  },
+  "HomePage": {
+    "heroSection": {
+      "mainHeading": "لنحجز رحلتك القادمة الآن!",
+      "subHeading": "اختر من بين أكثر من 1.5 مليون فندق و 450+ شركة طيران",
+      "searchForm": {
+        "formTypeHotels": "فنادق",
+        "formTypeFlights": "رحلات طيران",
+        "fromFieldLabel": "من",
+        "toFieldLabel": "إلى",
+        "DatePicker": "تاريخ المغادرة",
+        "returnDate": "تاريخ العودة",
+        "travelersLabel": "المسافرون",
+        "classLabel": "الدرجة",
+        "searchButton": "بحث",
+        "searchButtonLoading": "جارٍ البحث...",
+        "loadingText": "جارٍ التحميل...",
+        "hotelCountryLabel": "اختر الدولة",
+        "hotelCityLabel": "اختر المدينة",
+        "hotelCheckInDate": "تاريخ الوصول",
+        "hotelCheckOutDate": "تاريخ المغادرة"
+      }
+    },
+    "flightClassOptions": {
+      "economy": "الاقتصادية",
+      "premiumEconomy": "الاقتصادية المتميزة",
+      "business": "رجال الأعمال",
+      "firstClass": "الدرجة الأولى"
+    },
+    "milecoin": {
+      "nav": {
+        "home": "الرئيسية",
+        "about": "عن مايل كوين",
+        "learnMore": "المزيد"
+      },
+      "hero": {
+        "title": "مرحبًا بك في مستقبل",
+        "subtitle": "العملات المشفرة",
+        "description": "اكتشف حلول بلوكتشين مبتكرة تُحدث ثورة في طريقة تفكيرنا حول العملة الرقمية والأنشطة اليومية."
+      },
+      "intro": {
+        "title": "نقدم لكم مايل كوين",
+        "description": "أول عملة مشفرة في العالم تكافئك على تنقلاتك وحركتك اليومية",
+        "tag": "مفهوم التعدين الثوري",
+        "heading": "استخراج العملات المشفرة مع كل ميل تسافره",
+        "content": "يقدم مايل كوين نهجًا جديدًا لتعدين العملات المشفرة. بدلاً من الحوسبة المكثفة للطاقة، يمكنك استخراج العملات ببساطة من خلال السفر، المشي، القيادة، أو الحركة. كل ميل تقطعه يساهم في محفظة مايل كوين الخاصة بك.",
+        "features": {
+          "eco": "عملية تعدين صديقة للبيئة",
+          "rewards": "يكافئ نمط الحياة النشط",
+          "accessible": "يمكن للجميع الوصول إليه"
+        },
+        "cta": "استكشف مايل كوين"
+      },
+      "howItWorks": {
+        "title": "كيف يعمل",
+        "steps": {
+          "1": "اسافر أو تحرك في أنشطتك اليومية",
+          "2": "تطبيقنا يتتبع مسافاتك تلقائيًا",
+          "3": "اربح عملات مايل كوين بناءً على الأميال المقطوعة",
+          "4": "تاجر أو استخدم عملات مايل كوين التي ربحتها"
+        }
+      },
+      "stats": {
+        "miles": "أميال يتم تعدينها يوميًا",
+        "miners": "المعدّنون النشطون",
+        "footprint": "البصمة الكربونية"
+      },
+      "cta": {
+        "title": "مستعد للبدء في التعدين بالأميال؟",
+        "description": "انضم إلى آلاف المستخدمين الذين يجنون بالفعل عملات مايل كوين من خلال أنشطتهم اليومية",
+        "button": "ابدأ اليوم"
+      },
+      "footer": {
+        "copyright": "© 2025 مايل كوين. إحداث ثورة في العملات المشفرة من خلال الحركة."
+      }
+    },
+    "bestOffer": {
+      "bestOfferHeading": "أفضل عرض",
+      "bestOfferText": "الأعضاء يوفرون 10٪ أو أكثر على أكثر من 100,000 فندق حول العالم عند تسجيل الدخول",
+      "bestOfferButton": "سجّل الدخول الآن"
+    },
+    "topHotels": {
+      "topHotelsHeading": "أفضل الفنادق",
+      "categories": {
+        "Trending": "الأكثر رواجاً",
+        "5-Star": "5 نجوم",
+        "Asian": "آسيوية",
+        "Europe": "أوروبا",
+        "Middle-East": "الشرق الأوسط",
+        "Budget-Friendly": "اقتصادية",
+        "Adventure": "مغامرة",
+        "Family-Friendly": "مناسبة للعائلات"
+      }
+    },
+    "topDeals": {
+      "topDealsHeading": "عروض اللحظة الأخيرة لعطلة نهاية الأسبوع",
+      "bookNowButton": "احجز الآن"
+    },
+    "weekendDeals": {
+      "heading": "عروض اللحظة الأخيرة لعطلة نهاية الأسبوع",
+      "dealsButton": "سعر الأعضاء متاح"
+    },
+    "topFlights": {
+      "heading": "رحلات طيران شهيرة بالقرب منك",
+      "categories": {
+        "International": "دولية",
+        "Domestic": "محلية"
+      }
+    },
+    "mobileAppSection": {
+      "heading": "حمّل تطبيقنا الآن!",
+      "exprensHeading": "جرّب الراحة بين يديك",
+      "subHeading": "استكشف قائمتنا المختارة لأفضل الدول للزيارة في عام 2024 واكتشف وجهات مذهلة بانتظارك",
+      "downloadButton": "حمّل الآن"
+    }
+  },
+  "flightsearch": {
+    "noflight": "لا توجد رحلات متاحة"
+  },
+  "searchForm": {
+    "tripTypes": {
+      "roundtrip": "ذهاب وعودة",
+      "oneway": "ذهاب فقط",
+      "multiplecities": "مدن متعددة"
+    },
+    "flightClassOptions": {
+      "economy": "الاقتصادية",
+      "premiumEconomy": "الاقتصادية المتميزة",
+      "business": "رجال الأعمال",
+      "firstClass": "الدرجة الأولى"
+    },
+    "travlers": {
+      "buttonLabel": "الركاب",
+      "travlers": "المسافرون",
+      "adults": {
+        "label": "البالغون",
+        "note": "12 سنة فما فوق"
+      },
+      "children": {
+        "label": "الأطفال",
+        "note": "من 2 إلى 12 سنة"
+      },
+      "infants": {
+        "label": "الرضع",
+        "note": "أقل من سنتين"
+      }
+    },
+    "from": "من",
+    "to": "إلى",
+    "returndate": "تاريخ العودة",
+    "searchButton": "بحث",
+    "loadingButton": "جارٍ البحث..."
+  },
+  "filters": {
+    "heading": "الرحلات",
+    "sortby": "الترتيب حسب",
+    "earliestarrival": "أقرب وقت وصول",
+    "earliesttakeoff": "أقرب وقت إقلاع",
+    "shortest": "أقصر الرحلات",
+    "cheapest": "أرخص الرحلات",
+    "departuretime": {
+      "departuretimeheading": "وقت الإقلاع",
+      "before_morning": "قبل 06:00 صباحاً",
+      "morning": "06:00 صباحاً - 12:00 ظهراً",
+      "afternoon": "12:00 ظهراً - 06:00 مساءً",
+      "evening": "بعد 06:00 مساءً"
+    },
+    "price": "نطاق السعر",
+    "pricecurrency": "ر.س",
+    "stops": {
+      "stopsheading": "التوقفات",
+      "any": "أي عدد من التوقفات",
+      "direct": "رحلات مباشرة فقط",
+      "one": "توقف واحد",
+      "two_or_more": "توقفان أو أكثر"
+    },
+    "airlines": "شركات الطيران"
+  },
+  "bookNow": {
+    "pageTitle": "أكمل حجزك",
+    "personalDetails": {
+      "title": "البيانات الشخصية",
+      "titleOptions": {
+        "mr": "السيد",
+        "ms": "الآنسة",
+        "mrs": "السيدة"
+      },
+      "firstName": "الاسم الأول *",
+      "middleName": "الاسم الأوسط (اختياري)",
+      "lastName": "اسم العائلة *",
+      "dateOfBirth": "تاريخ الميلاد *",
+      "dayPlaceholder": "اليوم",
+      "monthPlaceholder": "الشهر",
+      "yearPlaceholder": "السنة",
+      "nationality": "الجنسية *"
+    },
+    "travelDocument": {
+      "title": "وثيقة السفر",
+      "documentType": "نوع الوثيقة *",
+      "passportNumber": "رقم الجواز *",
+      "issuingCountry": "بلد الإصدار *",
+      "expiryDate": "تاريخ انتهاء الجواز *"
+    },
+    "contactDetails": {
+      "title": "بيانات التواصل",
+      "email": "البريد الإلكتروني *",
+      "emailNote": "سيتم إرسال تذاكرك المشتراة إلى هذا البريد الإلكتروني.",
+      "phoneCode": "كود *",
+      "phoneNumber": "رقم الجوال *"
+    },
+    "payment": {
+      "confirmButton": "تأكيد الحجز",
+      "processing": "جارٍ المعالجة...",
+      "continueToPayment": "المتابعة إلى الدفع",
+      "backToDetails": "الرجوع إلى بيانات المسافرين",
+      "totalPrice": "السعر الإجمالي:",
+      "currency": "ر.س",
+      "amount": "المبلغ"
+    },
+    "baggage": {
+      "cabin": "7 كجم حقيبة يد",
+      "checked": "20 كجم أمتعة مشحونة",
+      "quantity": "قطعة واحدة"
+    },
+    "errors": {
+      "requiredField": "هذا الحقل مطلوب",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
+      "invalidPhone": "يرجى إدخال رقم هاتف صحيح",
+      "completeAllTravelers": "يرجي ادخال بيانات جميع المسافرين",
+      "noFlightAvailable": "لا توجد رحلات متاحة",
+      "noFlightDescription": "لم نتمكن من العثور على أي رحلات تطابق معاييرك.",
+      "backToSearch": "العودة إلى البحث",
+      "noFlightAltText": "رسم توضيحي لعدم وجود رحلات متاحة"
+    }
+  },
+  "FlightCard": {
+    "direct": "مباشرة",
+    "stop": "توقف",
+    "stops": "توقفات",
+    "noStops": "لا توجد توقفات",
+    "flightHasNoStop": "الرحلة بدون توقف",
+    "arrival": "الوصول",
+    "departure": "المغادرة",
+    "airport": "المطار",
+    "duration": "المدة",
+    "departureTitle": "الإقلاع",
+    "flightDetails": "تفاصيل الرحلة",
+    "baggageIncluded": "الأمتعة مشمولة",
+    "checking": "جاري التحقق...",
+    "bookNow": "احجز الآن",
+    "select": " اختر الرحلة",
+    "priceWithoutTax": "* السعر لا يشمل الضريبة"
+  },
+  "FlightBooking": {
+    "bookingConfirmed": "تم تأكيد الحجز!",
+    "flightSuccessfullyBooked": "لقد تم حجز رحلتك بنجاح",
+    "confirmation": "رقم التأكيد",
+    "flightDetails": "تفاصيل الرحلة",
+    "flight": "الرحلة",
+    "departure": "المغادرة",
+    "arrival": "الوصول",
+    "terminal": "المبنى",
+    "passengerInformation": "معلومات المسافر",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "bookingDate": "تاريخ الحجز",
+    "bookingSummary": "ملخص الحجز",
+    "basePrice": "السعر الأساسي",
+    "taxesAndFees": "الضرائب والرسوم",
+    "serviceFee": "رسوم الخدمة",
+    "totalPaid": "المبلغ الإجمالي",
+    "travelTips": "نصائح للسفر",
+    "beforeYouTravel": "قبل السفر",
+    "checkPassportExpiry": "تحقق من تاريخ انتهاء صلاحية جواز السفر",
+    "reviewBaggagePolicies": "راجع سياسات الأمتعة الخاصة بالخطوط الجوية",
+    "downloadAirlineApp": "قم بتنزيل تطبيق الهاتف للخطوط الجوية",
+    "atTheAirport": "في المطار",
+    "useMobileBoardingPass": "استخدم بطاقة الصعود عبر الهاتف",
+    "checkSecurityWaitTimes": "تحقق من أوقات انتظار الأمن",
+    "locateDepartureGate": "حدد موقع بوابة المغادرة",
+    "importantInformation": "معلومات مهمة",
+    "flexibleChanges": "تغييرات مرنة",
+    "flexibleChangesDescription": "يمكنك تغيير رحلتك حتى ساعتين قبل المغادرة بدون رسوم إضافية",
+    "support24/7": "دعم على مدار الساعة",
+    "support24/7Description": "فريق خدمة العملاء متاح على مدار الساعة للمساعدة",
+    "travelUpdates": "تحديثات السفر",
+    "travelUpdatesDescription": "تلقي إشعارات فورية حول حالة رحلتك عبر البريد الإلكتروني والرسائل النصية",
+    "unknown": "غير معروف",
+    "notAvailable": "غير متوفر",
+    "economy": "السياحية"
+  },
+  "OrderProgress": {
+    "processingOrder": "جاري معالجة طلبك",
+    "pleaseWait": "يرجى الانتظار بينما نقوم بتأكيد الدفع والحجز",
+    "progress": "التقدم",
+    "complete": "مكتمل",
+    "verifyingPayment": "التحقق من تفاصيل الدفع",
+    "securingBooking": "تأمين حجزك",
+    "confirmingAvailability": "التأكد من التوفر",
+    "finalizingOrder": "إكمال طلبك",
+    "processTime": "تستغرق هذه العملية عادة من 30 إلى 60 ثانية. يرجى عدم تحديث الصفحة"
+  },
+  "PaymentFailed": {
+    "paymentFailed": "فشل عملية الدفع",
+    "paymentNotProcessed": "لم نتمكن من معالجة دفعتك",
+    "transaction": "المعاملة",
+    "paymentError": "خطأ في الدفع",
+    "noChargesApplied": "لم يتم تطبيق أي رسوم على حسابك. يمكنك المحاولة مرة أخرى بأمان.",
+    "paymentMethod": "طريقة الدفع",
+    "cardBrand": "نوع البطاقة",
+    "cardNumber": "رقم البطاقة",
+    "expiry": "تاريخ الانتهاء",
+    "issuer": "المصدر",
+    "amount": "المبلغ",
+    "transactionId": "رقم المعاملة",
+    "tryDifferentPayment": "جرب طريقة دفع مختلفة",
+    "backToBooking": "العودة إلى الحجز",
+    "informationSecure": "معلوماتك آمنة",
+    "securityDescription": "جميع معلومات الدفع مشفرة ومحمية. نظرًا لفشل الدفع، لم تتم معالجة أي رسوم وتبقى معلوماتك المالية آمنة.",
+    "needHelp": "تحتاج إلى مساعدة؟",
+    "callSupport": "اتصل بالدعم",
+    "emailHelp": "مساعدة عبر البريد",
+    "responseTime": "متوسط وقت الاستجابة: أقل من 5 دقائق"
+  },
+  "BookingFailed": {
+    "title": "فشل الحجز",
+    "subtitle": "واجهنا مشكلة في معالجة حجز رحلتك",
+    "errorCodeLabel": "رمز الخطأ",
+    "whatHappenedTitle": "ماذا حدث؟",
+    "errorSummary": {
+      "title": "تعذر إكمال الحجز",
+      "description": "لم يكن حجز رحلتك ناجحًا بسبب مشكلة تقنية. لا تقلق - لم يتم تحصيل أي مبالغ من وسيلة الدفع الخاصة بك.",
+      "timestampLabel": "حدث الخطأ في",
+      "referenceIdLabel": "رقم المرجع"
+    },
+    "attemptedBookingTitle": "تفاصيل محاولة الحجز",
+    "routeLabel": "الطريق",
+    "flightLabel": "الرحلة",
+    "dateLabel": "التاريخ",
+    "passengersLabel": "عدد المسافرين",
+    "commonCausesTitle": "الأسباب الشائعة",
+    "commonIssues": [
+      {
+        "title": "معالجة الدفع",
+        "description": "رفض البطاقة الائتمانية أو انتهاء وقت عملية الدفع"
+      },
+      {
+        "title": "انتهاء الجلسة",
+        "description": "انتهت جلسة الحجز أثناء عملية الدفع"
+      },
+      {
+        "title": "مشاكل الاتصال",
+        "description": "مشاكل في اتصال الشبكة أثناء الحجز"
+      },
+      {
+        "title": "صيانة النظام",
+        "description": "تعطل النظام مؤقتًا أو وجود صيانة"
+      }
+    ],
+    "attemptedFlight": {
+      "route": "نيويورك (JFK) → لوس أنجلوس (LAX)",
+      "date": "15 مارس 2024",
+      "flightNumber": "SL 1847"
+    },
+    "quickActionsTitle": "إجراءات سريعة",
+    "tryAgainButton": "محاولة الحجز مرة أخرى",
+    "backToSearchButton": "العودة إلى البحث",
+    "backButton": "عودة",
+    "needHelpTitle": "تحتاج إلى مساعدة؟",
+    "callSupportLabel": "اتصل بالدعم",
+    "responseTimeLabel": "متوسط وقت الاستجابة: 2-5 دقائق",
+    "apologyMessage": "نعتذر عن الإزعاج. يعمل فريقنا على حل أي مشاكل تقنية.",
+    "systemStatusLink": "حالة النظام",
+    "helpCenterLink": "مركز المساعدة",
+    "contactSupportLink": "اتصل بالدعم",
+    "reportIssueLink": "الإبلاغ عن مشكلة"
+  },
+  "HotelPage": {
+    "noHotelsFound": "لم يتم العثور على فنادق بناءً على المعايير المحددة.",
+    "showing": "عرض",
+    "places": "أماكن",
+    "starHotel": "فندق نجوم",
+    "amenities": "المرافق",
+    "startingFrom": "ابتداءً من",
+    "night": "ليلة",
+    "excludingTax": "غير شامل الضريبة",
+    "viewPlace": "عرض المكان",
+    "noImage": "لا توجد صورة متاحة"
+  },
+  "hotel": {
+    "invalidHotelCode": "رمز فندق غير صالح.",
+    "error": "خطأ"
+  },
+  "hotelDetails": {
+    "stars": "فندق {rating} نجوم",
+    "buttons": {
+      "bookNow": "احجز الآن"
+    }
+  },
+  "footer": {
+    "contactUs": "اتصل بنا",
+    "socialMedia": "تابعنا على وسائل التواصل",
+    "legal": "قانوني",
+    "importantLinks": "المصادر",
+    "aboutUs": "من نحن",
+    "footerPargraph": "في النشر والتصميم الجرافيكي، لوريم إيبسوم هو نص افتراضي يُستخدم لعرض الشكل البصري للمستند",
+    "rights": " جميع الحقوق محفوظة ©"
+  },
+  "errors": {
+    "fromError": "يرجى اختيار مدينة المغادرة",
+    "toError": "يرجى اختيار مدينة الوجهة.",
+    "requiredFields": "يرجى ملء جميع الحقول المطلوبة للبحث عن الفنادق.",
+    "hotelErrorFetchingCountries": "حدث خطأ أثناء جلب الدول:",
+    "hotelErrorFetchingcities": "حدث خطأ أثناء جلب المدن:",
+    "hotelSearchAlert": "يرجى اختيار المدينة وتواريخ تسجيل الوصول والمغادرة."
+  }
+}

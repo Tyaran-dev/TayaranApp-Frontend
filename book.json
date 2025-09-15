@@ -1,0 +1,91 @@
+[
+    {
+        "mapping": "JED-AMM|2025-04-23|RJ-709||AMM-MXP|2025-04-23|RJ-103||MXP-AMM|2025-04-30|RJ-104||AMM-JED|2025-05-01|RJ-704",
+        "contact_info": {
+            "name": "Fady Shehata",
+            "email": "fadyshehata2@gmail.com",
+            "phone": "201027792728",
+            "country_calling_code": "20"
+        },
+        "travellers": [
+            {
+                "UserType": "ADT",
+                "firstName": "Fady",
+                "lastName": "Shehata",
+                "dateOfBirth": "2009-04-04",
+                "gender": "MALE",
+                "document": {
+                    "number": "p16252i2i62",
+                    "issuanceDate": "2025-04-05",
+                    "expiryDate": "2025-04-30",
+                    "issuanceCountry": "SA",
+                    "nationality": "SA"
+                }
+            }
+        ],
+        "currencyCode": "SAR",
+        "directFlight": false,
+        "cabinClass": "Economy",
+        "destinations": [
+            {
+                "id": 1,
+                "from": "JED",
+                "to": "MXP",
+                "date": "2025-04-23"
+            },
+            {
+                "id": 2,
+                "from": "MXP",
+                "to": "JED",
+                "date": "2025-04-30"
+            }
+        ],
+        "adults": 1,
+        "children": 0,
+        "infants": 0
+    },
+    {
+        "status": "success",
+        "reference": "FS-1746707327",
+        "invoice_url": "https://securepayments.alrajhibank.com.sa/pg/paymentpage.htm?PaymentID=600202512896336044",
+        "search": {
+            "mapping": "CAI-JED|2025-06-28|SV-300||JED-MED|2025-06-28|SV-1428",
+            "contact_info": {
+                "name": "Fady Shehata",
+                "email": "fadyshehata2@gmail.com",
+                "phone": "201027792728",
+                "country_calling_code": "20"
+            },
+            "travellers": [
+                {
+                    "UserType": "ADT",
+                    "firstName": "Fady",
+                    "lastName": "Shehata",
+                    "dateOfBirth": "2009-04-04",
+                    "gender": "MALE",
+                    "document": {
+                        "number": "p16252i2i62",
+                        "issuanceDate": "2025-04-05",
+                        "expiryDate": "2025-06-30",
+                        "issuanceCountry": "SA",
+                        "nationality": "SA"
+                    }
+                }
+            ],
+            "currencyCode": "SAR",
+            "directFlight": false,
+            "cabinClass": "Economy",
+            "destinations": [
+                {
+                    "id": 1,
+                    "from": "CAI",
+                    "to": "MED",
+                    "date": "2025-06-28"
+                }
+            ],
+            "adults": 1,
+            "children": 0,
+            "infants": 0
+        }
+    }
+]

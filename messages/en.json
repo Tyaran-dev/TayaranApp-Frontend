@@ -1,0 +1,447 @@
+{
+  "header": {
+    "navItems": {
+      "home": "Home",
+      "milecoin": "Milecoin",
+      "aboutUs": "About Us",
+      "packages": "Packages",
+      "tayyranBusiness": "Tayyran Business",
+      "corporate": "Corporate"
+    },
+    "registerButton": "Sign Up"
+  },
+  "Stepper": {
+    "flightSteps": {
+      "chooseFlight": "Choose your flight",
+      "enterDetails": "Enter your details",
+      "upgradeExperience": "Upgrade your experience",
+      "finalDetails": "Final details"
+    },
+    "hotelSteps": {
+      "selectHotel": "Select Hotel",
+      "selectRoom": "Select Room",
+      "enterDetails": "Enter Your Details",
+      "finalDetails": "Final Details"
+    }
+  },
+  "HomePage": {
+    "heroSection": {
+      "mainHeading": "Let’s book your next trip! now",
+      "subHeading": "Choose from over 1.5 million hotels & 450+ airlines",
+      "searchForm": {
+        "formTypeHotels": "Hotels",
+        "formTypeFlights": "Flights",
+        "fromFieldLabel": "From",
+        "toFieldLabel": "To",
+        "DatePicker": "Departure Date",
+        "returnDate": "Return Date",
+        "travelersLabel": "Travelers",
+        "classLabel": "Class",
+        "searchButton": "Search",
+        "searchButtonLoading": "Searching ...",
+        "loadingText": "Loading ...",
+        "hotelCountryLabel": "Select Country",
+        "hotelCityLabel": "Select City",
+        "hotelCheckInDate": "Check-In",
+        "hotelCheckOutDate": "Check-Out"
+      }
+    },
+    "flightClassOptions": {
+      "economy": "Economy",
+      "premiumEconomy": "Premium Economy",
+      "business": "Business",
+      "firstClass": "First Class"
+    },
+    "milecoin": {
+      "nav": {
+        "home": "Home",
+        "about": "About MileCoin",
+        "learnMore": "Learn More"
+      },
+      "hero": {
+        "title": "Welcome to the Future of",
+        "subtitle": "Cryptocurrency",
+        "description": "Discover innovative blockchain solutions that revolutionize how we think about digital currency and everyday activities."
+      },
+      "intro": {
+        "title": "Introducing MileCoin",
+        "description": "The world's first cryptocurrency that rewards your everyday travel and movement",
+        "tag": "Revolutionary Mining Concept",
+        "heading": "Mine Cryptocurrency with Every Mile You Travel",
+        "content": "MileCoin introduces a groundbreaking approach to cryptocurrency mining. Instead of energy-intensive computing, mine coins simply by traveling, walking, driving, or moving. Every mile you cover contributes to your MileCoin wallet.",
+        "features": {
+          "eco": "Eco-friendly mining process",
+          "rewards": "Rewards active lifestyle",
+          "accessible": "Accessible to everyone"
+        },
+        "cta": "Explore MileCoin"
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "steps": {
+          "1": "Travel or move around in your daily activities",
+          "2": "Our app tracks your distance automatically",
+          "3": "Earn MileCoins based on miles traveled",
+          "4": "Trade or use your earned MileCoins"
+        }
+      },
+      "stats": {
+        "miles": "Miles Mined Daily",
+        "miners": "Active Miners",
+        "footprint": "Carbon Footprint"
+      },
+      "cta": {
+        "title": "Ready to Start Mining with Miles?",
+        "description": "Join thousands of users who are already earning MileCoins through their daily activities",
+        "button": "Get Started Today"
+      },
+      "footer": {
+        "copyright": "© 2025 MileCoin. Revolutionizing cryptocurrency through movement."
+      }
+    },
+    "bestOffer": {
+      "bestOfferHeading": "Best Offer",
+      "bestOfferText": "Members save 10% or more on over 100,000 hotels worldwide when signed in",
+      "bestOfferButton": "Sign in now"
+    },
+    "topHotels": {
+      "topHotelsHeading": "Top Hotels",
+      "categories": {
+        "Trending": "Trending",
+        "5-Star": "5-Star",
+        "Asian": "Asian",
+        "Europe": "Europe",
+        "Middle-East": "Middle-East",
+        "Budget-Friendly": "Budget-Friendly",
+        "Adventure": "Adventure",
+        "Family-Friendly": "Family-Friendly"
+      }
+    },
+    "topDeals": {
+      "topDealsHeading": "Last Minute Weekend Deals",
+      "bookNowButton": "Book Now"
+    },
+    "weekendDeals": {
+      "heading": "Last Minute Weekend Deals",
+      "dealsButton": "Member Price Available"
+    },
+    "topFlights": {
+      "heading": "Popular flights near you",
+      "categories": {
+        "International": "International",
+        "Domestic": "Domestic"
+      }
+    },
+    "mobileAppSection": {
+      "heading": "Get Our Mobile App!",
+      "exprensHeading": "Experience Convenience at Your Fingertips",
+      "subHeading": "Explore our curated list of the best countries to visit in 2024 and discover incredible destinations waiting to be explored",
+      "downloadButton": "Download Now"
+    }
+  },
+  "flightsearch": {
+    "noflight": "No Flight Found"
+  },
+  "searchForm": {
+    "tripTypes": {
+      "roundtrip": "Back and forth",
+      "oneway": "One way only",
+      "multiplecities": "Multiple cities"
+    },
+    "flightClassOptions": {
+      "economy": "Economy",
+      "premiumEconomy": "Premium Economy",
+      "business": "Business",
+      "firstClass": "First Class"
+    },
+    "travlers": {
+      "buttonLabel": "Passengers",
+      "travlers": "Travelers",
+      "adults": {
+        "label": "Adults",
+        "note": "12+ Yrs"
+      },
+      "children": {
+        "label": "children",
+        "note": "2-12 Yrs"
+      },
+      "infants": {
+        "label": "infants",
+        "note": "under 2Yrs"
+      }
+    },
+    "from": "From",
+    "to": "To",
+    "returndate": "Return Date",
+    "searchButton": "Search",
+    "loadingButton": "Searching..."
+  },
+  "filters": {
+    "heading": "Flights",
+    "sortby": "Sort By",
+    "earliestarrival": "Earliest Arrival",
+    "earliesttakeoff": "Earliest Takeoff",
+    "shortest": "Shortest Flights",
+    "cheapest": "Cheapest Flights",
+    "departuretime": {
+      "departuretimeheading": "Departure Time",
+      "before_morning": "Before 06:00AM",
+      "morning": "06:00AM - 12:00PM",
+      "afternoon": "12:00PM - 06:00PM",
+      "evening": "After 06:00PM"
+    },
+    "price": "Price Range",
+    "pricecurrency": "SAR",
+    "stops": {
+      "stopsheading": "Stops",
+      "any": "Any number of stops",
+      "direct": "Direct flights only",
+      "one": "1 stop",
+      "two_or_more": "2 stops or more"
+    },
+    "airlines": "Airlines"
+  },
+  "bookNow": {
+    "pageTitle": "Complete Your Booking",
+    "personalDetails": {
+      "title": "Personal details",
+      "titleOptions": {
+        "mr": "Mr",
+        "ms": "Ms",
+        "mrs": "Mrs"
+      },
+      "firstName": "First name *",
+      "middleName": "Middle name (Optional)",
+      "lastName": "Last name *",
+      "dateOfBirth": "Date of birth *",
+      "dayPlaceholder": "Day",
+      "monthPlaceholder": "Month",
+      "yearPlaceholder": "Year",
+      "nationality": "Nationality *"
+    },
+    "travelDocument": {
+      "title": "Travel document",
+      "documentType": "Document type *",
+      "passportNumber": "Passport number *",
+      "issuingCountry": "Issuing country *",
+      "expiryDate": "Passport expiry date *"
+    },
+    "contactDetails": {
+      "title": "Contact details",
+      "email": "Email *",
+      "emailNote": "Your purchased tickets will be sent to this email.",
+      "phoneCode": "Code *",
+      "phoneNumber": "Mobile number *"
+    },
+    "payment": {
+      "confirmButton": "Confirm Booking",
+      "processing": "Processing...",
+      "continueToPayment": "Continue to Payment",
+      "backToDetails": "Back to Traveler Details",
+      "totalPrice": "Total Price:",
+      "currency": "SAR",
+      "amount": "Amount"
+    },
+    "baggage": {
+      "cabin": "7 KG Cabin baggage",
+      "checked": "20kg total checked baggage",
+      "quantity": "1 piece"
+    },
+    "errors": {
+      "requiredField": "This field is required",
+      "invalidEmail": "Please enter a valid email",
+      "invalidPhone": "Please enter a valid phone number",
+      "completeAllTravelers": "Please Complete All Travelers Info",
+      "noFlightAvailable": "No flights available",
+      "noFlightDescription": "We couldn't find any flights matching your criteria.",
+      "backToSearch": "Back to search",
+      "noFlightAltText": "No flights available illustration"
+    }
+  },
+  "FlightCard": {
+    "direct": "Direct",
+    "stop": "Stop",
+    "stops": "Stops",
+    "noStops": "No Stops",
+    "flightHasNoStop": "Flight has no stop",
+    "arrival": "Arrival",
+    "departure": "Departure",
+    "airport": "Airport",
+    "duration": "Duration",
+    "departureTitle": "Departure",
+    "flightDetails": "Flight Details",
+    "baggageIncluded": "Baggage Included",
+    "checking": "Checking...",
+    "bookNow": "Book Now",
+    "select": "Select Flight",
+    "priceWithoutTax": "* Price excludes taxes"
+  },
+  "FlightBooking": {
+    "bookingConfirmed": "Booking Confirmed!",
+    "flightSuccessfullyBooked": "Your flight has been successfully booked",
+    "confirmation": "Confirmation",
+    "flightDetails": "Flight Details",
+    "flight": "Flight",
+    "departure": "Departure",
+    "arrival": "Arrival",
+    "terminal": "Terminal",
+    "passengerInformation": "Passenger Information",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "bookingDate": "Booking Date",
+    "bookingSummary": "Booking Summary",
+    "basePrice": "Base Price",
+    "taxesAndFees": "Taxes & Fees",
+    "serviceFee": "Service Fee",
+    "totalPaid": "Total Paid",
+    "travelTips": "Travel Tips",
+    "beforeYouTravel": "Before You Travel",
+    "checkPassportExpiry": "Check passport expiration date",
+    "reviewBaggagePolicies": "Review airline baggage policies",
+    "downloadAirlineApp": "Download the airline mobile app",
+    "atTheAirport": "At the Airport",
+    "useMobileBoardingPass": "Use mobile boarding pass",
+    "checkSecurityWaitTimes": "Check security wait times",
+    "locateDepartureGate": "Locate your departure gate",
+    "importantInformation": "Important Information",
+    "flexibleChanges": "Flexible Changes",
+    "flexibleChangesDescription": "Change your flight up to 2 hours before departure with no additional fees",
+    "support24/7": "24/7 Support",
+    "support24/7Description": "Our customer service team is available around the clock for assistance",
+    "travelUpdates": "Travel Updates",
+    "travelUpdatesDescription": "Receive real-time notifications about your flight status via email and SMS",
+    "unknown": "Unknown",
+    "notAvailable": "N/A",
+    "economy": "Economy"
+  },
+  "OrderProgress": {
+    "processingOrder": "Processing your order",
+    "pleaseWait": "Please wait while we confirm your payment and booking",
+    "progress": "Progress",
+    "complete": "Complete",
+    "verifyingPayment": "Verifying payment details",
+    "securingBooking": "Securing your booking",
+    "confirmingAvailability": "Confirming availability",
+    "finalizingOrder": "Finalizing your order",
+    "processTime": "This process usually takes 30-60 seconds. Please don't refresh the page"
+  },
+  "PaymentFailed": {
+    "paymentFailed": "Payment Failed",
+    "paymentNotProcessed": "We couldn't process your payment",
+    "transaction": "Transaction",
+    "paymentError": "Payment Error",
+    "noChargesApplied": "No charges have been applied to your account. You can safely try again.",
+    "paymentMethod": "Payment Method",
+    "cardBrand": "Card Brand",
+    "cardNumber": "Card Number",
+    "expiry": "Expiry",
+    "issuer": "Issuer",
+    "amount": "Amount",
+    "transactionId": "Transaction ID",
+    "tryDifferentPayment": "Try Different Payment Method",
+    "backToBooking": "Back to Booking",
+    "informationSecure": "Your Information is Secure",
+    "securityDescription": "All payment information is encrypted and protected. Since the payment failed, no charges were processed and your financial information remains secure.",
+    "needHelp": "Need Help?",
+    "callSupport": "Call Support",
+    "emailHelp": "Email Help",
+    "responseTime": "Average response time: Under 5 minutes"
+  },
+  "BookingFailed": {
+    "title": "Booking Failed",
+    "subtitle": "We encountered an issue processing your flight booking",
+    "errorCodeLabel": "Error Code",
+    "whatHappenedTitle": "What Happened?",
+    "errorSummary": {
+      "title": "Booking Could Not Be Completed",
+      "description": "Your flight booking was not successful due to a technical issue. Don't worry - no charges have been made to your payment method.",
+      "timestampLabel": "Error occurred at",
+      "referenceIdLabel": "Reference ID"
+    },
+    "attemptedBookingTitle": "Attempted Booking Details",
+    "routeLabel": "Route",
+    "flightLabel": "Flight",
+    "dateLabel": "Date",
+    "passengersLabel": "Passengers",
+    "commonCausesTitle": "Common Causes",
+    "commonIssues": [
+      {
+        "title": "Payment Processing",
+        "description": "Credit card declined or payment gateway timeout"
+      },
+      {
+        "title": "Session Timeout",
+        "description": "Booking session expired during checkout process"
+      },
+      {
+        "title": "Connection Issues",
+        "description": "Network connectivity problems during booking"
+      },
+      {
+        "title": "System Maintenance",
+        "description": "Temporary system unavailability or maintenance"
+      }
+    ],
+    "attemptedFlight": {
+      "route": "New York (JFK) → Los Angeles (LAX)",
+      "date": "March 15, 2024",
+      "flightNumber": "SL 1847"
+    },
+    "quickActionsTitle": "Quick Actions",
+    "tryAgainButton": "Try Booking Again",
+    "backToSearchButton": "Back to Search",
+    "backButton": "Back",
+    "needHelpTitle": "Need Help?",
+    "callSupportLabel": "Call Support",
+    "responseTimeLabel": "Average response time: 2-5 minutes",
+    "apologyMessage": "We apologize for the inconvenience. Our team is working to resolve any technical issues.",
+    "systemStatusLink": "System Status",
+    "helpCenterLink": "Help Center",
+    "contactSupportLink": "Contact Support",
+    "reportIssueLink": "Report Issue"
+  },
+  "HotelPage": {
+    "noHotelsFound": "No hotels found for the provided criteria.",
+    "showing": "Showing",
+    "places": "places",
+    "starHotel": "Star Hotel",
+    "amenities": "Amenities",
+    "startingFrom": "Starting from",
+    "night": "Night",
+    "excludingTax": "excl. tax",
+    "viewPlace": "View Place",
+    "noImage": "No image available"
+  },
+  "hotel": {
+    "invalidHotelCode": "Invalid Hotel Code.",
+    "error": "Error"
+  },
+  "hotelDetails": {
+    "stars": "{rating} Star Hotel",
+    "buttons": {
+      "bookNow": "Book Now"
+    }
+  },
+  "footer": {
+    "contactUs": "Contact Us",
+    "socialMedia": "Follow Us On Social",
+    "legal": "Legal",
+    "importantLinks": "Resources",
+    "aboutUs": "About Us",
+    "footerPargraph": "In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document",
+    "rights": " All rights reserved ©"
+  },
+  "errors": {
+    "fromError": "Please select a departure city",
+    "toError": "Please select a destination city.",
+    "requiredFields": "Please fill in all required fields for the hotel search.",
+    "hotelErrorFetchingCountries": "Error fetching countries:",
+    "hotelErrorFetchingcities": "Error fetching cities:",
+    "hotelSearchAlert": "Please select city, check-in, and check-out dates.",
+    "noFlightAvailable": "No flights available",
+    "noFlightDescription": "We couldn't find any flights matching your criteria.",
+    "backToSearch": "Back to search",
+    "noFlightAltText": "No flights available illustration"
+  }
+}
