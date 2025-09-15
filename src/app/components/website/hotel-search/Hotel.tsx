@@ -18,25 +18,15 @@ interface Props {
   hotels: { data: HotelType[] } | HotelType[];
 }
 
-const starRatingMap: { [key: string]: number } = {
-  OneStar: 1,
-  TwoStar: 2,
-  ThreeStar: 3,
-  FourStar: 4,
-  FiveStar: 5,
-  SixStar: 6,
-  SevenStar: 7,
-};
-
-const starRatingMapFiltering: { [key: string]: string } = {
-  "1 stars": "OneStar",
-  "2 stars": "TwoStar",
-  "3 stars": "ThreeStar",
-  "4 stars": "FourStar",
-  "5 stars": "FiveStar",
-  "6 stars": "SixStar",
-  "7 stars": "SevenStar",
-};
+// const starRatingMapFiltering: { [key: string]: string } = {
+//   "1 stars": "OneStar",
+//   "2 stars": "TwoStar",
+//   "3 stars": "ThreeStar",
+//   "4 stars": "FourStar",
+//   "5 stars": "FiveStar",
+//   "6 stars": "SixStar",
+//   "7 stars": "SevenStar",
+// };
 
 const filterHotels = (
   hotels: any[],
@@ -52,15 +42,15 @@ const filterHotels = (
         ? true
         : price >= priceRange[0] && price <= priceRange[1];
 
-    // Convert filter options to the correct format for comparison
-    const convertedStarRatings = selectedStarRatingOptions.map(
-      option => starRatingMapFiltering[option]
+    // --- Star rating filter ---
+    const hotelStars = Number(hotel?.HotelRating || 0); // get star rating from hotel
+    const convertedSelectedStars = selectedStarRatingOptions.map((s) =>
+      Number(s)
     );
 
-    // Filter by star rating (if any options are selected)
     const isStarRatingMatch =
       selectedStarRatingOptions.length === 0 ||
-      convertedStarRatings.includes(hotel.HotelInfo?.Rating);
+      convertedSelectedStars.includes(hotelStars);
 
     // Filter by guest rating (if any options are selected)
     const guestRating = parseFloat(hotel.HotelInfo?.TripAdvisorRating || "0");
@@ -77,14 +67,18 @@ const filterHotels = (
 };
 
 const Hotel = ({ hotels }: Props) => {
-
-  console.log(hotels, "here is the hotelsssssssss")
   const hotelData = Array.isArray(hotels) ? hotels : hotels.data;
   const t = useTranslations("HotelPage");
   const [priceRange, setPriceRange] = useState<[number, number]>([10, 1000]);
-  const [selectedHotelOptions, setSelectedHotelOptions] = useState<string[]>([]);
-  const [selectedStarRatingOptions, setSelectedStarRatingOptions] = useState<string[]>([]);
-  const [selectedGuestRatingOptions, setSelectedGuestRatingOptions] = useState<string[]>([]);
+  const [selectedHotelOptions, setSelectedHotelOptions] = useState<string[]>(
+    []
+  );
+  const [selectedStarRatingOptions, setSelectedStarRatingOptions] = useState<
+    string[]
+  >([]);
+  const [selectedGuestRatingOptions, setSelectedGuestRatingOptions] = useState<
+    string[]
+  >([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hotelsPerPage] = useState(50);
 
@@ -98,7 +92,10 @@ const Hotel = ({ hotels }: Props) => {
   const totalPages = Math.ceil(filteredHotels?.length / hotelsPerPage);
   const indexOfLastHotel = currentPage * hotelsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
-  const currentHotels = filteredHotels?.slice(indexOfFirstHotel, indexOfLastHotel);
+  const currentHotels = filteredHotels?.slice(
+    indexOfFirstHotel,
+    indexOfLastHotel
+  );
 
   return (
     <Section>
@@ -107,6 +104,7 @@ const Hotel = ({ hotels }: Props) => {
           <Filters
             priceRange={priceRange}
             onPriceRangeChange={setPriceRange}
+            hotels={hotels}
             selectedHotelOptions={selectedHotelOptions}
             onHotelOptionsChange={setSelectedHotelOptions}
             selectedStarRatingOptions={selectedStarRatingOptions}
@@ -162,14 +160,18 @@ const Hotel = ({ hotels }: Props) => {
                           </h2>
                           {/* Price Section */}
                           <div className="text-center  md:text-right   md:w-auto">
-                            <p className="text-[10px] text-[#12121299]">{t("excludingTax")}</p>
+                            <p className="text-[10px] text-[#12121299]">
+                              {t("excludingTax")}
+                            </p>
                             <h2 className="text-lg md:text-2xl text-black font-bold">
                               {hotel?.MinHotelPrice?.toFixed()}$
                               <span className="text-xs md:text-sm font-normal text-[#12121299]">
                                 /{t("night")}
                               </span>
                             </h2>
-                            <p className="text-xs text-[#12121299]">{t("startingFrom")}</p>
+                            <p className="text-xs text-[#12121299]">
+                              {t("startingFrom")}
+                            </p>
                           </div>
                         </div>
 
@@ -185,14 +187,18 @@ const Hotel = ({ hotels }: Props) => {
                         <div className="flex items-center my-4 sm:flex-row justify-between gap-2">
                           <div className="flex flex-col items-center sm:items-start gap-2">
                             <div className="flex items-center gap-1 font-medium text-base text-grayText">
-                              {[...Array(Math.floor(parseFloat(hotel?.HotelRating) || 0))].map(
-                                (_, index) => (
-                                  <MdStar
-                                    className="text-[#FF7300] text-base md:text-xl"
-                                    key={index}
-                                  />
-                                )
-                              )}
+                              {[
+                                ...Array(
+                                  Math.floor(
+                                    parseFloat(hotel?.HotelRating) || 0
+                                  )
+                                ),
+                              ].map((_, index) => (
+                                <MdStar
+                                  className="text-[#FF7300] text-base md:text-xl"
+                                  key={index}
+                                />
+                              ))}
                             </div>
                             <p className="text-xs md:text-sm font-medium text-[#12121299]">
                               {hotel?.HotelRating || 0} {t("starHotel")}
@@ -203,8 +209,6 @@ const Hotel = ({ hotels }: Props) => {
                           </div>
                         </div>
                       </div>
-
-
                     </div>
 
                     {/* CTA */}
@@ -218,7 +222,6 @@ const Hotel = ({ hotels }: Props) => {
                     </div>
                   </div>
                 </div>
-
               ))}
 
               {/* Optional Pagination */}

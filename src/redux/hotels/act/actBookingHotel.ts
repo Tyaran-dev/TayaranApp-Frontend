@@ -29,30 +29,31 @@ export type BookingResponse = {
 // -------- Thunk --------
 const actBookingHotel = createAsyncThunk<
   BookingResponse, // return type of fulfilled action
-  BookingData,     // argument type (payload)
+  BookingData, // argument type (payload)
   { rejectValue: any }
->(
-  "hotels/actBookingHotel",
-  async (bookingData, thunkAPI) => {
-    const { rejectWithValue } = thunkAPI;
+>("hotels/actBookingHotel", async (bookingData, thunkAPI) => {
+  const { rejectWithValue } = thunkAPI;
 
-    try {
-      const BaseUrl = process.env.NEXT_PUBLIC_API_URL;
+  try {
+    const BaseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-      console.log(bookingData, "here is payload");
+    console.log(bookingData, "here is payload");
 
-      const response = await axios.post(
-        `${BaseUrl}/hotels/BookRoom`,
-        bookingData
-      );
+    const response = await axios.post(
+      `${BaseUrl}/hotels/BookRoom`,
+      bookingData
+    );
 
-      return response.data as BookingResponse;
-    } catch (error: any) {
-      const statusCode = error.response?.status || 500;
-      const message = error.response?.data || { error: error.message };
-      return rejectWithValue(axiosErrorHandler(message));
-    }
+    // Combine your API response with the bookingData you sent
+    return {
+      ...response.data,
+      BookingReferenceId: (bookingData as any).BookingReferenceId, // take from payload you sent
+    };
+  } catch (error: any) {
+    const statusCode = error.response?.status || 500;
+    const message = error.response?.data || { error: error.message };
+    return rejectWithValue(axiosErrorHandler(message));
   }
-);
+});
 
 export default actBookingHotel;

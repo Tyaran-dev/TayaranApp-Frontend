@@ -177,6 +177,11 @@ const validatePhoneNumber = (phone: string) => {
 };
 
 export default function BookingPage() {
+  // 1️⃣ Add state to hold BookingReferenceId and booking details
+  const [bookingReferenceId, setBookingReferenceId] = useState<string | null>(
+    null
+  );
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
   const dispatch = useDispatch();
   // State
   const [currentStep] = useState(3);
@@ -231,7 +236,6 @@ export default function BookingPage() {
       [`${guestKey}-${field}`]: error || "",
     }));
   };
-
 
   // Validate form
   const validateForm = useCallback(() => {
@@ -443,8 +447,8 @@ export default function BookingPage() {
     searchParamsData
       ? searchParamsData
       : (() => {
-        throw new Error("Search parameters are missing");
-      })()
+          throw new Error("Search parameters are missing");
+        })()
   );
 
   // Effects
@@ -498,7 +502,6 @@ export default function BookingPage() {
     preBookRoom();
   }, [selectedRoom]);
 
-
   // 🔹 30-minute session expiration
   // useEffect(() => {
   //   if (!preBookedRoom) return;
@@ -538,8 +541,6 @@ export default function BookingPage() {
   //   return () => clearTimeout(timer);
   // }, [preBookedRoom, router, locale, hotelCode, dispatch]);
 
-
-
   // Handle form submission
   const handleSubmit = useCallback(async () => {
     setHasAttemptedSubmit(true);
@@ -568,7 +569,15 @@ export default function BookingPage() {
     }
 
     try {
-      await handleSubmitBooking();
+      // Your existing booking call
+      const bookingResponse = await handleSubmitBooking();
+
+      
+
+      // Capture BookingReferenceId returned by API
+      if (bookingResponse?.BookingReferenceId) {
+        setBookingReferenceId(bookingResponse.BookingReferenceId);
+      }
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
@@ -577,6 +586,26 @@ export default function BookingPage() {
       }
     }
   }, [validateForm, roomsGuestData, validationErrors, handleSubmitBooking]);
+
+  useEffect(() => {
+    if (!bookingReferenceId) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await axios.post(
+          "http://localhost:3000/hotels/BookingDetail", // your Express endpoint
+          { BookingReferenceId: bookingReferenceId }
+        );
+
+        setBookingDetails(response.data);
+        console.log("Booking details:", response.data);
+      } catch (err) {
+        console.error("Error fetching booking details:", err);
+      }
+    }, 5000); // 120 seconds = 2 minutes
+
+    return () => clearTimeout(timer);
+  }, [bookingReferenceId]);
 
   // Render functions
   const renderGuestInputs = useCallback(
@@ -594,15 +623,16 @@ export default function BookingPage() {
       return (
         <div
           key={`${guestKey}`}
-          className={`space-y-4 p-4 border rounded-lg ${validationErrors[`${guestKey}-firstName`] ||
+          className={`space-y-4 p-4 border rounded-lg ${
+            validationErrors[`${guestKey}-firstName`] ||
             validationErrors[`${guestKey}-lastName`] ||
             validationErrors[`${guestKey}-title`] ||
             (isLeadGuest &&
               (validationErrors[`${guestKey}-email`] ||
                 validationErrors[`${guestKey}-phone`]))
-            ? "border-red-300 bg-red-50"
-            : "border-gray-200 bg-gray-50"
-            }`}
+              ? "border-red-300 bg-red-50"
+              : "border-gray-200 bg-gray-50"
+          }`}
           data-error={guestKey}
         >
           <h4 className="font-medium text-gray-900">{guestLabel}</h4>
@@ -624,10 +654,11 @@ export default function BookingPage() {
                     title
                   )
                 }
-                className={`px-4 py-2 text-sm rounded-lg ${guest.title === title
-                  ? "bg-greenGradient text-white"
-                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                className={`px-4 py-2 text-sm rounded-lg ${
+                  guest.title === title
+                    ? "bg-greenGradient text-white"
+                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                }`}
               >
                 {title}
               </button>
@@ -654,12 +685,19 @@ export default function BookingPage() {
                   )
                 }
                 onBlur={(e) =>
-                  validateField(roomIndex, guestType, guestIndex, "firstName", e.target.value)
+                  validateField(
+                    roomIndex,
+                    guestType,
+                    guestIndex,
+                    "firstName",
+                    e.target.value
+                  )
                 }
-                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-firstName`]
-                  ? "border-red-500"
-                  : "border-stone-300"
-                  }`}
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  validationErrors[`${guestKey}-firstName`]
+                    ? "border-red-500"
+                    : "border-stone-300"
+                }`}
                 required
               />
               {validationErrors[`${guestKey}-firstName`] && (
@@ -683,12 +721,19 @@ export default function BookingPage() {
                   )
                 }
                 onBlur={(e) =>
-                  validateField(roomIndex, guestType, guestIndex, "lastName", e.target.value)
+                  validateField(
+                    roomIndex,
+                    guestType,
+                    guestIndex,
+                    "lastName",
+                    e.target.value
+                  )
                 }
-                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-lastName`]
-                  ? "border-red-500"
-                  : "border-stone-300"
-                  }`}
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  validationErrors[`${guestKey}-lastName`]
+                    ? "border-red-500"
+                    : "border-stone-300"
+                }`}
                 required
               />
               {validationErrors[`${guestKey}-lastName`] && (
@@ -716,12 +761,19 @@ export default function BookingPage() {
                     )
                   }
                   onBlur={(e) =>
-                    validateField(roomIndex, guestType, guestIndex, "email", e.target.value)
+                    validateField(
+                      roomIndex,
+                      guestType,
+                      guestIndex,
+                      "email",
+                      e.target.value
+                    )
                   }
-                  className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-email`]
-                    ? "border-red-500"
-                    : "border-gray-300"
-                    }`}
+                  className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${
+                    validationErrors[`${guestKey}-email`]
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
                   required
                 />
                 {validationErrors[`${guestKey}-email`] && (
@@ -753,12 +805,19 @@ export default function BookingPage() {
                       );
                     }}
                     onBlur={(e) =>
-                      validateField(roomIndex, guestType, guestIndex, "phone", e.target.value)
+                      validateField(
+                        roomIndex,
+                        guestType,
+                        guestIndex,
+                        "phone",
+                        e.target.value
+                      )
                     }
-                    className={`w-full px-3 py-4 border border-l-0 rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-phone`]
-                      ? "border-red-500"
-                      : "border-gray-300"
-                      }`}
+                    className={`w-full px-3 py-4 border border-l-0 rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${
+                      validationErrors[`${guestKey}-phone`]
+                        ? "border-red-500"
+                        : "border-gray-300"
+                    }`}
                     required
                   />
                   {validationErrors[`${guestKey}-phone`] && (
@@ -856,8 +915,9 @@ export default function BookingPage() {
                                 ({roomData.adults.length} Adult
                                 {roomData.adults.length > 1 ? "s" : ""}
                                 {roomData.children.length > 0
-                                  ? `, ${roomData.children.length} Child${roomData.children.length > 1 ? "ren" : ""
-                                  }`
+                                  ? `, ${roomData.children.length} Child${
+                                      roomData.children.length > 1 ? "ren" : ""
+                                    }`
                                   : ""}
                                 )
                               </span>
@@ -871,9 +931,10 @@ export default function BookingPage() {
                                 roomIndex,
                                 "adults",
                                 adultIndex,
-                                `Guest ${adultIndex + 1} (Adult)${roomIndex === 0 && adultIndex === 0
-                                  ? " - Lead Guest *"
-                                  : ""
+                                `Guest ${adultIndex + 1} (Adult)${
+                                  roomIndex === 0 && adultIndex === 0
+                                    ? " - Lead Guest *"
+                                    : ""
                                 }`
                               )
                             )}
@@ -886,7 +947,8 @@ export default function BookingPage() {
                                 roomIndex,
                                 "children",
                                 childIndex,
-                                `Guest ${roomData.adults.length + childIndex + 1
+                                `Guest ${
+                                  roomData.adults.length + childIndex + 1
                                 } (Child) - Age ${childAge} Yrs *`
                               );
                             })}
@@ -911,24 +973,24 @@ export default function BookingPage() {
                     <div className="space-y-4">
                       {extractFeesAndExtras(preBookedRoom.RateConditions)
                         .mandatory && (
-                          <div
-                            dangerouslySetInnerHTML={
-                              extractFeesAndExtras(preBookedRoom.RateConditions)
-                                .mandatory
-                            }
-                            className="text-sm text-gray-600 space-y-2"
-                          />
-                        )}
+                        <div
+                          dangerouslySetInnerHTML={
+                            extractFeesAndExtras(preBookedRoom.RateConditions)
+                              .mandatory
+                          }
+                          className="text-sm text-gray-600 space-y-2"
+                        />
+                      )}
                       {extractFeesAndExtras(preBookedRoom.RateConditions)
                         .optional && (
-                          <div
-                            dangerouslySetInnerHTML={
-                              extractFeesAndExtras(preBookedRoom.RateConditions)
-                                .optional
-                            }
-                            className="text-sm text-gray-600 space-y-2"
-                          />
-                        )}
+                        <div
+                          dangerouslySetInnerHTML={
+                            extractFeesAndExtras(preBookedRoom.RateConditions)
+                              .optional
+                          }
+                          className="text-sm text-gray-600 space-y-2"
+                        />
+                      )}
                       <p className="text-base text-gray-500 mt-4">
                         The above list may not be comprehensive. Fees and
                         deposits may not include tax and are subject to change.
@@ -965,10 +1027,11 @@ export default function BookingPage() {
                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                   <button
                     disabled={!isValidForm || loading === "pending"}
-                    className={`bg-greenGradient w-full p-4 rounded-lg text-slate-200 transition-opacity duration-300 ${!isValidForm || loading === "pending"
-                      ? "opacity-50 cursor-not-allowed"
-                      : "opacity-100 hover:opacity-90"
-                      }`}
+                    className={`bg-greenGradient w-full p-4 rounded-lg text-slate-200 transition-opacity duration-300 ${
+                      !isValidForm || loading === "pending"
+                        ? "opacity-50 cursor-not-allowed"
+                        : "opacity-100 hover:opacity-90"
+                    }`}
                     onClick={handleSubmit}
                   >
                     {loading === "pending" ? "Processing..." : "Book Now"}
