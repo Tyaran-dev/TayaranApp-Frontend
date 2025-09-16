@@ -13,6 +13,7 @@ import {
   Server,
 } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 type Variant = "default" | "outline" | "success" | "destructive";
 type Size = "default" | "sm" | "lg";
@@ -35,6 +36,8 @@ type CardProps = {
 
 export default function BookingFailed() {
   const [isVisible, setIsVisible] = useState(false);
+  const locale = useLocale();
+  const t = useTranslations("BookingFailed");
 
   useEffect(() => {
     setIsVisible(true);
@@ -42,7 +45,7 @@ export default function BookingFailed() {
 
   const errorData = {
     errorCode: "BK-ERR-4521",
-    timestamp: new Date().toLocaleString("en-US", {
+    timestamp: new Date().toLocaleString(locale, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -50,9 +53,9 @@ export default function BookingFailed() {
       minute: "2-digit",
     }),
     attemptedFlight: {
-      route: "New York (JFK) → Los Angeles (LAX)",
-      date: "March 15, 2024",
-      flightNumber: "SL 1847",
+      route: t("attemptedFlight.route"),
+      date: t("attemptedFlight.date"),
+      flightNumber: t("attemptedFlight.flightNumber"),
       passengers: 1,
     },
   };
@@ -60,26 +63,26 @@ export default function BookingFailed() {
   const commonIssues = [
     {
       icon: CreditCard,
-      title: "Payment Processing",
-      description: "Credit card declined or payment gateway timeout",
+      title: t("commonIssues.0.title"),
+      description: t("commonIssues.0.description"),
       color: "text-red-600 bg-red-100",
     },
     {
       icon: Clock,
-      title: "Session Timeout",
-      description: "Booking session expired during checkout process",
+      title: t("commonIssues.1.title"),
+      description: t("commonIssues.1.description"),
       color: "text-orange-600 bg-orange-100",
     },
     {
       icon: Wifi,
-      title: "Connection Issues",
-      description: "Network connectivity problems during booking",
+      title: t("commonIssues.2.title"),
+      description: t("commonIssues.2.description"),
       color: "text-blue-600 bg-blue-100",
     },
     {
       icon: Server,
-      title: "System Maintenance",
-      description: "Temporary system unavailability or maintenance",
+      title: t("commonIssues.3.title"),
+      description: t("commonIssues.3.description"),
       color: "text-purple-600 bg-purple-100",
     },
   ];
@@ -121,7 +124,6 @@ export default function BookingFailed() {
   );
 
   // Custom Badge Component
-
   const Badge: React.FC<CardProps> = ({
     children,
     variant = "default",
@@ -134,7 +136,7 @@ export default function BookingFailed() {
       default: "bg-gray-100 text-gray-800",
       outline: "border border-gray-300 text-gray-700 bg-white",
       destructive: "bg-red-100 text-red-800",
-      success: "bg-green-100 text-green-800", // ✅ added
+      success: "bg-green-100 text-green-800",
     };
 
     return (
@@ -163,7 +165,7 @@ export default function BookingFailed() {
       outline: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
       ghost: "hover:bg-gray-100 text-gray-700",
       destructive: "bg-red-600 text-white hover:bg-red-700",
-      success: "bg-green-600 text-white hover:bg-green-700", // ✅ added
+      success: "bg-green-600 text-white hover:bg-green-700",
     };
 
     const sizeClasses = {
@@ -179,7 +181,7 @@ export default function BookingFailed() {
           className="inline-flex items-center text-blue-600 hover:underline"
         >
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Back
+          {t("backButton")}
         </Link>
       );
     }
@@ -210,16 +212,14 @@ export default function BookingFailed() {
             <AlertTriangle className="w-10 h-10 text-red-600" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Booking Failed
+            {t("title")}
           </h1>
-          <p className="text-xl text-gray-600 mb-4">
-            We encountered an issue processing your flight booking
-          </p>
+          <p className="text-xl text-gray-600 mb-4">{t("subtitle")}</p>
           <Badge
             variant="destructive"
             className="text-lg px-6 py-2 font-semibold"
           >
-            Error Code: {errorData.errorCode}
+            {t("errorCodeLabel")}: {errorData.errorCode}
           </Badge>
         </div>
 
@@ -231,64 +231,69 @@ export default function BookingFailed() {
               <CardHeader className="pb-4">
                 <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                   <AlertTriangle className="w-6 h-6 text-red-600" />
-                  What Happened?
+                  {t("whatHappenedTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <h3 className="font-semibold text-red-900 mb-2">
-                    Booking Could Not Be Completed
+                    {t("errorSummary.title")}
                   </h3>
                   <p className="text-red-800 text-sm mb-3">
-                    Your flight booking was not successful due to a technical
-                    issue. Don't worry - no charges have been made to your
-                    payment method.
+                    {t("errorSummary.description")}
                   </p>
                   <div className="text-xs text-red-700">
-                    <div>Error occurred at: {errorData.timestamp}</div>
-                    <div>Reference ID: {errorData.errorCode}</div>
+                    <div>
+                      {t("errorSummary.timestampLabel")}: {errorData.timestamp}
+                    </div>
+                    <div>
+                      {t("errorSummary.referenceIdLabel")}:{" "}
+                      {errorData.errorCode}
+                    </div>
                   </div>
                 </div>
 
                 <Separator />
 
                 {/* Attempted Booking Details */}
-                <div>
+                {/* <div>
                   <h4 className="font-semibold text-gray-900 mb-4">
-                    Attempted Booking Details
+                    {t("attemptedBookingTitle")}
                   </h4>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Route</span>
+                      <span className="text-gray-600">{t("routeLabel")}</span>
                       <span className="font-semibold text-gray-900">
                         {errorData.attemptedFlight.route}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Flight</span>
+                      <span className="text-gray-600">{t("flightLabel")}</span>
                       <span className="font-semibold text-gray-900">
                         {errorData.attemptedFlight.flightNumber}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Date</span>
+                      <span className="text-gray-600">{t("dateLabel")}</span>
                       <span className="font-semibold text-gray-900">
                         {errorData.attemptedFlight.date}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Passengers</span>
+                      <span className="text-gray-600">
+                        {t("passengersLabel")}
+                      </span>
                       <span className="font-semibold text-gray-900">
                         {errorData.attemptedFlight.passengers}
                       </span>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Common Issues */}
                 <div>
                   <h4 className="font-semibold text-gray-900 mb-4">
-                    Common Causes
+                    {t("commonCausesTitle")}
                   </h4>
                   <div className="grid gap-3">
                     {commonIssues.map((issue, index) => (
@@ -297,11 +302,11 @@ export default function BookingFailed() {
                         className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                       >
                         <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${issue.color}`}
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 bg-emerald-50`}
                         >
-                          <issue.icon className="w-4 h-4" />
+                          <issue.icon className="w-4 h-4 text-emerald-600 " />
                         </div>
-                        <div>
+                        <div >
                           <div className="font-medium text-gray-900">
                             {issue.title}
                           </div>
@@ -323,26 +328,25 @@ export default function BookingFailed() {
             <Card delay={400}>
               <CardHeader>
                 <CardTitle className="text-xl font-bold text-gray-900">
-                  Quick Actions
+                  {t("quickActionsTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+                  className="w-full text-sm  bg-emerald-600 transition-colors duration-200"
                   size="lg"
                 >
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Try Booking Again
+                  <RefreshCw className="w-4 h-4 mx-2" />
+                  {t("tryAgainButton")}
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full hover:bg-gray-50 transition-colors duration-200"
+                  className="w-full flex bg-greenGradient text-slate-200 hover:bg-gray-50 transition-colors duration-200"
                   size="lg"
-                  asChild
                 >
-                  <Link href="/">
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Search
+                  <ArrowLeft className="w-4 h-4 m-2" />
+                  <Link href={`/${locale}/flight-search`}>
+                    {t("backToSearchButton")}
                   </Link>
                 </Button>
               </CardContent>
@@ -352,149 +356,49 @@ export default function BookingFailed() {
             <Card delay={500}>
               <CardHeader>
                 <CardTitle className="text-lg font-bold text-gray-900">
-                  Need Help?
+                  {t("needHelpTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex gap-2 text-sm justify-between items-center w-full duration-200">
-                    <Phone className="w-5 h-5   text-green-600" />
-                    Call Support: 1-800-SKY-LINE
+                    <Phone className="w-5 h-5 text-green-600" />
+                    {t("callSupportLabel")}: 1-800-SKY-LINE
                   </div>
-              
-                  <div className="flex gap-2  text-sm justify-between items-center w-full duration-200">
-                    <Mail className="w-5 h-5  text-green-600" />
+
+                  <div className="flex gap-2 text-sm justify-between items-center w-full duration-200">
+                    <Mail className="w-5 h-5 text-green-600" />
                     support@skylineairways.com
                   </div>
                 </div>
                 <div className="text-xs text-gray-500 text-center">
-                  Average response time: 2-5 minutes
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Status Updates */}
-            <Card delay={600}>
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-gray-900">
-                  System Status
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      Booking System
-                    </span>
-                    <Badge className="bg-green-100 text-green-800 border-green-300">
-                      Operational
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      Payment Gateway
-                    </span>
-                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300">
-                      Degraded
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Flight Search</span>
-                    <Badge className="bg-green-100 text-green-800 border-green-300">
-                      Operational
-                    </Badge>
-                  </div>
-                </div>
-                <div className="mt-4 text-xs text-gray-500">
-                  Last updated: 2 minutes ago
+                  {t("responseTimeLabel")}
                 </div>
               </CardContent>
             </Card>
           </div>
         </div>
 
-        {/* Troubleshooting Tips */}
-        <Card delay={700} className="mt-8">
-          <CardHeader>
-            <CardTitle className="text-xl font-bold text-gray-900">
-              Troubleshooting Tips
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h4 className="font-semibold text-gray-900">
-                  Before Trying Again
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Check your internet connection stability
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Verify your payment method details
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Clear your browser cache and cookies
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Try using a different browser or device
-                  </li>
-                </ul>
-              </div>
-              <div className="space-y-4">
-                <h4 className="font-semibold text-gray-900">
-                  Alternative Options
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Call our booking hotline for assistance
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Visit our mobile app for booking
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Try booking during off-peak hours
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0"></div>
-                    Consider alternative flight times
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Footer */}
         <div
           className={`text-center mt-8 transition-all duration-700 delay-800 transform ${isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
         >
-          <p className="text-gray-600 mb-4">
-            We apologize for the inconvenience. Our team is working to resolve
-            any technical issues.
-          </p>
+          <p className="text-gray-600 mb-4">{t("apologyMessage")}</p>
           <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
             <button className="hover:text-blue-600 transition-colors duration-200">
-              System Status
+              {t("systemStatusLink")}
             </button>
             <span>•</span>
             <button className="hover:text-blue-600 transition-colors duration-200">
-              Help Center
+              {t("helpCenterLink")}
             </button>
             <span>•</span>
             <button className="hover:text-blue-600 transition-colors duration-200">
-              Contact Support
+              {t("contactSupportLink")}
             </button>
             <span>•</span>
             <button className="hover:text-blue-600 transition-colors duration-200">
-              Report Issue
+              {t("reportIssueLink")}
             </button>
           </div>
         </div>

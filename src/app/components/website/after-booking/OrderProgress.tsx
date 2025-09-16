@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CreditCard, Shield, Clock, Check, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl'; // Assuming you're using next-intl
 
 interface ProcessStep {
     id: string;
@@ -10,32 +11,38 @@ interface ProcessStep {
     status: 'completed' | 'current' | 'pending';
 }
 
-export default function OrderProgress() {
+interface OrderProgressProps {
+  lng?: "en" | "ar";
+}
+
+export default function OrderProgress({ lng = "en" }: OrderProgressProps) {
     const [progress, setProgress] = useState(45);
     const [currentStepIndex, setCurrentStepIndex] = useState(1);
+    const t = useTranslations('OrderProgress');
+    const isRTL = lng === "ar";
 
     const steps: ProcessStep[] = [
         {
             id: 'verify-payment',
-            label: 'Verifying payment details',
+            label: t('verifyingPayment'),
             icon: <CreditCard className="w-5 h-5" />,
             status: currentStepIndex > 0 ? 'completed' : 'pending'
         },
         {
             id: 'secure-booking',
-            label: 'Securing your booking',
+            label: t('securingBooking'),
             icon: <Shield className="w-5 h-5" />,
             status: currentStepIndex === 1 ? 'current' : currentStepIndex > 1 ? 'completed' : 'pending'
         },
         {
             id: 'confirm-availability',
-            label: 'Confirming availability',
+            label: t('confirmingAvailability'),
             icon: <Clock className="w-5 h-5" />,
             status: currentStepIndex === 2 ? 'current' : currentStepIndex > 2 ? 'completed' : 'pending'
         },
         {
             id: 'finalize-order',
-            label: 'Finalizing your order',
+            label: t('finalizingOrder'),
             icon: <Check className="w-5 h-5" />,
             status: currentStepIndex === 3 ? 'current' : currentStepIndex > 3 ? 'completed' : 'pending'
         }
@@ -65,7 +72,7 @@ export default function OrderProgress() {
     }, [progress]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className={`min-h-screen bg-gray-50 flex items-center justify-center p-4 ${isRTL ? 'rtl' : 'ltr'}`}>
             <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-md w-full">
                 {/* Animated Spinner */}
                 <div className="flex justify-center mb-8">
@@ -78,18 +85,18 @@ export default function OrderProgress() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                        Processing your order
+                        {t('processingOrder')}
                     </h1>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                        Please wait while we confirm your payment and booking
+                        {t('pleaseWait')}
                     </p>
                 </div>
 
                 {/* Progress Bar */}
                 <div className="mb-8">
                     <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-700">Progress</span>
-                        <span className="text-sm font-medium text-gray-700">Complete {progress}%</span>
+                        <span className="text-sm font-medium text-gray-700">{t('progress')}</span>
+                        <span className="text-sm font-medium text-gray-700">{t('complete')} {progress}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div
@@ -112,7 +119,7 @@ export default function OrderProgress() {
                                 }`}
                         >
                             <div
-                                className={`flex items-center m-2 justify-center w-10 h-10 rounded-full mr-4 transition-all duration-300 ${step.status === 'completed'
+                                className={`flex items-center m-2 justify-center w-10 h-10 rounded-full ${isRTL ? 'ml-4' : 'mr-4'} transition-all duration-300 ${step.status === 'completed'
                                         ? 'bg-emerald-600 text-white'
                                         : step.status === 'current'
                                             ? 'bg-blue-500 text-white animate-pulse'
@@ -142,7 +149,7 @@ export default function OrderProgress() {
                 {/* Footer Message */}
                 <div className="text-center">
                     <p className="text-xs text-gray-500 leading-relaxed">
-                        This process usually takes 30-60 seconds. Please don't refresh the page
+                        {t('processTime')}
                     </p>
                 </div>
             </div>

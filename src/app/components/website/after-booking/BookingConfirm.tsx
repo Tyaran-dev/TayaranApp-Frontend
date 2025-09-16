@@ -14,6 +14,7 @@ import {
   Phone,
   Globe,
 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl"; // Assuming you're using next-intl
 
 type Variant = "default" | "secondary" | "outline" | "success";
 type Size = "default" | "sm" | "lg";
@@ -26,97 +27,140 @@ type CardProps = {
   size?: Size;
 };
 
+type Airline = {
+  id: string;
+  code: string;
+  name: { en: string; ar: string };
+  image: string;
+};
+
+type Airport = {
+  id: string;
+  code: string;
+  name: { en: string; ar: string };
+  city: { en: string; ar: string };
+};
+
 type FlightOrder = {
-  message: string;
-  order: {
+  airlines: Record<string, Airline>;
+  airports: Record<string, Airport>;
+  data: {
     type: string;
     id: string;
-    data: {
-      associatedRecords: any[];
-      contacts: any[];
-      flightOffers: any[];
-      travelers: any[];
-    };
-    dictionaries: Record<string, any>;
+    associatedRecords: any[];
+    contacts: any[];
+    flightOffers: any[];
+    travelers: any[];
+    ticketingAgreement: { option: string };
+  };
+  dictionaries: {
+    locations: Record<string, any>;
   };
 };
 
 type FlightBookingThankYouProps = {
   order: FlightOrder;
+  lng?: "en" | "ar";
 };
 
 export default function FlightBookingThankYou({
   order,
+  lng = "en",
 }: FlightBookingThankYouProps) {
   const [isVisible, setIsVisible] = useState(false);
-
-  console.log(order, "order from confirimtion page");
+  const t = useTranslations("FlightBooking"); // Hook to access translations
+  const locale = useLocale();
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
-  // Extract from order
-  const record = order?.order?.data?.associatedRecords?.[0];
-  const flightOffer = order?.order?.data?.flightOffers?.[0];
+  const isRTL = lng === "ar";
+
+  const record = order?.data?.associatedRecords?.[0];
+  const flightOffer = order?.data?.flightOffers?.[0];
   const itinerary = flightOffer?.itineraries?.[0];
   const segment = itinerary?.segments?.[0];
-  const traveler = order?.order?.data?.travelers?.[0];
+  const traveler = order?.data?.travelers?.[0];
   const price = flightOffer?.price;
+
+  // --- Airline & Airport lookup helpers ---
+  const airline =
+    order?.airlines?.[flightOffer?.validatingAirlineCodes?.[0] || ""] || null;
+  const depAirport = order?.airports?.[segment?.departure?.iataCode || ""];
+  const arrAirport = order?.airports?.[segment?.arrival?.iataCode || ""];
 
   const bookingData = {
     confirmationNumber: record?.reference || "N/A",
-    bookingDate: new Date(record?.creationDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }),
+    bookingDate: record?.creationDate
+      ? new Date(record.creationDate).toLocaleDateString(
+          lng === "ar" ? "ar-EG" : "en-US",
+          {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }
+        )
+      : "N/A",
     passenger: {
       name: `${traveler?.name?.firstName || ""} ${traveler?.name?.lastName || ""}`,
       email: traveler?.contact?.emailAddress || "N/A",
       phone: traveler?.contact?.phones?.[0]?.number || "N/A",
     },
     flight: {
-      airline: flightOffer?.validatingAirlineCodes?.[0] || "Unknown",
-      flightNumber: segment?.carrierCode + " " + segment?.number,
+      airlineName: airline ? airline.name[lng] : t("unknown"),
+      airlineLogo: airline?.image,
+      flightNumber: segment
+        ? `${segment?.carrierCode} ${segment?.number}`
+        : "N/A",
       departure: {
-        city:
-          order?.order?.dictionaries?.locations?.[segment?.departure?.iataCode]
-            ?.cityCode || "",
-        airport: segment?.departure?.iataCode,
-        code: segment?.departure?.iataCode,
-        time: new Date(segment?.departure?.at).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        date: new Date(segment?.departure?.at).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        airportName: depAirport?.name?.[lng] || segment?.departure?.iataCode,
+        city: depAirport?.city?.[lng] || "",
+        code: depAirport?.code,
+        time: segment?.departure?.at
+          ? new Date(segment?.departure?.at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A",
+        date: segment?.departure?.at
+          ? new Date(segment?.departure?.at).toLocaleDateString(
+              lng === "ar" ? "ar-EG" : "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            )
+          : "N/A",
         terminal: segment?.departure?.terminal || "-",
       },
       arrival: {
-        city:
-          order?.order?.dictionaries?.locations?.[segment?.arrival?.iataCode]
-            ?.cityCode || "",
-        airport: segment?.arrival?.iataCode,
-        code: segment?.arrival?.iataCode,
-        time: new Date(segment?.arrival?.at).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        date: new Date(segment?.arrival?.at).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        airportName: arrAirport?.name?.[lng] || segment?.arrival?.iataCode,
+        city: arrAirport?.city?.[lng] || "",
+        code: arrAirport?.code,
+        time: segment?.arrival?.at
+          ? new Date(segment?.arrival?.at).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : "N/A",
+        date: segment?.arrival?.at
+          ? new Date(segment?.arrival?.at).toLocaleDateString(
+              lng === "ar" ? "ar-EG" : "en-US",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            )
+          : "N/A",
         terminal: segment?.arrival?.terminal || "-",
       },
       duration: segment?.duration || "",
       aircraft: segment?.aircraft?.code || "",
-      seat: traveler?.documents?.[0]?.number || "N/A", // fallback since real seat isn’t in Amadeus
-      class: flightOffer?.pricingOptions?.fareType?.[0] || "Economy",
+      seat: traveler?.documents?.[0]?.number || t("notAvailable"),
+      class: flightOffer?.pricingOptions?.fareType?.[0] || t("economy"),
     },
     pricing: {
       basePrice: parseFloat(price?.base || "0"),
@@ -126,7 +170,7 @@ export default function FlightBookingThankYou({
             acc + parseFloat(fee.amount),
           0
         ) ?? 0,
-      fees: 0, // you can separate service fee if you have it
+      fees: 0,
       total: parseFloat(price?.grandTotal || "0"),
     },
   };
@@ -141,7 +185,10 @@ export default function FlightBookingThankYou({
       className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-700 ${className} ${
         isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
       }`}
-      style={{ transitionDelay: `${delay}ms` }}
+      style={{
+        transitionDelay: `${delay}ms`,
+      }}
+      dir={locale === "ar" ? "rtl" : "ltr"}
     >
       {children}
     </div>
@@ -154,7 +201,7 @@ export default function FlightBookingThankYou({
   );
 
   const CardTitle: React.FC<CardProps> = ({ children, className = "" }) => (
-    <h3 className={`text-lg font-semibold text-gray-900 ${className}`}>
+    <h3 className={`text-lg  font-semibold text-gray-900 ${className}`}>
       {children}
     </h3>
   );
@@ -168,7 +215,6 @@ export default function FlightBookingThankYou({
     variant = "default",
     className = "",
   }) => {
-    // Custom Badge Component
     const baseClasses =
       "inline-flex items-center px-3 py-1 rounded-lg bg-emerald-50 !text-emerald-600 text-sm font-medium";
 
@@ -187,8 +233,6 @@ export default function FlightBookingThankYou({
       </span>
     );
   };
-
-  // Custom Button Component
 
   const Button: React.FC<CardProps> = ({
     children,
@@ -223,13 +267,14 @@ export default function FlightBookingThankYou({
     );
   };
 
-  // Custom Separator Component
   const Separator = ({ className = "" }) => (
     <div className={`w-full h-px bg-gray-200 my-4 ${className}`} />
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div
+      className={`min-h-screen  bg-gradient-to-br from-blue-50 via-white to-indigo-50 ${isRTL ? "rtl" : "ltr"}`}
+    >
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header Confirmation */}
         <div
@@ -239,16 +284,16 @@ export default function FlightBookingThankYou({
             <Check className="w-10 h-10 text-green-600" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Booking Confirmed!
+            {t("bookingConfirmed")}
           </h1>
           <p className="text-xl text-gray-600 mb-4">
-            Your flight has been successfully booked
+            {t("flightSuccessfullyBooked")}
           </p>
           <Badge
             variant="secondary"
             className="text-lg px-6 py-2 bg-blue-100 text-blue-800 font-semibold"
           >
-            Confirmation: {bookingData.confirmationNumber}
+            {t("confirmation")}: {bookingData.confirmationNumber}
           </Badge>
         </div>
 
@@ -259,10 +304,18 @@ export default function FlightBookingThankYou({
             <Card delay={200}>
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                    <Plane className="w-6 h-6 text-emerald-600" />
-                    Flight Details
-                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    {bookingData.flight.airlineLogo && (
+                      <img
+                        src={bookingData.flight.airlineLogo}
+                        alt={bookingData.flight.airlineName}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    )}
+                    <CardTitle className="text-2xl font-bold text-gray-900">
+                      {t("flightDetails")}
+                    </CardTitle>
+                  </div>
                   <Badge className="bg-green-100 text-green-800 border-green-300">
                     {bookingData.flight.class}
                   </Badge>
@@ -270,8 +323,10 @@ export default function FlightBookingThankYou({
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                  <span>{bookingData.flight.airline}</span>
-                  <span>Flight {bookingData.flight.flightNumber}</span>
+                  <span>{bookingData.flight.airlineName}</span>
+                  <span>
+                    {t("flight")} {bookingData.flight.flightNumber}
+                  </span>
                   <span>{bookingData.flight.aircraft}</span>
                 </div>
 
@@ -286,7 +341,7 @@ export default function FlightBookingThankYou({
                         {bookingData.flight.departure.city}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {bookingData.flight.departure.airport}
+                        {bookingData.flight.departure.airportName}
                       </div>
                     </div>
 
@@ -309,7 +364,7 @@ export default function FlightBookingThankYou({
                         {bookingData.flight.arrival.city}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {bookingData.flight.arrival.airport}
+                        {bookingData.flight.arrival.airportName}
                       </div>
                     </div>
                   </div>
@@ -322,7 +377,7 @@ export default function FlightBookingThankYou({
                   <div className="space-y-3">
                     <h4 className="font-semibold text-gray-900 flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-emerald-600" />
-                      Departure
+                      {t("departure")}
                     </h4>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -335,7 +390,7 @@ export default function FlightBookingThankYou({
                         {bookingData.flight.departure.date}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {bookingData.flight.departure.terminal}
+                        {t("terminal")}: {bookingData.flight.departure.terminal}
                       </div>
                     </div>
                   </div>
@@ -343,7 +398,7 @@ export default function FlightBookingThankYou({
                   <div className="space-y-3">
                     <h4 className="font-semibold text-gray-900 flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-emerald-600" />
-                      Arrival
+                      {t("arrival")}
                     </h4>
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -356,7 +411,7 @@ export default function FlightBookingThankYou({
                         {bookingData.flight.arrival.date}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {bookingData.flight.arrival.terminal}
+                        {t("terminal")}: {bookingData.flight.arrival.terminal}
                       </div>
                     </div>
                   </div>
@@ -369,31 +424,33 @@ export default function FlightBookingThankYou({
               <CardHeader>
                 <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <Users className="w-5 h-5 text-emerald-600" />
-                  Passenger Information
+                  {t("passengerInformation")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-gray-500">Full Name</div>
+                    <div className="text-sm text-gray-500">{t("fullName")}</div>
                     <div className="font-semibold text-gray-900">
                       {bookingData.passenger.name}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Email</div>
+                    <div className="text-sm text-gray-500">{t("email")}</div>
                     <div className="font-semibold text-gray-900">
                       {bookingData.passenger.email}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Phone</div>
+                    <div className="text-sm text-gray-500">{t("phone")}</div>
                     <div className="font-semibold text-gray-900">
                       {bookingData.passenger.phone}
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Booking Date</div>
+                    <div className="text-sm text-gray-500">
+                      {t("bookingDate")}
+                    </div>
                     <div className="font-semibold text-gray-900">
                       {bookingData.bookingDate}
                     </div>
@@ -410,32 +467,32 @@ export default function FlightBookingThankYou({
               <CardHeader>
                 <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-emerald-600" />
-                  Booking Summary
+                  {t("bookingSummary")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Base Price</span>
+                    <span className="text-gray-600">{t("basePrice")}</span>
                     <span className="font-semibold">
                       ${bookingData.pricing.basePrice.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Taxes & Fees</span>
+                    <span className="text-gray-600">{t("taxesAndFees")}</span>
                     <span className="font-semibold">
                       ${bookingData.pricing.taxes.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Service Fee</span>
+                    <span className="text-gray-600">{t("serviceFee")}</span>
                     <span className="font-semibold">
                       ${bookingData.pricing.fees.toFixed(2)}
                     </span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total Paid</span>
+                    <span>{t("totalPaid")}</span>
                     <span className="text-green-600">
                       ${bookingData.pricing.total.toFixed(2)}
                     </span>
@@ -443,102 +500,39 @@ export default function FlightBookingThankYou({
                 </div>
               </CardContent>
             </Card>
+
             {/* Travel Tips */}
             <Card delay={800} className="mt-6">
               <CardHeader>
                 <CardTitle className="text-lg font-bold text-gray-900">
-                  Travel Tips
+                  {t("travelTips")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col gap-2 text-sm">
                   <div className="bg-blue-50 rounded-lg p-3">
                     <h5 className="font-semibold text-blue-900 mb-2">
-                      Before You Travel
+                      {t("beforeYouTravel")}
                     </h5>
                     <ul className="space-y-1 text-blue-800">
-                      <li>• Check passport expiration date</li>
-                      <li>• Review airline baggage policies</li>
-                      <li>• Download the airline mobile app</li>
+                      <li>• {t("checkPassportExpiry")}</li>
+                      <li>• {t("reviewBaggagePolicies")}</li>
+                      <li>• {t("downloadAirlineApp")}</li>
                     </ul>
                   </div>
                   <div className="bg-green-50 rounded-lg p-4">
                     <h5 className="font-semibold text-green-900 mb-2">
-                      At the Airport
+                      {t("atTheAirport")}
                     </h5>
                     <ul className="space-y-1 text-green-800">
-                      <li>• Use mobile boarding pass</li>
-                      <li>• Check security wait times</li>
-                      <li>• Locate your departure gate</li>
+                      <li>• {t("useMobileBoardingPass")}</li>
+                      <li>• {t("checkSecurityWaitTimes")}</li>
+                      <li>• {t("locateDepartureGate")}</li>
                     </ul>
                   </div>
                 </div>
               </CardContent>
             </Card>
-            {/* Action Buttons */}
-            {/* <Card delay={500}>
-              <CardContent className="pt-6 space-y-3">
-                <Button
-                  className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
-                  size="lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download Confirmation
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full hover:bg-gray-50 transition-colors duration-200"
-                  size="lg"
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email Confirmation
-                </Button>
-              </CardContent>
-            </Card> */}
-
-            {/* Next Steps */}
-            {/* <Card delay={600}>
-              <CardHeader>
-                <CardTitle className="text-lg font-bold text-gray-900">
-                  Next Steps
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2 flex-shrink-0"></div>
-                    <div>
-                      <div className="font-medium flex justify-start text-gray-900">
-                        Check-in online
-                        Available 24 hours before departure
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2 flex-shrink-0"></div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        Arrive at airport
-                      </div>
-                      <div className="text-gray-600">
-                        2 hours early for domestic flights
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full mt-2 flex-shrink-0"></div>
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        Valid ID required
-                      </div>
-                      <div className="text-gray-600">
-                        Government-issued photo ID
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card> */}
           </div>
         </div>
 
@@ -546,7 +540,7 @@ export default function FlightBookingThankYou({
         <Card delay={700} className="mt-8">
           <CardHeader>
             <CardTitle className="text-xl font-bold text-gray-900">
-              Important Information
+              {t("importantInformation")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -556,11 +550,10 @@ export default function FlightBookingThankYou({
                   <Calendar className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">
-                  Flexible Changes
+                  {t("flexibleChanges")}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  Change your flight up to 2 hours before departure with no
-                  additional fees
+                  {t("flexibleChangesDescription")}
                 </p>
               </div>
               <div className="text-center">
@@ -568,11 +561,10 @@ export default function FlightBookingThankYou({
                   <Phone className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">
-                  24/7 Support
+                  {t("support24/7")}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  Our customer service team is available around the clock for
-                  assistance
+                  {t("support24/7Description")}
                 </p>
               </div>
               <div className="text-center">
@@ -580,11 +572,10 @@ export default function FlightBookingThankYou({
                   <Globe className="w-6 h-6 text-emerald-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">
-                  Travel Updates
+                  {t("travelUpdates")}
                 </h4>
                 <p className="text-sm text-gray-600">
-                  Receive real-time notifications about your flight status via
-                  email and SMS
+                  {t("travelUpdatesDescription")}
                 </p>
               </div>
             </div>

@@ -15,12 +15,15 @@ import { useRouter } from "next/navigation";
 import Section from "@/app/components/shared/section";
 import { useAppSelector } from "@/redux/hooks";
 import useBookingHandler from "@/hooks/useBookingHandler";
+import { useDispatch, UseDispatch } from "react-redux";
+import { clearHotels } from "@/redux/hotels/hotelsSlice";
+import AminitiesSection from "@/app/components/website/hotel-details/AminitiesSection";
 
 // Types
 type Title = "Mr" | "Ms" | "Mrs" | "Master" | "Miss";
 type CustomerType = "Adult" | "Child";
 type BookingType = "Voucher" | "Regular";
-type PaymentMode = "PayLater" | "PayNow" | "CreditCard" | "Cash";
+type PaymentMode = "PayLater" | "PayNow" | "CreditCard" | "Cash" | "Limit";
 
 interface CustomerName {
   Title: Title;
@@ -143,11 +146,39 @@ const extractFeesAndExtras = (
 };
 
 const validateEnglishName = (name: string) => /^[a-zA-Z\s'-]*$/.test(name);
+
+const validateGuestName = (name: string) => {
+  if (!name.trim()) {
+    return "Name is required";
+  }
+  if (!validateEnglishName(name)) {
+    return "Only English letters allowed";
+  }
+  if (name.trim().length < 2) {
+    return "Name must be at least 2 characters";
+  }
+
+  if (name.trim().length > 25) {
+    return "Name must be less than 25 characters";
+  }
+  return null;
+};
+
 const validateEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const validatePhoneNumber = (phone: string) => /^[0-9]*$/.test(phone);
+
+const validatePhoneNumber = (phone: string) => {
+  if (!/^[0-9]*$/.test(phone)) {
+    return "Numbers only";
+  }
+  if (phone.trim().length < 7) {
+    return "Phone must be at least 7 digits";
+  }
+  return null;
+};
 
 export default function BookingPage() {
+  const dispatch = useDispatch();
   // State
   const [currentStep] = useState(3);
   const [roomsGuestData, setRoomsGuestData] = useState<RoomGuestData[]>([]);
@@ -158,6 +189,7 @@ export default function BookingPage() {
   const [validationErrors, setValidationErrors] = useState<{
     [key: string]: string;
   }>({});
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const { loading } = useAppSelector((state) => state.hotelData);
 
   // Hooks
@@ -168,32 +200,74 @@ export default function BookingPage() {
   );
   const hotelCode = hotel?.data?.hotel[0].HotelCode;
 
+  const validateField = (
+    roomIndex: number,
+    guestType: "adults" | "children",
+    guestIndex: number,
+    field: keyof GuestData,
+    value: string
+  ) => {
+    const guestKey = `room-${roomIndex}-${guestType}-${guestIndex}`;
+    let error: string | null = null;
+
+    if (field === "firstName" || field === "lastName") {
+      error = validateGuestName(value);
+    }
+
+    if (field === "email") {
+      if (!value.trim()) error = "Email is required";
+      else if (!validateEmail(value)) error = "Invalid email format";
+    }
+
+    if (field === "phone") {
+      error = validatePhoneNumber(value);
+    }
+
+    if (field === "title" && !value) {
+      error = "Title is required";
+    }
+
+    setValidationErrors((prev) => ({
+      ...prev,
+      [`${guestKey}-${field}`]: error || "",
+    }));
+  };
+
+
   // Validate form
-  const isValidForm = useMemo(() => {
+  const validateForm = useCallback(() => {
     const errors: { [key: string]: string } = {};
     let isValid = true;
+
+    const allFirstNames: string[] = [];
 
     roomsGuestData.forEach((room, roomIndex) => {
       room.adults.forEach((adult, adultIndex) => {
         const guestKey = `room-${roomIndex}-adult-${adultIndex}`;
 
-        if (!adult.firstName.trim()) {
-          errors[`${guestKey}-firstName`] = "First name is required";
-          isValid = false;
-        } else if (!validateEnglishName(adult.firstName)) {
-          errors[`${guestKey}-firstName`] = "Only English letters allowed";
+        // Validate title
+        if (!adult.title) {
+          errors[`${guestKey}-title`] = "Title is required";
           isValid = false;
         }
 
-        if (!adult.lastName.trim()) {
-          errors[`${guestKey}-lastName`] = "Last name is required";
+        // Validate first name
+        const firstNameError = validateGuestName(adult.firstName);
+        if (firstNameError) {
+          errors[`${guestKey}-firstName`] = firstNameError;
           isValid = false;
-        } else if (!validateEnglishName(adult.lastName)) {
-          errors[`${guestKey}-lastName`] = "Only English letters allowed";
+        } else {
+          allFirstNames.push(adult.firstName.trim().toLowerCase());
+        }
+
+        // Validate last name
+        const lastNameError = validateGuestName(adult.lastName);
+        if (lastNameError) {
+          errors[`${guestKey}-lastName`] = lastNameError;
           isValid = false;
         }
 
-        // Validate lead guest (first adult in first room)
+        // Lead guest email/phone
         if (roomIndex === 0 && adultIndex === 0) {
           if (!adult.email.trim()) {
             errors[`${guestKey}-email`] = "Email is required";
@@ -203,11 +277,9 @@ export default function BookingPage() {
             isValid = false;
           }
 
-          if (!adult.phone.trim()) {
-            errors[`${guestKey}-phone`] = "Phone is required";
-            isValid = false;
-          } else if (!validatePhoneNumber(adult.phone)) {
-            errors[`${guestKey}-phone`] = "Numbers only";
+          const phoneError = validatePhoneNumber(adult.phone);
+          if (phoneError) {
+            errors[`${guestKey}-phone`] = phoneError;
             isValid = false;
           }
         }
@@ -216,27 +288,59 @@ export default function BookingPage() {
       room.children.forEach((child, childIndex) => {
         const guestKey = `room-${roomIndex}-child-${childIndex}`;
 
-        if (!child.firstName.trim()) {
-          errors[`${guestKey}-firstName`] = "First name is required";
-          isValid = false;
-        } else if (!validateEnglishName(child.firstName)) {
-          errors[`${guestKey}-firstName`] = "Only English letters allowed";
+        // Validate title
+        if (!child.title) {
+          errors[`${guestKey}-title`] = "Title is required";
           isValid = false;
         }
 
-        if (!child.lastName.trim()) {
-          errors[`${guestKey}-lastName`] = "Last name is required";
+        // Validate first name
+        const firstNameError = validateGuestName(child.firstName);
+        if (firstNameError) {
+          errors[`${guestKey}-firstName`] = firstNameError;
           isValid = false;
-        } else if (!validateEnglishName(child.lastName)) {
-          errors[`${guestKey}-lastName`] = "Only English letters allowed";
+        } else {
+          allFirstNames.push(child.firstName.trim().toLowerCase());
+        }
+
+        // Validate last name
+        const lastNameError = validateGuestName(child.lastName);
+        if (lastNameError) {
+          errors[`${guestKey}-lastName`] = lastNameError;
           isValid = false;
         }
       });
     });
 
+    // Check for duplicate first names
+    const duplicates = allFirstNames.filter(
+      (name, index) => allFirstNames.indexOf(name) !== index
+    );
+    if (duplicates.length > 0) {
+      isValid = false;
+      // Add error for each duplicate
+      roomsGuestData.forEach((room, roomIndex) => {
+        room.adults.forEach((adult, adultIndex) => {
+          if (duplicates.includes(adult.firstName.trim().toLowerCase())) {
+            errors[`room-${roomIndex}-adult-${adultIndex}-firstName`] =
+              "First name must be unique";
+          }
+        });
+        room.children.forEach((child, childIndex) => {
+          if (duplicates.includes(child.firstName.trim().toLowerCase())) {
+            errors[`room-${roomIndex}-child-${childIndex}-firstName`] =
+              "First name must be unique";
+          }
+        });
+      });
+    }
+
     setValidationErrors(errors);
     return isValid;
   }, [roomsGuestData]);
+
+  // Check if form is valid
+  const isValidForm = useMemo(() => validateForm(), [validateForm]);
 
   // Callbacks
   const handleToggle = useCallback((value: string) => {
@@ -265,8 +369,20 @@ export default function BookingPage() {
         };
         return updated;
       });
+
+      // Clear validation error when user starts typing
+      if (hasAttemptedSubmit) {
+        const guestKey = `room-${roomIndex}-${guestType}-${guestIndex}`;
+        if (validationErrors[`${guestKey}-${field}`]) {
+          setValidationErrors((prev) => {
+            const newErrors = { ...prev };
+            delete newErrors[`${guestKey}-${field}`];
+            return newErrors;
+          });
+        }
+      }
     },
-    []
+    [hasAttemptedSubmit, validationErrors]
   );
 
   const handleNameInput = useCallback(
@@ -312,22 +428,25 @@ export default function BookingPage() {
           })),
         ],
       })),
-      ClientReferenceId: `CASE7-${dateStr}${randomNum}`,
-      BookingReferenceId: `TBO-BOOK-CASE9-${dateStr}${randomNum}`,
+      ClientReferenceId: `BOOK-${dateStr}${randomNum}`,
+      BookingReferenceId: `TBO-BOOK-${dateStr}${randomNum}`,
       TotalFare: selectedRoom?.TotalFare || 0,
       EmailId: leadGuest?.email || "",
       PhoneNumber: leadGuest?.phone || "",
       BookingType: "Voucher",
-      PaymentMode: "PayLater",
+      PaymentMode: "Limit",
     };
   }, [roomsGuestData, selectedRoom]);
 
   const handleSubmitBooking = useBookingHandler(
     formatGuestDataForAPI,
     isValidForm,
-    searchParamsData ? searchParamsData : (() => {
-      throw new Error('Search parameters are missing');
-    })());
+    searchParamsData
+      ? searchParamsData
+      : (() => {
+        throw new Error("Search parameters are missing");
+      })()
+  );
 
   // Effects
   useEffect(() => {
@@ -380,6 +499,86 @@ export default function BookingPage() {
     preBookRoom();
   }, [selectedRoom]);
 
+
+  // 🔹 30-minute session expiration
+  // useEffect(() => {
+  //   if (!preBookedRoom) return;
+
+  //   // ⏰ Calculate expiration date (30 min from now)
+  //   const expiryTimestamp = Date.now() + 1 * 60 * 1000;
+
+  //   // Save expiry in localStorage or Redux if you want persistence
+  //   localStorage.setItem("hotelBookingExpiry", expiryTimestamp.toString());
+
+  //   const checkExpiry = () => {
+  //     const savedExpiry = parseInt(localStorage.getItem("hotelBookingExpiry") || "0", 10);
+  //     const now = Date.now();
+
+  //     if (savedExpiry && now >= savedExpiry) {
+  //       // clear Redux state if expired
+  //       dispatch(clearHotels());
+
+  //       // redirect to expired page
+  //       router.push(`/${locale}/hotel-details/${hotelCode}?expired=true`);
+  //       return true;
+  //     }
+  //     return false;
+  //   };
+
+  //   // ✅ Check immediately in case expiry passed
+  //   if (checkExpiry()) return;
+
+  //   // 🕒 Calculate remaining time dynamically
+  //   const remainingTime = expiryTimestamp - Date.now();
+
+  //   const timer = setTimeout(() => {
+  //     console.log("check")
+  //     // checkExpiry();
+  //   }, (remainingTime / 2));
+
+  //   return () => clearTimeout(timer);
+  // }, [preBookedRoom, router, locale, hotelCode, dispatch]);
+
+
+
+  // Handle form submission
+  const handleSubmit = useCallback(async () => {
+    setHasAttemptedSubmit(true);
+
+    // Validate form before submission
+    const isValid = validateForm();
+
+    if (!isValid) {
+      // Open all accordions to show errors
+      setOpenItems(roomsGuestData.map((_, i) => `room-${i}`));
+
+      // Scroll to first error after a small delay
+      setTimeout(() => {
+        const firstErrorKey = Object.keys(validationErrors)[0];
+        if (firstErrorKey) {
+          const element = document.querySelector(
+            `[data-error="${firstErrorKey}"]`
+          );
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }
+      }, 100);
+
+      return;
+    }
+
+    try {
+      await handleSubmitBooking();
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unexpected error occurred");
+      }
+    }
+  }, [validateForm, roomsGuestData, validationErrors, handleSubmitBooking]);
+
   // Render functions
   const renderGuestInputs = useCallback(
     (
@@ -398,12 +597,14 @@ export default function BookingPage() {
           key={`${guestKey}`}
           className={`space-y-4 p-4 border rounded-lg ${validationErrors[`${guestKey}-firstName`] ||
             validationErrors[`${guestKey}-lastName`] ||
+            validationErrors[`${guestKey}-title`] ||
             (isLeadGuest &&
               (validationErrors[`${guestKey}-email`] ||
                 validationErrors[`${guestKey}-phone`]))
             ? "border-red-300 bg-red-50"
             : "border-gray-200 bg-gray-50"
             }`}
+          data-error={guestKey}
         >
           <h4 className="font-medium text-gray-900">{guestLabel}</h4>
 
@@ -414,6 +615,7 @@ export default function BookingPage() {
             ).map((title) => (
               <button
                 key={title}
+                type="button"
                 onClick={() =>
                   updateGuestData(
                     roomIndex,
@@ -432,6 +634,11 @@ export default function BookingPage() {
               </button>
             ))}
           </div>
+          {validationErrors[`${guestKey}-title`] && (
+            <p className="text-red-500 text-sm mt-1">
+              {validationErrors[`${guestKey}-title`]}
+            </p>
+          )}
 
           <div className="flex justify-between gap-4">
             <div className="w-full">
@@ -447,7 +654,13 @@ export default function BookingPage() {
                     e.target.value
                   )
                 }
-                className="w-full px-3 py-4 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onBlur={(e) =>
+                  validateField(roomIndex, guestType, guestIndex, "firstName", e.target.value)
+                }
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-firstName`]
+                  ? "border-red-500"
+                  : "border-stone-300"
+                  }`}
                 required
               />
               {validationErrors[`${guestKey}-firstName`] && (
@@ -470,7 +683,13 @@ export default function BookingPage() {
                     e.target.value
                   )
                 }
-                className="w-full px-3 py-4 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onBlur={(e) =>
+                  validateField(roomIndex, guestType, guestIndex, "lastName", e.target.value)
+                }
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-lastName`]
+                  ? "border-red-500"
+                  : "border-stone-300"
+                  }`}
                 required
               />
               {validationErrors[`${guestKey}-lastName`] && (
@@ -497,7 +716,13 @@ export default function BookingPage() {
                       e.target.value
                     )
                   }
-                  className="w-full px-3 py-4 border border-gray-300 rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none"
+                  onBlur={(e) =>
+                    validateField(roomIndex, guestType, guestIndex, "email", e.target.value)
+                  }
+                  className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-email`]
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
                   required
                 />
                 {validationErrors[`${guestKey}-email`] && (
@@ -517,16 +742,24 @@ export default function BookingPage() {
                     placeholder="Phone number"
                     type="tel"
                     value={guest.phone}
-                    onChange={(e) =>
+                    onChange={(e) => {
+                      // only allow numbers while typing
+                      const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
                       updateGuestData(
                         roomIndex,
                         guestType,
                         guestIndex,
                         "phone",
-                        e.target.value
-                      )
+                        onlyNumbers
+                      );
+                    }}
+                    onBlur={(e) =>
+                      validateField(roomIndex, guestType, guestIndex, "phone", e.target.value)
                     }
-                    className="w-full px-3 py-4 border border-gray-300 border-l-0 rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none"
+                    className={`w-full px-3 py-4 border border-l-0 rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-phone`]
+                      ? "border-red-500"
+                      : "border-gray-300"
+                      }`}
                     required
                   />
                   {validationErrors[`${guestKey}-phone`] && (
@@ -712,9 +945,6 @@ export default function BookingPage() {
                   <h2 className="text-lg font-semibold text-gray-900">
                     Check in instructions
                   </h2>
-                  <p className="text-base text-gray-600">
-                    Check-in Instructions
-                  </p>
                 </div>
                 <div className="px-6 pb-6">
                   {preBookedRoom.RateConditions &&
@@ -740,28 +970,56 @@ export default function BookingPage() {
                       ? "opacity-50 cursor-not-allowed"
                       : "opacity-100 hover:opacity-90"
                       }`}
-                    onClick={async () => {
-                      if (!isValidForm) {
-                        // Open all accordions to show errors
-                        setOpenItems(roomsGuestData.map((_, i) => `room-${i}`));
-                        alert("Please fill in all required fields correctly");
-                        return;
-                      }
-                      try {
-                        await handleSubmitBooking();
-                      } catch (error) {
-                        if (error instanceof Error) {
-                          alert(error.message);
-                        } else {
-                          alert("An unexpected error occurred");
-                        }
-                      }
-                    }}
+                    onClick={handleSubmit}
                   >
                     {loading === "pending" ? "Processing..." : "Book Now"}
                   </button>
                 </div>
               </div>
+              {/* Aminities section */}
+              {/* ✅ Redesigned Amenities Section */}
+              {/* ✅ Redesigned Amenities Section */}
+              {preBookedRoom && preBookedRoom.Rooms?.[0]?.Amenities?.length > 0 && (
+                <section className="mt-10">
+                  {/* Section Title */}
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="w-1.5 h-8 bg-emerald-500 rounded-full"></span>
+                    <h3 className="text-2xl font-bold text-gray-900">Room Amenities</h3>
+                  </div>
+
+                  {/* Amenities Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                    {preBookedRoom.Rooms[0].Amenities.map(
+                      (amenity: string, idx: number) => (
+                        <div
+                          key={idx}
+                          className="flex items-start gap-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-4"
+                        >
+                          <div className="flex-shrink-0">
+                            {/* Icon */}
+                            <svg
+                              className="w-5 h-5 text-emerald-500 mt-1"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2}
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-gray-700 text-sm leading-relaxed">{amenity}</p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </section>
+              )}
+
+
             </div>
 
             <HotelBookingSummary hotel={hotel} room={preBookedRoom} />

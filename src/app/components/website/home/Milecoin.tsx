@@ -13,13 +13,16 @@ export default function Home() {
     return (
 
 
-        <div className="min-h-screen ">
-
-            <div className="text-center mb-16 bg-emerald-50 w-full p-8">
+        <div className=" ">
+            <div className="text-center mb-8 md:mb-16 bg-emerald-50 w-full p-4 md:p-8 flex flex-col items-center gap-2">
                 <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">{t('intro.title')}</h2>
-                <p className="text-base text-gray-600 max-w-3xl mx-auto">
+                <p className="text-xs md:text-base text-gray-600 max-w-3xl mx-auto">
                     {t('intro.description')}
                 </p>
+
+                <video className=' md:hidden' width="250" height="250" autoPlay loop muted>
+                    <source src="/assets/video/milcoin.mp4" type="video/mp4" />
+                </video>
             </div>
             <Section>
                 {/* MileCoin Brief Section */}
@@ -68,8 +71,13 @@ export default function Home() {
                             <div className="relative">
                                 <div className="bg-greenGradient rounded-2xl p-8 text-white">
                                     <div className="text-center">
-                                        <Coins className="w-16 h-16 mx-auto mb-4 text-yellow-300" />
-                                        <h4 className="text-2xl font-bold mb-4">{t('howItWorks.title')}</h4>
+                                        <div className='flex flex-col items-center mb-4'>
+                                            <h4 className="text-2xl font-bold mb-4">{t('howItWorks.title')}</h4>
+                                            <Coins className="md:hidden w-16 h-16 mx-auto mb-4 text-yellow-300" />
+                                            <video className='hidden md:block' width="250" height="250" autoPlay loop muted>
+                                                <source src="/assets/video/milcoin.mp4" type="video/mp4" />
+                                            </video>
+                                        </div>
                                         <div className="space-y-4 text-left">
                                             <div className="flex items-start space-x-3">
                                                 <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-sm font-bold">1</div>

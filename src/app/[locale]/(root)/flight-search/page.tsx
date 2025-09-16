@@ -79,6 +79,10 @@ const Page: React.FC = () => {
   const slectedData = useSelector((state: any) => state.flightData.slectedFlight);
   const flightDataSlice = useSelector((state: any) => state.flightData.flights);
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const presentageCommission = useSelector((state: any) => state.flightData.presentageCommission);
+
+  console.log(presentageCommission, "presentageCommission")
+
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -686,7 +690,8 @@ const Page: React.FC = () => {
                   <h2 className="text-xl text-primary font-semibold">
                     Flight details
                   </h2>
-                  <h1 className="flex items-center gap-2">
+
+                  <h2 className="flex items-center gap-2">
                     <span>Totla Price:</span>
                     <span className="font-semibold text-lg">
                       {selectedFlight?.price.currency}
@@ -694,7 +699,19 @@ const Page: React.FC = () => {
                     <span className="font-semibold text-lg">
                       {selectedFlight?.price.total}
                     </span>
-                  </h1>
+                  </h2>
+                  <h2 className="flex items-center gap-2">
+                    <span>Total Price:</span>
+                    <span className="font-semibold text-lg">
+                      {selectedFlight?.price.currency}
+                    </span>
+                    <span className="font-semibold text-lg">
+                      {(
+                        Number(selectedFlight?.price.total || 0) +
+                        (Number(selectedFlight?.price.total || 0) * presentageCommission) / 100
+                      ).toFixed(2)}
+                    </span>
+                  </h2>
                 </div>
                 <button
                   onClick={() => {

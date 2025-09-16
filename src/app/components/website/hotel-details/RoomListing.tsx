@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, Share2, Bed, Users, ChevronDown, ChevronUp } from 'lucide-react';
-import Link from 'next/link';
+import { Bed, ChevronDown, ChevronUp, Users } from 'lucide-react';
 import Button from './Button';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -35,12 +34,20 @@ const RoomListing = ({
   showCancellationBadge = false,
   showMealTypeBadge = false
 }: RoomListingProps) => {
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const dispatch = useDispatch();
   const router = useRouter();
 
-
+  // Helper function to safely handle RoomPromotion
+  const getRoomPromotions = (room: Room): string[] => {
+    if (!room.RoomPromotion) return [];
+    if (Array.isArray(room.RoomPromotion)) {
+      return room.RoomPromotion.filter(promo =>
+        promo && typeof promo === 'string' && promo.trim().length > 0
+      );
+    }
+    return [];
+  };
 
   const groupRoomsByName = (rooms: Room[]) => {
     const grouped: { [key: string]: Room[] } = {};
@@ -65,6 +72,7 @@ const RoomListing = ({
       [roomName]: !prev[roomName]
     }));
   };
+
   // ✅ Open all sections by default
   useEffect(() => {
     const initialExpanded: Record<string, boolean> = {};
@@ -74,105 +82,170 @@ const RoomListing = ({
     setExpandedSections(initialExpanded);
   }, [data]);
 
-
   return (
-    <div className="w-full flex flex-col gap-4">
-      {Object.entries(groupedRooms).map(([roomName, roomOptions], i) => (
-        <div key={i} className="w-full border border-gray-200 rounded-xl overflow-hidden bg-white">
-          {/* Room Header - Accordion Toggle */}
-          <div
-            className="p-4 bg-white sticky top-0 z-10 border-b cursor-pointer"
-            onClick={() => toggleSection(roomName)}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-emerald-600">
-                <Bed className="text-orange-500 w-5 h-5" />
-                <h2 className="text-base md:text-lg font-bold text-emerald-600">{roomName}</h2>
-                <span className="text-sm text-gray-500 ml-2">({roomOptions.length} options)</span>
+    <div className="w-full flex flex-col gap-6">
+      {Object.entries(groupedRooms).map(([roomName, roomOptions], i) => {
+        const isExpanded = expandedSections[roomName];
+        
+        return (
+          <div key={i} className="w-full border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
+            {/* Room Header - Accordion Toggle */}
+            <div
+              className={`p-4 sticky top-0 z-10 border-b cursor-pointer transition-colors duration-200 ${
+                isExpanded 
+                  ? ' bg-greenGradient text-white'  // Emerald background when expanded
+                  : 'bg-white text-gray-900'     // White background when collapsed
+              }`}
+              onClick={() => toggleSection(roomName)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Bed className={`w-5 h-5 ${
+                    isExpanded ? 'text-white' : 'text-orange-500'
+                  }`} />
+                  <div>
+                    <h2 className={`text-lg font-semibold ${
+                      isExpanded ? 'text-white' : 'text-gray-900'
+                    }`}>
+                      {roomName}
+                    </h2>
+                    <p className={`text-sm ${
+                      isExpanded ? 'text-emerald-100' : 'text-gray-500'
+                    }`}>
+                      {roomOptions.length} option(s) available
+                    </p>
+                  </div>
+                </div>
+                {isExpanded ? (
+                  <ChevronUp className={`w-5 h-5 ${
+                    isExpanded ? 'text-white' : 'text-gray-500'
+                  }`} />
+                ) : (
+                  <ChevronDown className={`w-5 h-5 ${
+                    isExpanded ? 'text-white' : 'text-gray-500'
+                  }`} />
+                )}
               </div>
-              {expandedSections[roomName] ? (
-                <ChevronUp className="w-5 h-5 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500" />
-              )}
             </div>
-          </div>
 
-          {/* Room Options - Collapsible Content */}
-          {expandedSections[roomName] && (
-            <>
-              {/* Table Header (desktop only) */}
-              <div className="hidden md:block bg-greenGradient text-white">
-                <div className="grid grid-cols-12 text-sm font-semibold py-3 px-6">
-                  <div className="col-span-6">Select an option</div>
+            {/* Room Options - Collapsible Content */}
+            {isExpanded && (
+              <div className="bg-gray-50">
+                {/* Table Header (desktop only) */}
+                <div className="hidden md:grid md:grid-cols-12  text-sm font-semibold py-3 px-6">
+                  <div className="col-span-6 ">Room Details & Features</div>
                   <div className="col-span-2 text-center">Guests</div>
-                  <div className="col-span-2 text-center">Total for 1 room</div>
+                  <div className="col-span-2 text-center">Price</div>
                   <div className="col-span-2 text-center">Action</div>
                 </div>
-              </div>
 
-              {/* Room Options */}
-              <div className="divide-y divide-gray-200">
-                {roomOptions.map((room, idx) => (
-                  <div
-                    key={idx}
-                    className="flex flex-col md:grid md:grid-cols-12 p-4 gap-4"
-                  >
-                    {/* Left: Room Info */}
-                    <div className="flex-1 md:col-span-6">
-                      <div className="flex items-center gap-2 mb-2 ">
-                        <h4 className="font-semibold text-gray-900 text-sm">
-                          {room.Inclusion || "Room Only"}
-                        </h4>
-                        {room.RoomPromotion?.length > 0 && (
-                          <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-                            {room.RoomPromotion[0]}
-                          </span>
-                        )}
-                      </div>
+                {/* Room Options */}
+                <div className="divide-y divide-gray-200">
+                  {roomOptions.map((room, idx) => {
+                    const promotions = getRoomPromotions(room);
 
-                      {/* Only show extras on desktop */}
-                      <div className="hidden md:block space-y-1 text-sm text-gray-600 mb-2">
-                        {showCancellationBadge && room.IsRefundable && (
-                          <div className="flex items-center gap-1">
-                            <span className="text-emerald-600">✓</span>
-                            <span>FREE cancellation</span>
-                          </div>
-                        )}
-                        {showMealTypeBadge && room.MealType && (
-                          <div className="flex items-center gap-1">
-                            <span className="text-emerald-600">✓</span>
-                            <span>{room.MealType.replace(/_/g, " ")}
+                    return (
+                      <div
+                        key={idx}
+                        className="grid grid-cols-1 md:grid-cols-12 p-6 gap-4 hover:bg-gray-50 transition-colors"
+                      >
+                        {/* Room Details - Left Column */}
+                        <div className="md:col-span-6 space-y-3">
+                          <div className="flex flex-wrap items-center gap-2">
+                            {/* Inclusion Badge */}
+                            <span className="inline-block bg-emerald-100 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                              {room.Inclusion || "Room Only"}
                             </span>
+
+                            {/* Meal Type Badge */}
+                            {room.MealType && (
+                              <span className="inline-block bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                {room.MealType.replace(/_/g, " ")}
+                              </span>
+                            )}
+
+                            {/* Cancellation Badge */}
+                            {room.IsRefundable && (
+                              <span className="inline-block bg-green-100 text-green-700 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                FREE Cancellation
+                              </span>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
 
-                    {/* Right: Price + Book */}
-                    <div className="flex flex-col md:col-span-6 md:flex-row md:items-center md:justify-end gap-3">
-                      <div className="text-center md:text-right">
-                        <div className="text-2xl font-bold text-gray-900">
-                          ${room.TotalFare?.toFixed(2)}
+                          {/* Promotions */}
+                          {room.RoomPromotion?.length > 0 && (
+                            <p className="flex items-center gap-2">
+                              <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
+                              Special Offers Available
+                            </p>
+                          )}
+                          {promotions.length > 0 && (
+                            <div className="space-y-2 items-center">
+                              <div className="flex gap-2">
+                                <span className="bg-emerald-100 text-xs font-medium px-3 py-1.5 rounded-lg">
+                                  Special Promotions:
+                                </span>
+                                {promotions.map((promo, pIdx) => (
+                                  <span
+                                    key={pIdx}
+                                    className="bg-emerald-100 text-xs font-medium px-3 py-1.5 rounded-lg"
+                                  >
+                                   {promo}  🎁
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Room Features */}
+                          <div className="space-y-1 text-sm text-gray-600">
+                            {room.WithTransfers && (
+                              <p className="flex items-center gap-2">
+                                <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                                Includes Transfers
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">Incl. VAT</div>
-                      </div>
 
-                      <Button
-                        onClick={() => handleSelectRoom(room)}
-                        label="Book Now"
-                        style={
-                          "bg-greenGradient hover:scale-105 text-white px-6 py-2 rounded-md font-medium"
-                        }
-                      />
-                    </div>
-                  </div>
-                ))}
+                        {/* Guests - Center Column */}
+                        <div className="md:col-span-2 flex md:flex-col md:items-center md:justify-center">
+                          <div className="text-center">
+                            <Users className="w-5 h-5 text-gray-400 mx-auto mb-1" />
+                            <span className="text-sm text-gray-600">2 Guests</span>
+                          </div>
+                        </div>
+
+                        {/* Price - Center Column */}
+                        <div className="md:col-span-2 flex md:flex-col md:items-center md:justify-center">
+                          <div className="text-center">
+                            <div className="text-xl font-bold text-gray-900">
+                              ${room.TotalFare?.toFixed(2)}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">incl. taxes & fees</div>
+                            <div className="text-xs text-green-600 font-medium mt-1">
+                              Free cancellation
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action - Right Column */}
+                        <div className="md:col-span-2 flex md:items-center md:justify-center">
+                          <Button
+                            onClick={() => handleSelectRoom(room)}
+                            label="Book Now"
+                            style="bg-greenGradient hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium w-full md:w-auto transition-colors"
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </>
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

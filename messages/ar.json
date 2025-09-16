@@ -1,7 +1,8 @@
 {
   "header": {
     "navItems": {
-      "promo": "عرض ترويجي",
+      "home": "الرئيسية",
+      "milecoin": "مايل كوين",
       "aboutUs": "من نحن",
       "packages": "الباقات",
       "tayyranBusiness": "طيّران بزنس",
@@ -44,6 +45,12 @@
         "hotelCheckInDate": "تاريخ الوصول",
         "hotelCheckOutDate": "تاريخ المغادرة"
       }
+    },
+    "flightClassOptions": {
+      "economy": "الاقتصادية",
+      "premiumEconomy": "الاقتصادية المتميزة",
+      "business": "رجال الأعمال",
+      "firstClass": "الدرجة الأولى"
     },
     "milecoin": {
       "nav": {
@@ -141,10 +148,10 @@
       "oneway": "ذهاب فقط",
       "multiplecities": "مدن متعددة"
     },
-    "flightClass": {
-      "economy": "اقتصادية",
-      "premiumEconomy": "اقتصادية مميزة",
-      "business": "رجال أعمال",
+    "flightClassOptions": {
+      "economy": "الاقتصادية",
+      "premiumEconomy": "الاقتصادية المتميزة",
+      "business": "رجال الأعمال",
       "firstClass": "الدرجة الأولى"
     },
     "travlers": {
@@ -244,7 +251,11 @@
       "requiredField": "هذا الحقل مطلوب",
       "invalidEmail": "يرجى إدخال بريد إلكتروني صحيح",
       "invalidPhone": "يرجى إدخال رقم هاتف صحيح",
-      "completeAllTravelers": "يرجي ادخال بيانات جميع المسافرين"
+      "completeAllTravelers": "يرجي ادخال بيانات جميع المسافرين",
+      "noFlightAvailable": "لا توجد رحلات متاحة",
+      "noFlightDescription": "لم نتمكن من العثور على أي رحلات تطابق معاييرك.",
+      "backToSearch": "العودة إلى البحث",
+      "noFlightAltText": "رسم توضيحي لعدم وجود رحلات متاحة"
     }
   },
   "FlightCard": {
@@ -264,6 +275,131 @@
     "bookNow": "احجز الآن",
     "select": " اختر الرحلة",
     "priceWithoutTax": "* السعر لا يشمل الضريبة"
+  },
+  "FlightBooking": {
+    "bookingConfirmed": "تم تأكيد الحجز!",
+    "flightSuccessfullyBooked": "لقد تم حجز رحلتك بنجاح",
+    "confirmation": "رقم التأكيد",
+    "flightDetails": "تفاصيل الرحلة",
+    "flight": "الرحلة",
+    "departure": "المغادرة",
+    "arrival": "الوصول",
+    "terminal": "المبنى",
+    "passengerInformation": "معلومات المسافر",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "bookingDate": "تاريخ الحجز",
+    "bookingSummary": "ملخص الحجز",
+    "basePrice": "السعر الأساسي",
+    "taxesAndFees": "الضرائب والرسوم",
+    "serviceFee": "رسوم الخدمة",
+    "totalPaid": "المبلغ الإجمالي",
+    "travelTips": "نصائح للسفر",
+    "beforeYouTravel": "قبل السفر",
+    "checkPassportExpiry": "تحقق من تاريخ انتهاء صلاحية جواز السفر",
+    "reviewBaggagePolicies": "راجع سياسات الأمتعة الخاصة بالخطوط الجوية",
+    "downloadAirlineApp": "قم بتنزيل تطبيق الهاتف للخطوط الجوية",
+    "atTheAirport": "في المطار",
+    "useMobileBoardingPass": "استخدم بطاقة الصعود عبر الهاتف",
+    "checkSecurityWaitTimes": "تحقق من أوقات انتظار الأمن",
+    "locateDepartureGate": "حدد موقع بوابة المغادرة",
+    "importantInformation": "معلومات مهمة",
+    "flexibleChanges": "تغييرات مرنة",
+    "flexibleChangesDescription": "يمكنك تغيير رحلتك حتى ساعتين قبل المغادرة بدون رسوم إضافية",
+    "support24/7": "دعم على مدار الساعة",
+    "support24/7Description": "فريق خدمة العملاء متاح على مدار الساعة للمساعدة",
+    "travelUpdates": "تحديثات السفر",
+    "travelUpdatesDescription": "تلقي إشعارات فورية حول حالة رحلتك عبر البريد الإلكتروني والرسائل النصية",
+    "unknown": "غير معروف",
+    "notAvailable": "غير متوفر",
+    "economy": "السياحية"
+  },
+  "OrderProgress": {
+    "processingOrder": "جاري معالجة طلبك",
+    "pleaseWait": "يرجى الانتظار بينما نقوم بتأكيد الدفع والحجز",
+    "progress": "التقدم",
+    "complete": "مكتمل",
+    "verifyingPayment": "التحقق من تفاصيل الدفع",
+    "securingBooking": "تأمين حجزك",
+    "confirmingAvailability": "التأكد من التوفر",
+    "finalizingOrder": "إكمال طلبك",
+    "processTime": "تستغرق هذه العملية عادة من 30 إلى 60 ثانية. يرجى عدم تحديث الصفحة"
+  },
+  "PaymentFailed": {
+    "paymentFailed": "فشل عملية الدفع",
+    "paymentNotProcessed": "لم نتمكن من معالجة دفعتك",
+    "transaction": "المعاملة",
+    "paymentError": "خطأ في الدفع",
+    "noChargesApplied": "لم يتم تطبيق أي رسوم على حسابك. يمكنك المحاولة مرة أخرى بأمان.",
+    "paymentMethod": "طريقة الدفع",
+    "cardBrand": "نوع البطاقة",
+    "cardNumber": "رقم البطاقة",
+    "expiry": "تاريخ الانتهاء",
+    "issuer": "المصدر",
+    "amount": "المبلغ",
+    "transactionId": "رقم المعاملة",
+    "tryDifferentPayment": "جرب طريقة دفع مختلفة",
+    "backToBooking": "العودة إلى الحجز",
+    "informationSecure": "معلوماتك آمنة",
+    "securityDescription": "جميع معلومات الدفع مشفرة ومحمية. نظرًا لفشل الدفع، لم تتم معالجة أي رسوم وتبقى معلوماتك المالية آمنة.",
+    "needHelp": "تحتاج إلى مساعدة؟",
+    "callSupport": "اتصل بالدعم",
+    "emailHelp": "مساعدة عبر البريد",
+    "responseTime": "متوسط وقت الاستجابة: أقل من 5 دقائق"
+  },
+  "BookingFailed": {
+    "title": "فشل الحجز",
+    "subtitle": "واجهنا مشكلة في معالجة حجز رحلتك",
+    "errorCodeLabel": "رمز الخطأ",
+    "whatHappenedTitle": "ماذا حدث؟",
+    "errorSummary": {
+      "title": "تعذر إكمال الحجز",
+      "description": "لم يكن حجز رحلتك ناجحًا بسبب مشكلة تقنية. لا تقلق - لم يتم تحصيل أي مبالغ من وسيلة الدفع الخاصة بك.",
+      "timestampLabel": "حدث الخطأ في",
+      "referenceIdLabel": "رقم المرجع"
+    },
+    "attemptedBookingTitle": "تفاصيل محاولة الحجز",
+    "routeLabel": "الطريق",
+    "flightLabel": "الرحلة",
+    "dateLabel": "التاريخ",
+    "passengersLabel": "عدد المسافرين",
+    "commonCausesTitle": "الأسباب الشائعة",
+    "commonIssues": [
+      {
+        "title": "معالجة الدفع",
+        "description": "رفض البطاقة الائتمانية أو انتهاء وقت عملية الدفع"
+      },
+      {
+        "title": "انتهاء الجلسة",
+        "description": "انتهت جلسة الحجز أثناء عملية الدفع"
+      },
+      {
+        "title": "مشاكل الاتصال",
+        "description": "مشاكل في اتصال الشبكة أثناء الحجز"
+      },
+      {
+        "title": "صيانة النظام",
+        "description": "تعطل النظام مؤقتًا أو وجود صيانة"
+      }
+    ],
+    "attemptedFlight": {
+      "route": "نيويورك (JFK) → لوس أنجلوس (LAX)",
+      "date": "15 مارس 2024",
+      "flightNumber": "SL 1847"
+    },
+    "quickActionsTitle": "إجراءات سريعة",
+    "tryAgainButton": "محاولة الحجز مرة أخرى",
+    "backToSearchButton": "العودة إلى البحث",
+    "backButton": "عودة",
+    "needHelpTitle": "تحتاج إلى مساعدة؟",
+    "callSupportLabel": "اتصل بالدعم",
+    "responseTimeLabel": "متوسط وقت الاستجابة: 2-5 دقائق",
+    "apologyMessage": "نعتذر عن الإزعاج. يعمل فريقنا على حل أي مشاكل تقنية.",
+    "systemStatusLink": "حالة النظام",
+    "helpCenterLink": "مركز المساعدة",
+    "contactSupportLink": "اتصل بالدعم",
+    "reportIssueLink": "الإبلاغ عن مشكلة"
   },
   "HotelPage": {
     "noHotelsFound": "لم يتم العثور على فنادق بناءً على المعايير المحددة.",

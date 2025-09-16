@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setData } from "@/redux/store";
 import { AirlinesData } from "@/app/data/airlines";
 import axios from "axios";
-import { addFlightData, selectFlight } from "@/redux/flights/flightSlice";
+import { addFlightData, selectFlight, setCommission } from "@/redux/flights/flightSlice";
 import { scrollToTop } from "@/utils";
 import { useTranslations } from "next-intl";
 
@@ -120,8 +120,10 @@ const FlightCard = ({
       flight
     );
     const flightData = response.data.data.flightOffers;
+    console.log(response.data,"here")
     dispatch(addFlightData(flight));
     dispatch(selectFlight(flightData));
+    dispatch(setCommission(Number(response.data.presentageCommission ?? 0)));
     setIsSideMenuOpen(true);
   };
 
@@ -170,7 +172,7 @@ const FlightCard = ({
                 </div>
 
                 {/* Compact Flight Row */}
-                <div className="grid grid-cols-3 items-center gap-   py-2 px-2">
+                <div className="grid grid-cols-3 items-center gap- py-2 px-2">
                   {/* Departure */}
                   <div className="text-left">
                     <div className="text-base  text-gray-900">
@@ -231,7 +233,6 @@ const FlightCard = ({
             <div className="text-sm text-red-600">
               {flight.numberOfBookableSeats} seats remaining
             </div>
-
             {/* Price Section */}
             <div className="text-right">
               <div className="flex items-center justify-end gap-1">

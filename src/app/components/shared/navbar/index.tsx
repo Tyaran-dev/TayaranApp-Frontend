@@ -8,15 +8,15 @@ import { Menu } from "lucide-react";
 import { WhatApps } from "@/app/svg";
 // import { LanguageSwitcher } from "../google-tranlator/language-switcher";
 import LanguageSwitcher from "../translate/LanguageSwitcher";
-import {useTranslations} from 'next-intl';
-import {Link} from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 const menuItems = [
-  { key: "promo", url: "/promo" },
+  { key: "home", url: "/" },
+  { key: "milecoin", url: "/milecoin" },
   { key: "aboutUs", url: "/aboutUs" },
   { key: "packages", url: "/packages" },
   { key: "tayyranBusiness", url: "/tayyran-Business" },
-  { key: "corporate", url: "/Corporate" },
 ];
 
 const Navbar = () => {
@@ -47,16 +47,16 @@ const Navbar = () => {
 
 
 
-          {menuItems.map((item) => (
-            <Link
-              key={item.key}
-              href={item.url}
-              className={`hover:scale-105 hover:text-secondary duration-300 transition-all text-base font-medium font-montserrat ${isActive(item.url)}`}
-              onClick={() => setIsModalOpen(false)} // only in mobile nav
-            >
-              {t(`navItems.${item.key}`)}
-            </Link>
-          ))}
+            {menuItems.map((item) => (
+              <Link
+                key={item.key}
+                href={item.url}
+                className={`hover:scale-105 hover:text-secondary duration-300 transition-all text-base font-medium font-montserrat ${isActive(item.url)}`}
+                onClick={() => setIsModalOpen(false)} // only in mobile nav
+              >
+                {t(`navItems.${item.key}`)}
+              </Link>
+            ))}
           </div>
 
 
@@ -92,7 +92,7 @@ const Navbar = () => {
         : "-translate-y-[110vh] opacity-40"
         }`}>
         <div className="flex flex-col justify-center gap-2 ">
-        {menuItems.map((item) => (
+          {menuItems.map((item) => (
             <Link
               key={item.key}
               href={item.url}
@@ -100,7 +100,7 @@ const Navbar = () => {
               onClick={() => setIsModalOpen(false)} // only in mobile nav
             >
               {t(`navItems.${item.key}`)}
-              </Link>
+            </Link>
           ))}
 
           <div className="flex flex-col  gap-4">

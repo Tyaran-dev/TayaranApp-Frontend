@@ -137,7 +137,7 @@ const Hotel = ({ hotels }: Props) => {
                   <div className="w-full md:w-[25%] h-48 md:h-60 flex-shrink-0">
                     {hotel?.Images ? (
                       <img
-                        src={hotel.Images[0]}
+                        src={hotel.Image}
                         className="w-full h-full object-cover rounded-xl"
                         alt={hotel?.HotelName}
                       />

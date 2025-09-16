@@ -11,7 +11,7 @@ import Stepper from "@/app/components/shared/Feedback/Stepper";
 import CustomProgressBar from "@/app/components/shared/progress-bar";
 import HotelDetailsSkeleton from "@/app/components/shared/Feedback/HotelDetailsSkeleton";
 import { Hotel } from "@/redux/hotels/hotelsSlice";
-
+import AttractionsSection from "@/app/components/website/hotel-details/AttractionsSection";
 const defaultHotel: Hotel = {
   HotelCode: "",
   HotelName: "",
@@ -48,7 +48,7 @@ export default function HotelPage() {
     (state) => state.hotelData
   );
 
-  const hotelData: Hotel | undefined = hotel?.data?.hotel[0];
+  const hotelData: Hotel | undefined = hotel?.data?.hotel?.[0];
   const availableRooms = hotel?.data?.availableRooms ?? [];
 
 

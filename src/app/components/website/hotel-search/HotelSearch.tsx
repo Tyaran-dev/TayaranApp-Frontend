@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation"; // or next/router if you're using pages router
 import { setHotelSearchData } from "@/redux/hotels/hotelsSlice";
 import Stepper from "../../shared/Feedback/Stepper";
+import { useHotelSearchForm } from "@/hooks/useSearchHotels";
 
 type Room = {
   Adults: number;
@@ -16,164 +17,75 @@ type Room = {
 };
 
 const HotelSearch = () => {
-  const today = new Date();
-  const locale = useLocale();
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
+  const {
+    countries,
+    cities,
+    selectedCountry,
+    setSelectedCountry,
+    selectedCity,
+    setSelectedCity,
+    checkIn,
+    setCheckIn,
+    checkOut,
+    setCheckOut,
+    rooms,
+    addRoom,
+    removeRoom,
+    selectedNationality,
+    setSelectedNationality,
+    handleAdultChange,
+    handleChildChange,
+    handleAgeChange,
+    totalSummary,
+    open,
+    setOpen,
+    today,
+  } = useHotelSearchForm();
+
   const dispatch = useDispatch();
   const router = useRouter();
-
-  const [countries, setCountries] = useState<any[]>([]);
+  const locale = useLocale();
   const [hotelcodes, setHotelCodes] = useState<any[]>([]);
-  const [cities, setCities] = useState<any[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedNationality, setSelectedNationality] = useState("");
-  const [checkIn, setCheckIn] = useState<Date | null>(today);
-  const [checkOut, setCheckOut] = useState<Date | null>(tomorrow);
   const [loading, setLoading] = useState(false);
-  const [rooms, setRooms] = useState<Room[]>([
-    { Adults: 2, Children: 0, ChildrenAges: [] },
-  ]);
 
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const reponse = await axios.get(`${baseUrl}/hotels/CountryList`);
-        setCountries(reponse.data.data || []);
-      } catch (error) {
-        console.error("Error fetching countries:", error);
-      }
-    };
-    fetchCountries();
-  }, []);
-
-  useEffect(() => {
-    if (!selectedCountry) return;
-    const fetchCities = async () => {
-      try {
-        const reponse = await axios.post(`${baseUrl}/hotels/CityList`, {
-          CountryCode: selectedCountry,
-        });
-
-        console.log(reponse, "cities");
-        setCities(reponse.data.data || []);
-      } catch (error) {
-        console.error("Error fetching cities:", error);
-      }
-    };
-    fetchCities();
-  }, [selectedCountry]);
-
-  const addRoom = () => {
-    if (rooms.length < 6) {
-      setRooms([...rooms, { Adults: 2, Children: 0, ChildrenAges: [] }]);
-    }
-  };
-
-  const removeRoom = (index: number) => {
-    const updated = rooms.filter((_, i) => i !== index);
-    setRooms(updated);
-  };
-
-  const updateRoom = (
-    index: number,
-    field: "Adults" | "Children",
-    value: number
-  ) => {
-    const updated = [...rooms];
-    updated[index][field] = value;
-    if (field === "Children") {
-      updated[index].ChildrenAges = Array(value).fill(0);
-    }
-    setRooms(updated);
-  };
-
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!selectedCity || !checkIn || !checkOut) {
       alert("Please select city, check-in, and check-out dates.");
       return;
     }
 
-    const searchParams = {
-      CheckIn: checkIn,
-      CheckOut: checkOut,
-      CityCode: selectedCity,
-      Language: locale,
-      GuestNationality: selectedNationality || selectedCountry,
-      PreferredCurrencyCode: "SAR",
-      PaxRooms: rooms,
-      IsDetailResponse: true,
-      ResponseTime: 23,
-      Filters: {
-        MealType: "All",
-        Refundable: "true",
-        NoOfRooms: rooms.length,
-      },
-    };
+    setLoading(true);
 
-    dispatch(setHotelSearchData(searchParams)); // ✅ store it
-    router.push(`/${locale}/hotel-search`); // ✅ navigate to search result page
+    try {
+      // Store search parameters in Redux
+      dispatch(setHotelSearchData(searchParams));
+
+      // Navigate to results page (you can change the path)
+      router.push(`/${locale}/hotel-search`);
+    } catch (error) {
+      console.error("Hotel search failed:", error);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const [open, setOpen] = useState(false);
-
-  const handleAdultChange = (roomIndex: number, delta: number) => {
-    setRooms((prev) =>
-      prev.map((room, i) =>
-        i === roomIndex
-          ? {
-              ...room,
-              Adults: Math.min(6, Math.max(1, room.Adults + delta)),
-            }
-          : room
-      )
-    );
+  const searchParams = {
+    CheckIn: checkIn,
+    CheckOut: checkOut,
+    CityCode: selectedCity,
+    Language: locale,
+    GuestNationality: selectedNationality || selectedCountry,
+    PreferredCurrencyCode: "SAR",
+    PaxRooms: rooms,
+    IsDetailResponse: true,
+    ResponseTime: 23,
+    Filters: {
+      MealType: "All",
+      Refundable: "true",
+      NoOfRooms: rooms.length,
+    },
   };
-
-  const handleChildChange = (roomIndex: number, delta: number) => {
-    setRooms((prev) =>
-      prev.map((room, i) =>
-        i === roomIndex
-          ? {
-              ...room,
-              Children: Math.min(4, Math.max(0, room.Children + delta)),
-              ChildrenAges:
-                delta > 0
-                  ? [...room.ChildrenAges, 0].slice(0, 4)
-                  : room.ChildrenAges.slice(0, room.ChildrenAges.length - 1),
-            }
-          : room
-      )
-    );
-  };
-
-  const handleAgeChange = (
-    roomIndex: number,
-    childIndex: number,
-    value: number
-  ) => {
-    setRooms((prev) =>
-      prev.map((room, i) =>
-        i === roomIndex
-          ? {
-              ...room,
-              ChildrenAges: room.ChildrenAges.map((age, j) =>
-                j === childIndex ? value : age
-              ),
-            }
-          : room
-      )
-    );
-  };
-
-  const totalSummary = `${rooms.length} Room${
-    rooms.length > 1 ? "s" : ""
-  }, ${rooms.reduce((sum, r) => sum + r.Adults, 0)} Adults, ${rooms.reduce(
-    (sum, r) => sum + r.Children,
-    0
-  )} Child${rooms.reduce((sum, r) => sum + r.Children, 0) !== 1 ? "ren" : ""}`;
 
   return (
     <div className="p-4 max-w-3xl mx-auto ">

@@ -67,6 +67,8 @@ const HotelDetails = ({ hotel, availableRooms }: HotelDetailsProps) => {
         <RoomChoices rooms={availableRooms} />
       </div>
 
+  
+
       <div className="mt-8 ">
         <AminitiesSection aminities={amenities} count={14} />
       </div>

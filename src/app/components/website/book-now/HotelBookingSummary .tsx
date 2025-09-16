@@ -20,16 +20,18 @@ interface CancellationPolicy {
   rawDate?: string;
 }
 
-
 const formatDate = (dateString?: string) => {
   if (!dateString) return "";
   try {
     const parts = dateString.split(/[-/]/);
-    const date = parts.length === 3
-      ? new Date(parts[0].length === 4
-        ? `${parts[0]}-${parts[1]}-${parts[2]}`
-        : `${parts[2]}-${parts[1]}-${parts[0]}`)
-      : new Date(dateString);
+    const date =
+      parts.length === 3
+        ? new Date(
+            parts[0].length === 4
+              ? `${parts[0]}-${parts[1]}-${parts[2]}`
+              : `${parts[2]}-${parts[1]}-${parts[0]}`
+          )
+        : new Date(dateString);
     return date.toLocaleDateString("en-US", {
       day: "numeric",
       month: "short",
@@ -63,7 +65,9 @@ const calculateNights = (checkIn?: string, checkOut?: string) => {
   try {
     const start = new Date(checkIn);
     const end = new Date(checkOut);
-    return Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.round(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    );
   } catch {
     return 0;
   }
@@ -87,71 +91,84 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
   const roomName = selectedRoom?.Name?.[0] || selectedRoom?.Name || "Room";
   const mealType = selectedRoom?.MealType?.replace(/_/g, " ") || "Meal Info";
   const totalPrice = selectedRoom?.TotalFare?.toFixed(2) || "0.00";
+  const netPrice = Number(selectedRoom?.TotalFare || 0);
+  const rspPrice = (netPrice * 1.05).toFixed(2);
   const isRefundable = selectedRoom?.IsRefundable;
   const inclusion = selectedRoom?.Inclusion;
   const cancelPolicies = selectedRoom?.CancelPolicies || [];
   const amenities = selectedRoom?.Amenities || [];
+  const supplements = selectedRoom?.Supplements || [];
   const roomCount = searchParamsData?.PaxRooms.length;
 
-  // Calculate guests from PaxRooms
+  // Guests
   const calculateGuests = () => {
     if (!searchParamsData?.PaxRooms || searchParamsData.PaxRooms.length === 0) {
-      return { adults: 2, children: 0 }; // Default values
+      return { adults: 2, children: 0 };
     }
 
     return searchParamsData.PaxRooms.reduce(
-      (acc: { adults: number; children: number }, room: { Adults?: number; Children?: number }) => ({
+      (
+        acc: { adults: number; children: number },
+        room: { Adults?: number; Children?: number }
+      ) => ({
         adults: acc.adults + (room.Adults || 0),
-        children: acc.children + (room.Children || 0)
+        children: acc.children + (room.Children || 0),
       }),
       { adults: 0, children: 0 }
     );
-
   };
 
   const { adults, children } = calculateGuests();
 
-  console.log(adults, children, "count")
-
-  // Get booking details from search params or use defaults
   const checkInDate = formatDate(searchParamsData?.CheckIn) || "04 Aug 2025";
   const checkOutDate = formatDate(searchParamsData?.CheckOut) || "05 Aug 2025";
-  const nights = calculateNights(searchParamsData?.CheckIn, searchParamsData?.CheckOut) || 1;
+  const nights =
+    calculateNights(searchParamsData?.CheckIn, searchParamsData?.CheckOut) || 1;
 
-  // Process cancellation policies
+  // Cancellation policies
   const getCancellationPolicy = () => {
     if (!cancelPolicies || cancelPolicies.length === 0) {
       return isRefundable
-        ? [{
-          policy: "Free cancellation available",
-          deadline: "Anytime before check-in",
-          charge: "SAR 0",
-          type: "free"
-        }]
-        : [{
-          policy: "Non-refundable",
-          deadline: "N/A",
-          charge: "Full amount will be charged",
-          type: "non-refundable"
-        }];
+        ? [
+            {
+              policy: "Free cancellation available",
+              deadline: "Anytime before check-in",
+              charge: "SAR 0",
+              type: "free",
+            },
+          ]
+        : [
+            {
+              policy: "Non-refundable",
+              deadline: "N/A",
+              charge: "Full amount will be charged",
+              type: "non-refundable",
+            },
+          ];
     }
 
-    return cancelPolicies.map((policy: any) => {
-      const charge = policy.CancellationCharge || 0;
-      return {
-        policy: charge === 0 ? "Free cancellation" : "Cancellation fee applies",
-        deadline: `Before ${formatDateTime(policy.FromDate)}`,
-        charge: charge > 0 ? `SAR ${charge.toFixed(2)}` : "No charge",
-        type: charge === 0 ? "free" : "penalty",
-        rawDate: policy.FromDate ? String(policy.FromDate) : ""
-      };
-    }).sort((a: CancellationPolicy, b: CancellationPolicy) => {
-      try {
-        return new Date(a.rawDate || "").getTime() - new Date(b.rawDate || "").getTime();
-      } catch {
-        return 0;
-      }
-    });
+    return cancelPolicies
+      .map((policy: any) => {
+        const charge = policy.CancellationCharge || 0;
+        return {
+          policy:
+            charge === 0 ? "Free cancellation" : "Cancellation fee applies",
+          deadline: `Before ${formatDateTime(policy.FromDate)}`,
+          charge: charge > 0 ? `SAR ${charge.toFixed(2)}` : "No charge",
+          type: charge === 0 ? "free" : "penalty",
+          rawDate: policy.FromDate ? String(policy.FromDate) : "",
+        };
+      })
+      .sort((a: CancellationPolicy, b: CancellationPolicy) => {
+        try {
+          return (
+            new Date(a.rawDate || "").getTime() -
+            new Date(b.rawDate || "").getTime()
+          );
+        } catch {
+          return 0;
+        }
+      });
   };
 
   const cancellationPolicies = getCancellationPolicy();
@@ -186,35 +203,42 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
               </div>
 
               <ul className="space-y-4">
-                {cancellationPolicies.map((policy: CancellationPolicy, index: number) => (
-                  <li
-                    key={index}
-                    className={`text-sm border-l-4 pl-3 py-1 ${policy.type === "free"
-                      ? "border-green-500 bg-green-50"
-                      : policy.type === "non-refundable"
-                        ? "border-red-500 bg-red-50"
-                        : "border-orange-500 bg-orange-50"
+                {cancellationPolicies.map(
+                  (policy: CancellationPolicy, index: number) => (
+                    <li
+                      key={index}
+                      className={`text-sm border-l-4 pl-3 py-1 ${
+                        policy.type === "free"
+                          ? "border-green-500 bg-green-50"
+                          : policy.type === "non-refundable"
+                            ? "border-red-500 bg-red-50"
+                            : "border-orange-500 bg-orange-50"
                       }`}
-                  >
-                    <div className="font-medium text-gray-800">
-                      {policy.policy}
-                    </div>
-                    <div className="text-gray-600 mt-1">
-                      <span className="font-semibold">Deadline:</span> {policy.deadline}
-                    </div>
-                    <div className="text-gray-600 mt-1">
-                      <span className="font-semibold">Charge:</span> {policy.charge}
-                    </div>
-                  </li>
-                ))}
+                    >
+                      <div className="font-medium text-gray-800">
+                        {policy.policy}
+                      </div>
+                      <div className="text-gray-600 mt-1">
+                        <span className="font-semibold">Deadline:</span>{" "}
+                        {policy.deadline}
+                      </div>
+                      <div className="text-gray-600 mt-1">
+                        <span className="font-semibold">Charge:</span>{" "}
+                        {policy.charge}
+                      </div>
+                    </li>
+                  )
+                )}
               </ul>
 
               <div className="mt-6 text-xs text-gray-500">
                 <p className="mb-2">
-                  The property's cancellation policy applies to this reservation.
+                  The property's cancellation policy applies to this
+                  reservation.
                 </p>
                 <p>
-                  For modifications or assistance, please contact the property directly.
+                  For modifications or assistance, please contact the property
+                  directly.
                 </p>
               </div>
             </div>
@@ -233,7 +257,9 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
       {/* Booking Summary Card */}
       <div className="sticky top-6 bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-6 pb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Booking Summary</h2>
+          <h2 className="text-lg font-semibold text-gray-900">
+            Booking Summary
+          </h2>
         </div>
 
         <div className="px-6 pb-6 space-y-4">
@@ -286,7 +312,9 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
               <LuUsers className="w-4 h-4 text-gray-500" />
               <span className="text-gray-700">
                 {adults} Adult{adults !== 1 ? "s" : ""}
-                {children > 0 ? `, ${children} Child${children !== 1 ? "ren" : ""}` : ""}
+                {children > 0
+                  ? `, ${children} Child${children !== 1 ? "ren" : ""}`
+                  : ""}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -317,7 +345,7 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
                 </span>
               )}
               {inclusion && (
-                <span className="text-xs text-gray-600 border border-gray-200 bg-gray-50 px-2 py-1 rounded">
+                <span className="text-xs text-gray-600 border  border-gray-200 bg-gray-50 px-2 py-1 rounded">
                   {inclusion}
                 </span>
               )}
@@ -332,7 +360,8 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
                 >
                   View cancellation policy
                   <span className="ml-1 text-blue-400">
-                    ({cancellationPolicies.length} condition{cancellationPolicies.length !== 1 ? 's' : ''})
+                    ({cancellationPolicies.length} condition
+                    {cancellationPolicies.length !== 1 ? "s" : ""})
                   </span>
                 </button>
               </div>
@@ -346,26 +375,68 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
             <h4 className="font-semibold text-sm text-gray-900">
               Price breakdown
             </h4>
+
+            {/* Base Price */}
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">
-                {roomCount} room x {nights} night{nights !== 1 ? "s" : ""}
+                Base price ({roomCount} room x {nights} night
+                {nights !== 1 ? "s" : ""})
               </span>
-              <span className="text-gray-900">SAR {totalPrice}</span>
+              <span className="text-gray-900">
+                SAR {parseFloat(totalPrice).toFixed(2)}
+              </span>
             </div>
+
+            {/* Commission */}
+            <div className="flex justify-between text-sm text-green-700">
+              <span className="text-gray-600">Administration Fees </span>
+              <span className="text-green-700">
+                SAR {(parseFloat(totalPrice) * 0.05).toFixed(2)}
+              </span>
+            </div>
+
             <hr className="border-gray-200" />
+
+            {/* RSP Price (Total) */}
             <div className="flex justify-between font-semibold text-sm">
               <span className="text-gray-900">Total (incl. VAT)</span>
-              <span className="text-gray-900">SAR {totalPrice}</span>
+              <span className="text-gray-900">SAR {rspPrice}</span>
             </div>
           </div>
+
+          {/* Supplement Details */}
+          {selectedRoom?.Supplements && selectedRoom.Supplements.length > 0 && (
+            <div className="mt-4 border rounded-lg bg-white border-gray-200 p-3">
+              <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                Supplement Details for Room
+              </h4>
+              <p className="text-sm text-gray-600 mb-2">
+                Supplements to be paid directly to the hotel on reaching:
+              </p>
+              <ul className="space-y-1">
+                {selectedRoom.Supplements.flat().map(
+                  (supp: any, idx: number) => (
+                    <li
+                      key={idx}
+                      className="flex items-center text-sm text-gray-800"
+                    >
+                      <span className="text-green-600 mr-2">✔</span>
+                      {supp.Description}
+                      <span className="ml-1 text-gray-500">
+                        ({supp.Currency} {supp.Price})
+                      </span>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          )}
 
           {/* Check-in/out times */}
           <div className="text-xs text-gray-500 mt-2">
             <p>Check-in: {checkInTime}</p>
             <p>Check-out: {checkOutTime}</p>
           </div>
-
-
         </div>
       </div>
     </div>

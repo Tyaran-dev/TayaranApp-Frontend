@@ -6,12 +6,16 @@ import CustomDatePicker from "../../shared/custom-date-picker";
 import Travelers from "../../shared/traveller-field";
 import toast from "react-hot-toast";
 import { useLocale, useTranslations } from "next-intl";
-import { changeTripType, setSearchData, clearFlightData } from "@/redux/flights/flightSlice";
+import {
+  changeTripType,
+  setSearchData,
+  clearFlightData,
+} from "@/redux/flights/flightSlice";
 import { useDispatch, useSelector } from "react-redux";
 import useSearchflights from "@/hooks/useSearchflights";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { FlightFormData } from "@/redux/flights/flightSlice";
-export const tripTypes = ["roundtrip", "oneway", "multiCities"] as const;
+export const tripTypes = ["oneway", "roundtrip", "multiCities"] as const;
 import fromImg from "/public/assets/from.png";
 import toImg from "/public/assets/to.png";
 
@@ -26,7 +30,9 @@ const FlightSearchForm = () => {
   const t = useTranslations("searchForm");
   const locale = useLocale();
   const dispatch = useDispatch();
-  const tripType = useSelector((state: any) => state.flightData.tripType);
+  const tripType = useSelector(
+    (state: any) => state.flightData.searchParamsData.flightType
+  );
 
   const {
     flights,
@@ -48,23 +54,25 @@ const FlightSearchForm = () => {
     setFlightClass,
     setSegments,
     triggerSearch,
-    hasHydrated
+    hasHydrated,
   } = useSearchflights();
 
-  const [multiCitySegments, setMultiCitySegments] = useState<FlightSegment[]>(() => {
-    if (tripType === "multiCities" && segments?.length > 0) {
-      return segments.map(s => ({
-        id: s.id || uuidv4(),
-        origin: s.origin,
-        destination: s.destination,
-        date: s.date
-      }));
+  const [multiCitySegments, setMultiCitySegments] = useState<FlightSegment[]>(
+    () => {
+      if (tripType === "multiCities" && segments?.length > 0) {
+        return segments.map((s) => ({
+          id: s.id || uuidv4(),
+          origin: s.origin,
+          destination: s.destination,
+          date: s.date,
+        }));
+      }
+      return [
+        { id: uuidv4(), origin: "", destination: "", date: null },
+        { id: uuidv4(), origin: "", destination: "", date: null },
+      ];
     }
-    return [
-      { id: uuidv4(), origin: "", destination: "", date: null },
-      { id: uuidv4(), origin: "", destination: "", date: null }
-    ];
-  });
+  );
 
   useEffect(() => {
     if (tripType === "multiCities" && segments?.length > 0) {
@@ -73,8 +81,9 @@ const FlightSearchForm = () => {
   }, [tripType, segments]);
 
   const handleAddSegment = () => {
-    setMultiCitySegments([...multiCitySegments,
-    { id: uuidv4(), origin: "", destination: "", date: null }
+    setMultiCitySegments([
+      ...multiCitySegments,
+      { id: uuidv4(), origin: "", destination: "", date: null },
     ]);
   };
 
@@ -86,7 +95,11 @@ const FlightSearchForm = () => {
     }
   };
 
-  const handleSegmentChange = (index: number, field: keyof FlightSegment, value: any) => {
+  const handleSegmentChange = (
+    index: number,
+    field: keyof FlightSegment,
+    value: any
+  ) => {
     const updated = [...multiCitySegments];
     updated[index] = { ...updated[index], [field]: value };
     setMultiCitySegments(updated);
@@ -104,7 +117,9 @@ const FlightSearchForm = () => {
         return false;
       }
     } else if (tripType === "multiCities") {
-      if (multiCitySegments.some(s => !s.origin || !s.destination || !s.date)) {
+      if (
+        multiCitySegments.some((s) => !s.origin || !s.destination || !s.date)
+      ) {
         toast.error(t("errors.missingMultiCityFields"));
         return false;
       }
@@ -121,15 +136,17 @@ const FlightSearchForm = () => {
 
     const searchData: FlightFormData = {
       origin: tripType === "multiCities" ? multiCitySegments[0].origin : origin,
-      destination: tripType === "multiCities"
-        ? multiCitySegments[multiCitySegments.length - 1].destination
-        : destination,
-      departure: tripType === "multiCities" ? multiCitySegments[0].date : departure,
+      destination:
+        tripType === "multiCities"
+          ? multiCitySegments[multiCitySegments.length - 1].destination
+          : destination,
+      departure:
+        tripType === "multiCities" ? multiCitySegments[0].date : departure,
       returnDate,
       travelers,
       flightType: tripType,
       flightClass,
-      segments: tripType === "multiCities" ? multiCitySegments : []
+      segments: tripType === "multiCities" ? multiCitySegments : [],
     };
 
     dispatch(setSearchData(searchData));
@@ -140,18 +157,20 @@ const FlightSearchForm = () => {
 
     // Trigger the search after state updates
     triggerSearch(searchData);
-
   };
 
   const flightClassOptions = [
-    { label: t("flightClass.economy"), value: "ECONOMY" },
-    { label: t("flightClass.premiumEconomy"), value: "PREMIUM_ECONOMY" },
-    { label: t("flightClass.business"), value: "BUSINESS" },
-    { label: t("flightClass.firstClass"), value: "FIRST" },
+    { label: t("flightClassOptions.economy"), value: "ECONOMY" },
+    { label: t("flightClassOptions.premiumEconomy"), value: "PREMIUM_ECONOMY" },
+    { label: t("flightClassOptions.business"), value: "BUSINESS" },
+    { label: t("flightClassOptions.firstClass"), value: "FIRST" },
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-1  rounded-lg  border shadow-sm  py-4 px-6 w-full mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-1  rounded-lg  border shadow-sm  py-4 px-6 w-full mx-auto"
+    >
       {/* Trip Type Selector */}
       <div className="flex gap-2 md:gap-4 justify-between md:justify-normal w-full">
         {tripTypes.map((type) => (
@@ -159,11 +178,15 @@ const FlightSearchForm = () => {
             key={type}
             type="button"
             onClick={() => dispatch(changeTripType(type))}
-            className={`px-2 md:px-4 py-2 text-sm font-medium md:text-base rounded-lg ${tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
-              }`}
+            className={`px-2 md:px-4 py-2 text-sm font-medium md:text-base rounded-lg ${
+              tripType === type ? "bg-greenGradient text-white" : "bg-[#EEEEEE]"
+            }`}
           >
-            {type === "roundtrip" ? t("tripTypes.roundtrip") :
-              type === "oneway" ? t("tripTypes.oneway") : t("tripTypes.multiplecities")}
+            {type === "roundtrip"
+              ? t("tripTypes.roundtrip")
+              : type === "oneway"
+                ? t("tripTypes.oneway")
+                : t("tripTypes.multiplecities")}
           </button>
         ))}
       </div>
@@ -176,8 +199,12 @@ const FlightSearchForm = () => {
             children={travelers.children}
             infants={travelers.infants}
             setAdults={(value) => setTravelers({ ...travelers, adults: value })}
-            setChildren={(value) => setTravelers({ ...travelers, children: value })}
-            setInfants={(value) => setTravelers({ ...travelers, infants: value })}
+            setChildren={(value) =>
+              setTravelers({ ...travelers, children: value })
+            }
+            setInfants={(value) =>
+              setTravelers({ ...travelers, infants: value })
+            }
           />
         </div>
         <div className="lg:w-1/5">
@@ -187,7 +214,11 @@ const FlightSearchForm = () => {
             onChange={(e) => setFlightClass(e.target.value)}
           >
             {flightClassOptions.map((item) => (
-              <option className="text-[10px] md:text-base flex justify-center" key={item.value} value={item.value}>
+              <option
+                className="text-[10px] md:text-base flex justify-center"
+                key={item.value}
+                value={item.value}
+              >
                 {item.label}
               </option>
             ))}
@@ -200,7 +231,7 @@ const FlightSearchForm = () => {
         <div className="flex gap-7 justify-start flex-wrap items-center">
           <div className="relative lg:w-1/5 w-full">
             <AirportSearchField
-              placeholder={t("from")}
+              placeholder={origin ? origin : t("from")}
               defaultValue={origin}
               onSelect={setOrigin}
               className="border rounded-lg py-2 !border-borderColor"
@@ -222,12 +253,11 @@ const FlightSearchForm = () => {
 
           <div className="relative lg:w-1/5 w-full">
             <AirportSearchField
-              placeholder={t("to")}
+              placeholder={destination ? destination : t("to")}
               defaultValue={destination}
               onSelect={setDestination}
               className="border rounded-lg py-2 !border-borderColor"
               icon={toImg}
-
             />
           </div>
 
@@ -259,7 +289,9 @@ const FlightSearchForm = () => {
                 <AirportSearchField
                   placeholder={t("from")}
                   defaultValue={segment.origin}
-                  onSelect={(value) => handleSegmentChange(index, "origin", value)}
+                  onSelect={(value) =>
+                    handleSegmentChange(index, "origin", value)
+                  }
                   className="border rounded-lg py-2 !border-borderColor"
                 />
               </div>
@@ -268,7 +300,9 @@ const FlightSearchForm = () => {
                 <AirportSearchField
                   placeholder={t("to")}
                   defaultValue={segment.destination}
-                  onSelect={(value) => handleSegmentChange(index, "destination", value)}
+                  onSelect={(value) =>
+                    handleSegmentChange(index, "destination", value)
+                  }
                   className="border rounded-lg py-2 !border-borderColor text-sm"
                 />
               </div>
@@ -276,7 +310,11 @@ const FlightSearchForm = () => {
               <div className="relative lg:w-[30%] w-full">
                 <CustomDatePicker
                   value={segment.date}
-                  minDate={index > 0 ? multiCitySegments[index - 1].date || undefined : new Date()}
+                  minDate={
+                    index > 0
+                      ? multiCitySegments[index - 1].date || undefined
+                      : new Date()
+                  }
                   onChange={(date) => handleSegmentChange(index, "date", date)}
                   className="px-4 py-2 w-full rounded-lg text-sm border border-borderColor"
                 />
@@ -299,8 +337,6 @@ const FlightSearchForm = () => {
               )}
             </div>
           ))}
-
-
         </div>
       )}
 

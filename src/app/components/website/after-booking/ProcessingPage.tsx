@@ -3,15 +3,22 @@ import ProcessingSpinner from "./ProcessingSpinner";
 import ProcessingProgressBar from "./ProcessingProgressBar";
 import ProcessingDots from "./ProcessingDots";
 import { CheckCircle, Clock, CreditCard, Shield } from "lucide-react";
+import { useTranslations } from "next-intl"; // Assuming you're using next-intl
 
-const ProcessingPage = () => {
+type ProcessingPageProps = {
+  lng?: "en" | "ar";
+};
+
+const ProcessingPage = ({ lng = "en" }: ProcessingPageProps) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const t = useTranslations("Processing");
+  const isRTL = lng === "ar";
 
   const steps = [
-    { icon: CreditCard, label: "Verifying payment details", delay: 2000 },
-    { icon: Shield, label: "Securing your booking", delay: 3000 },
-    { icon: Clock, label: "Confirming availability", delay: 4000 },
-    { icon: CheckCircle, label: "Finalizing your order", delay: 5000 },
+    { icon: CreditCard, label: t("verifyingPayment"), delay: 2000 },
+    { icon: Shield, label: t("securingBooking"), delay: 3000 },
+    { icon: Clock, label: t("confirmingAvailability"), delay: 4000 },
+    { icon: CheckCircle, label: t("finalizingOrder"), delay: 5000 },
   ];
 
   useEffect(() => {
@@ -23,7 +30,9 @@ const ProcessingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-processing-bg via-white to-processing-bg/50 flex items-center justify-center p-6">
+    <div
+      className={`min-h-screen bg-gradient-to-br from-processing-bg via-white to-processing-bg/50 flex items-center justify-center p-6 ${isRTL ? "rtl" : "ltr"}`}
+    >
       <div className="w-full max-w-md mx-auto">
         {/* Main processing card */}
         <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-xl border border-border/50 p-8 text-center animate-fade-in">
@@ -34,11 +43,11 @@ const ProcessingPage = () => {
             </div>
 
             <h1 className="text-2xl font-bold text-foreground mb-3">
-              Processing your order
+              {t("processingOrder")}
             </h1>
 
             <p className="text-muted-foreground leading-relaxed">
-              Please wait while we confirm your payment and booking
+              {t("pleaseWait")}
             </p>
           </div>
 
@@ -58,7 +67,7 @@ const ProcessingPage = () => {
               return (
                 <div
                   key={index}
-                  className={`flex bg-emerald-50 items-center justify-center space-x-3 p-3 rounded-lg transition-all duration-500 ${
+                  className={`flex bg-emerald-50 items-center ${isRTL ? "space-x-reverse" : ""} space-x-3 p-3 rounded-lg transition-all duration-500 ${
                     isActive
                       ? "bg-processing-primary/10 text-processing-primary"
                       : "text-muted-foreground"
@@ -94,10 +103,7 @@ const ProcessingPage = () => {
 
           {/* Footer message */}
           <div className="mt-8 pt-6 border-t border-border/50">
-            <p className="text-xs text-muted-foreground">
-              This process usually takes 30-60 seconds. Please don't refresh the
-              page.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("processTime")}</p>
           </div>
         </div>
 
