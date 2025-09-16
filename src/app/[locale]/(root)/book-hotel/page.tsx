@@ -180,6 +180,9 @@ const validatePhoneNumber = (phone: string) => {
 export default function BookingPage() {
   const dispatch = useDispatch();
   // State
+  // 1️⃣ Add state to hold BookingReferenceId and booking details
+  const [bookingReferenceId, setBookingReferenceId] = useState<string | null>(null);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
   const [currentStep] = useState(3);
   const [roomsGuestData, setRoomsGuestData] = useState<RoomGuestData[]>([]);
   const [openItems, setOpenItems] = useState<string[]>([]);
@@ -499,6 +502,25 @@ export default function BookingPage() {
     preBookRoom();
   }, [selectedRoom]);
 
+  useEffect(() => {
+    if (!bookingReferenceId) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await axios.post(
+          "https://api.tayyaran.com/hotels/BookingDetail", // your Express endpoint
+          { BookingReferenceId: bookingReferenceId }
+        );
+
+        console.log("Booking details:", response.data);
+      } catch (err) {
+        console.error("Error fetching booking details:", err);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [bookingReferenceId]);
+
 
   // 🔹 30-minute session expiration
   // useEffect(() => {
@@ -569,7 +591,12 @@ export default function BookingPage() {
     }
 
     try {
-      await handleSubmitBooking();
+      const bookingResponse = await handleSubmitBooking();
+
+      // Capture BookingReferenceId returned by API
+      if (bookingResponse?.BookingReferenceId) {
+        setBookingReferenceId(bookingResponse.BookingReferenceId);
+      }
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
