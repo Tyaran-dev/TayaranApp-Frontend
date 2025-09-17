@@ -15,8 +15,16 @@ type CustomerDetail = {
 };
 
 export type BookingData = {
+  BookingCode: string; // or whatever fields you already have
+  BookingReferenceId: string; // 👈 add this
   CustomerDetails: CustomerDetail[];
-  // add more fields as required by API
+  ClientReferenceId: string;
+  TotalFare: number;
+  EmailId: string;
+  PhoneNumber: string;
+  BookingType: string;
+  PaymentMode: string;
+  // add other fields expected by your API here
 };
 
 export type BookingResponse = {
@@ -24,6 +32,7 @@ export type BookingResponse = {
   success: boolean;
   bookingId: string;
   message?: string;
+  BookingReferenceId: string; // now guaranteed to exist
 };
 
 // -------- Thunk --------
@@ -44,11 +53,10 @@ const actBookingHotel = createAsyncThunk<
       bookingData
     );
 
-    // Combine your API response with the bookingData you sent
     return {
-      ...response.data,
-      BookingReferenceId: (bookingData as any).BookingReferenceId, // take from payload you sent
-    };
+      ...response.data, // everything from API
+      BookingReferenceId: bookingData.BookingReferenceId, // add your own field
+    } as BookingResponse;
   } catch (error: any) {
     const statusCode = error.response?.status || 500;
     const message = error.response?.data || { error: error.message };

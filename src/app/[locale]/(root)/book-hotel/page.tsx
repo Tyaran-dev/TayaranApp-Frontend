@@ -572,8 +572,6 @@ export default function BookingPage() {
       // Your existing booking call
       const bookingResponse = await handleSubmitBooking();
 
-      
-
       // Capture BookingReferenceId returned by API
       if (bookingResponse?.BookingReferenceId) {
         setBookingReferenceId(bookingResponse.BookingReferenceId);
@@ -1038,6 +1036,51 @@ export default function BookingPage() {
                   </button>
                 </div>
               </div>
+              {/* ✅ Redesigned Amenities Section */}
+              {preBookedRoom &&
+                preBookedRoom.Rooms?.[0]?.Amenities?.length > 0 && (
+                  <section className="mt-10">
+                    {/* Section Title */}
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="w-1.5 h-8 bg-emerald-500 rounded-full"></span>
+                      <h3 className="text-2xl font-bold text-gray-900">
+                        Room Amenities
+                      </h3>
+                    </div>
+
+                    {/* Amenities Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                      {preBookedRoom.Rooms[0].Amenities.map(
+                        (amenity: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-start gap-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-4"
+                          >
+                            <div className="flex-shrink-0">
+                              {/* Icon */}
+                              <svg
+                                className="w-5 h-5 text-emerald-500 mt-1"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </div>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                              {amenity}
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </section>
+                )}
             </div>
 
             <HotelBookingSummary hotel={hotel} room={preBookedRoom} />

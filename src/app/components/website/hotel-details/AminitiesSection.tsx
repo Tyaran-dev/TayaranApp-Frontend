@@ -1,6 +1,6 @@
-'use client';
-import { useState } from 'react';
-import { useLocale } from 'next-intl';
+"use client";
+import { useState } from "react";
+import { useLocale } from "next-intl";
 import {
   Wifi,
   Bed,
@@ -11,7 +11,7 @@ import {
   Dumbbell,
   ParkingCircle,
   Sparkles,
-} from 'lucide-react';
+} from "lucide-react";
 
 type Props = {
   aminities: string[];
@@ -53,7 +53,7 @@ const AminitiesSection = ({ aminities, count = 8 }: Props) => {
 
       {/* Grid of cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
-        {visibleAminities.map((item, index) => (
+        {visibleAminities?.map((item, index) => (
           <div
             key={index}
             className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition"
@@ -69,13 +69,13 @@ const AminitiesSection = ({ aminities, count = 8 }: Props) => {
       </div>
 
       {/* Show More / Less */}
-      {aminities.length > count && (
+      {aminities?.length > count && (
         <div className="flex justify-center mt-6">
           <button
             onClick={() => setShowMore(!showMore)}
             className="px-6 py-2 text-sm font-medium rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 shadow-sm"
           >
-            {showMore ? 'Show Less' : `+${aminities.length - count} More`}
+            {showMore ? "Show Less" : `+${aminities.length - count} More`}
           </button>
         </div>
       )}
