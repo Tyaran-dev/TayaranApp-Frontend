@@ -100,9 +100,7 @@ export default function Page() {
   }, [hotels]);
 
 
-  // Debug
-  console.log(hotelsData.hotels, "normalized hotels");
-  console.log(hotelsData.pagination, "normalized pagination");
+
 
   const noResults =
     loading === "succeeded" && hotelsData.hotels.length === 0 || loading === "failed";

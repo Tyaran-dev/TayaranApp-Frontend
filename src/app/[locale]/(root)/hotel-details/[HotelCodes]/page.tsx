@@ -11,7 +11,8 @@ import Stepper from "@/app/components/shared/Feedback/Stepper";
 import CustomProgressBar from "@/app/components/shared/progress-bar";
 import HotelDetailsSkeleton from "@/app/components/shared/Feedback/HotelDetailsSkeleton";
 import { Hotel } from "@/redux/hotels/hotelsSlice";
-import AttractionsSection from "@/app/components/website/hotel-details/AttractionsSection";
+
+
 const defaultHotel: Hotel = {
   HotelCode: "",
   HotelName: "",
