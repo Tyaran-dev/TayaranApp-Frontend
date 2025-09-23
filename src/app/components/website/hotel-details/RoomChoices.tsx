@@ -15,7 +15,7 @@ export interface Room {
   RateConditions?: (string | object | null | undefined)[];
 }
 
-const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
+const RoomChoices = ({ rooms, presentageCommission }: { rooms: Room[], presentageCommission?: number; }) => {
   const [activeTab, setActiveTab] = useState<
     "all" | "free-cancellation" | "breakfast-included"
   >("all");
@@ -51,8 +51,8 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
       <div className="flex gap-2 md:gap-6 my-4 md:mb-12 p-2 text-xs md:text-base">
         <button
           className={`px-4 py-2 rounded-lg  w-28 md:w-44 ${activeTab === "all"
-              ? "bg-orange text-white"
-              : "border border-gray2 text-gray2"
+            ? "bg-orange text-white"
+            : "border border-gray2 text-gray2"
             }`}
           onClick={() => setActiveTab("all")}
         >
@@ -60,8 +60,8 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
         </button>
         <button
           className={`px-4 py-2 rounded-lg  w-28  md:w-44 ${activeTab === "free-cancellation"
-              ? "bg-orange text-white"
-              : "border border-gray2 text-gray2"
+            ? "bg-orange text-white"
+            : "border border-gray2 text-gray2"
             }`}
           onClick={() => setActiveTab("free-cancellation")}
         >
@@ -69,8 +69,8 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
         </button>
         <button
           className={`px-4 py-2 rounded-lg  w-28  md:w-44 ${activeTab === "breakfast-included"
-              ? "bg-orange text-white"
-              : "border border-gray2 text-gray2"
+            ? "bg-orange text-white"
+            : "border border-gray2 text-gray2"
             }`}
           onClick={() => setActiveTab("breakfast-included")}
         >
@@ -85,6 +85,7 @@ const RoomChoices = ({ rooms }: { rooms: Room[] }) => {
             data={getCurrentRooms()}
             showCancellationBadge={activeTab === "all"}
             showMealTypeBadge={activeTab === "all"}
+            presentageCommission={presentageCommission}
           />
         ) : (
           <p className="text-gray-500">

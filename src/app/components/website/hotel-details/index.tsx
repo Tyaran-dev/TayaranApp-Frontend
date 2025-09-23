@@ -20,9 +20,10 @@ import PhotosSection from "./PhotoSection";
 interface HotelDetailsProps {
   hotel: Hotel;
   availableRooms: any[]; // Replace `any[]` with your actual room type if you have one
+  presentageCommission: number | undefined
 }
 
-const HotelDetails = ({ hotel, availableRooms }: HotelDetailsProps) => {
+const HotelDetails = ({ hotel, availableRooms, presentageCommission }: HotelDetailsProps) => {
   const data = {
     airline: "Ramada Plaza by Wyndham Istanbul City Center Adults Only",
     location: "Halaskargazi Cad No 63",
@@ -32,7 +33,6 @@ const HotelDetails = ({ hotel, availableRooms }: HotelDetailsProps) => {
     images: [i1, i2, i3, i4, i5],
     // featureImages: [f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6, f1, f2, f3, f4, f5, f6],
   };
-  console.log(hotel, "hotelllllllllllllllllll here")
 
   const tabs = [
     { id: "photos", label: "Photos" },
@@ -64,10 +64,10 @@ const HotelDetails = ({ hotel, availableRooms }: HotelDetailsProps) => {
       )}
 
       <div className="mt-8 w-full">
-        <RoomChoices rooms={availableRooms} />
+        <RoomChoices rooms={availableRooms} presentageCommission={presentageCommission} />
       </div>
 
-  
+
 
       <div className="mt-8 ">
         <AminitiesSection aminities={amenities} count={14} />

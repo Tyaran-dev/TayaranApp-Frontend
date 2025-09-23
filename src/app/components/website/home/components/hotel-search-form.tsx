@@ -217,7 +217,7 @@ const HotelSearch = ({ className }: { className?: string }) => {
                                     )
                                   }
                                 >
-                                  {Array.from({ length: 18 }).map((_, i) => (
+                                  {Array.from({ length: 17 }).map((_, i) => (
                                     <option key={i} value={i}>
                                       {i + 1} yrs
                                     </option>
