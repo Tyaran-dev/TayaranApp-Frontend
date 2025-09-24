@@ -16,7 +16,7 @@ interface CancellationPolicy {
   policy: string;
   deadline: string;
   charge: string;
-  type: "free" | "non-refundable" | "penalty";
+  type: string;
   rawDate?: string;
 }
 
@@ -27,10 +27,10 @@ const formatDate = (dateString?: string) => {
     const date =
       parts.length === 3
         ? new Date(
-            parts[0].length === 4
-              ? `${parts[0]}-${parts[1]}-${parts[2]}`
-              : `${parts[2]}-${parts[1]}-${parts[0]}`
-          )
+          parts[0].length === 4
+            ? `${parts[0]}-${parts[1]}-${parts[2]}`
+            : `${parts[2]}-${parts[1]}-${parts[0]}`
+        )
         : new Date(dateString);
     return date.toLocaleDateString("en-US", {
       day: "numeric",
@@ -130,32 +130,54 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
     if (!cancelPolicies || cancelPolicies.length === 0) {
       return isRefundable
         ? [
-            {
-              policy: "Free cancellation available",
-              deadline: "Anytime before check-in",
-              charge: "SAR 0",
-              type: "free",
-            },
-          ]
+          {
+            policy: "Free cancellation available",
+            deadline: "Anytime before check-in",
+            charge: "SAR 0",
+            type: "free",
+          },
+        ]
         : [
-            {
-              policy: "Non-refundable",
-              deadline: "N/A",
-              charge: "Full amount will be charged",
-              type: "non-refundable",
-            },
-          ];
+          {
+            policy: "Non-refundable",
+            deadline: "N/A",
+            charge: "Full amount will be charged",
+            type: "non-refundable",
+          },
+        ];
     }
 
     return cancelPolicies
       .map((policy: any) => {
         const charge = policy.CancellationCharge || 0;
+        const chargeType = (policy.ChargeType || "").toLowerCase();
+
+        // Build charge string depending on type
+        let chargeDisplay = "";
+        let type = "";
+
+        if (charge === 0) {
+          chargeDisplay = "No charge";
+          type = "free";
+        } else if (chargeType === "percentage") {
+          chargeDisplay = `${charge}% of booking amount`;
+          type = "percentage";
+        } else if (chargeType === "fixed") {
+          chargeDisplay = `SAR ${charge.toFixed(2)}`;
+          type = "fixed";
+        } else {
+          chargeDisplay = `SAR ${charge.toFixed(2)}`;
+          type = "penalty";
+        }
+
         return {
           policy:
-            charge === 0 ? "Free cancellation" : "Cancellation fee applies",
+            charge === 0
+              ? "Free cancellation"
+              : `Cancellation fee applies (${policy.ChargeType})`,
           deadline: `Before ${formatDateTime(policy.FromDate)}`,
-          charge: charge > 0 ? `SAR ${charge.toFixed(2)}` : "No charge",
-          type: charge === 0 ? "free" : "penalty",
+          charge: chargeDisplay,
+          type,
           rawDate: policy.FromDate ? String(policy.FromDate) : "",
         };
       })
@@ -171,70 +193,75 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
       });
   };
 
+
   const cancellationPolicies = getCancellationPolicy();
   const hasCancellationPolicy = cancellationPolicies.length > 0;
 
   return (
     <div className="lg:col-span-1">
-      {/* Cancellation Policy Modal */}
       {showCancellationPolicy && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={() => setShowCancellationPolicy(false)}
         >
           <div
-            className="bg-white rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto"
+            className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[80vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white">
-              <h3 className="font-semibold text-lg">Cancellation Policy</h3>
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white rounded-t-2xl">
+              <h3 className="font-bold text-xl text-gray-800">Cancellation Policy</h3>
               <button
                 onClick={() => setShowCancellationPolicy(false)}
                 className="text-gray-500 hover:text-gray-700"
-                aria-label="Close policy"
               >
                 <FiX size={24} />
               </button>
             </div>
-            <div className="p-4">
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-800">{hotelName}</h4>
-                <p className="text-sm text-gray-600">{roomName}</p>
-              </div>
 
-              <ul className="space-y-4">
-                {cancellationPolicies.map(
-                  (policy: CancellationPolicy, index: number) => (
-                    <li
+            {/* Hotel & Room info */}
+            <div className="px-6 pt-4">
+              <h4 className="text-lg font-semibold text-gray-800">{hotelName}</h4>
+              <p className="text-sm text-gray-500">{roomName}</p>
+            </div>
+
+            {/* Policies Table */}
+            <div className="p-6">
+              <table className="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr>
+                    <th className="py-2 px-3 text-left">From Date</th>
+                    <th className="py-2 px-3 text-left">Type</th>
+                    <th className="py-2 px-3 text-left">Charge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cancellationPolicies.map((policy: any, index: number) => (
+                    <tr
                       key={index}
-                      className={`text-sm border-l-4 pl-3 py-1 ${
-                        policy.type === "free"
-                          ? "border-green-500 bg-green-50"
-                          : policy.type === "non-refundable"
-                            ? "border-red-500 bg-red-50"
-                            : "border-orange-500 bg-orange-50"
-                      }`}
+                      className="even:bg-gray-50 hover:bg-gray-100 transition-colors"
                     >
-                      <div className="font-medium text-gray-800">
-                        {policy.policy}
-                      </div>
-                      <div className="text-gray-600 mt-1">
-                        <span className="font-semibold">Deadline:</span>{" "}
-                        {policy.deadline}
-                      </div>
-                      <div className="text-gray-600 mt-1">
-                        <span className="font-semibold">Charge:</span>{" "}
+                      <td className="py-2 px-3">
+                        {formatDateTime(policy.rawDate || policy.FromDate)}
+                      </td>
+                      <td className="py-2 px-3 capitalize">
+                        {policy.type === "percentage"
+                          ? "Percentage"
+                          : policy.type === "fixed"
+                            ? "Fixed"
+                            : "Free"}
+                      </td>
+                      <td className="py-2 px-3 font-medium text-gray-800">
                         {policy.charge}
-                      </div>
-                    </li>
-                  )
-                )}
-              </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-              <div className="mt-6 text-xs text-gray-500">
-                <p className="mb-2">
-                  The property's cancellation policy applies to this
-                  reservation.
+              <div className="mt-4 text-xs text-gray-500 leading-relaxed">
+                <p>
+                  The property's cancellation policy applies to this reservation.
                 </p>
                 <p>
                   For modifications or assistance, please contact the property
@@ -242,10 +269,12 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
                 </p>
               </div>
             </div>
-            <div className="p-4 border-t border-gray-200 flex justify-end">
+
+            {/* Footer */}
+            <div className="p-4 border-t border-gray-200 flex justify-end bg-gray-50 rounded-b-2xl">
               <button
                 onClick={() => setShowCancellationPolicy(false)}
-                className="px-4 py-2 bg-greenGradient text-slate-200 text-sm"
+                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg"
               >
                 I Understand
               </button>
@@ -253,6 +282,7 @@ const HotelBookingSummary = ({ hotel, room }: Props) => {
           </div>
         </div>
       )}
+
 
       {/* Booking Summary Card */}
       <div className="sticky top-6 bg-white rounded-lg shadow-sm border border-gray-200">

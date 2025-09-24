@@ -202,7 +202,7 @@ export default function BookingPage() {
   const { selectedRoom, hotel, searchParamsData } = useAppSelector(
     (state) => state.hotelData
   );
-  const hotelCode = hotel?.data?.hotel[0].HotelCode;
+  const hotelCode = hotel?.data?.hotel?.[0].HotelCode;
 
   const validateField = (
     roomIndex: number,

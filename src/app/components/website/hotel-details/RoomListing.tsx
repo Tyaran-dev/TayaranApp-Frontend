@@ -27,12 +27,14 @@ interface RoomListingProps {
   data: Room[];
   showCancellationBadge?: boolean;
   showMealTypeBadge?: boolean;
+  presentageCommission?: number
 }
 
 const RoomListing = ({
   data,
   showCancellationBadge = false,
-  showMealTypeBadge = false
+  showMealTypeBadge = false,
+  presentageCommission
 }: RoomListingProps) => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const dispatch = useDispatch();
@@ -86,44 +88,38 @@ const RoomListing = ({
     <div className="w-full flex flex-col gap-6">
       {Object.entries(groupedRooms).map(([roomName, roomOptions], i) => {
         const isExpanded = expandedSections[roomName];
-        
+
         return (
           <div key={i} className="w-full border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
             {/* Room Header - Accordion Toggle */}
             <div
-              className={`p-4 sticky top-0 z-10 border-b cursor-pointer transition-colors duration-200 ${
-                isExpanded 
-                  ? ' bg-greenGradient text-white'  // Emerald background when expanded
-                  : 'bg-white text-gray-900'     // White background when collapsed
-              }`}
+              className={`p-4 sticky top-0 z-10 border-b cursor-pointer transition-colors duration-200 ${isExpanded
+                ? ' bg-greenGradient text-white'  // Emerald background when expanded
+                : 'bg-white text-gray-900'     // White background when collapsed
+                }`}
               onClick={() => toggleSection(roomName)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Bed className={`w-5 h-5 ${
-                    isExpanded ? 'text-white' : 'text-orange-500'
-                  }`} />
+                  <Bed className={`w-5 h-5 ${isExpanded ? 'text-white' : 'text-orange-500'
+                    }`} />
                   <div>
-                    <h2 className={`text-lg font-semibold ${
-                      isExpanded ? 'text-white' : 'text-gray-900'
-                    }`}>
+                    <h2 className={`text-lg font-semibold ${isExpanded ? 'text-white' : 'text-gray-900'
+                      }`}>
                       {roomName}
                     </h2>
-                    <p className={`text-sm ${
-                      isExpanded ? 'text-emerald-100' : 'text-gray-500'
-                    }`}>
+                    <p className={`text-sm ${isExpanded ? 'text-emerald-100' : 'text-gray-500'
+                      }`}>
                       {roomOptions.length} option(s) available
                     </p>
                   </div>
                 </div>
                 {isExpanded ? (
-                  <ChevronUp className={`w-5 h-5 ${
-                    isExpanded ? 'text-white' : 'text-gray-500'
-                  }`} />
+                  <ChevronUp className={`w-5 h-5 ${isExpanded ? 'text-white' : 'text-gray-500'
+                    }`} />
                 ) : (
-                  <ChevronDown className={`w-5 h-5 ${
-                    isExpanded ? 'text-white' : 'text-gray-500'
-                  }`} />
+                  <ChevronDown className={`w-5 h-5 ${isExpanded ? 'text-white' : 'text-gray-500'
+                    }`} />
                 )}
               </div>
             </div>
@@ -190,7 +186,7 @@ const RoomListing = ({
                                     key={pIdx}
                                     className="bg-emerald-100 text-xs font-medium px-3 py-1.5 rounded-lg"
                                   >
-                                   {promo}  🎁
+                                    {promo}  🎁
                                   </span>
                                 ))}
                               </div>
@@ -219,13 +215,23 @@ const RoomListing = ({
                         {/* Price - Center Column */}
                         <div className="md:col-span-2 flex md:flex-col md:items-center md:justify-center">
                           <div className="text-center">
-                            <div className="text-xl font-bold text-gray-900">
-                              ${room.TotalFare?.toFixed(2)}
-                            </div>
+                            {/* Calculate commission-adjusted price */}
+                            {(() => {
+                              const totalWithCommission =
+                                room.TotalFare + (room.TotalFare * presentageCommission) / 100;
+
+                              return (
+                                <div className="text-xl font-bold text-gray-900">
+                                  ${totalWithCommission.toFixed(2)}
+                                </div>
+                              );
+                            })()}
                             <div className="text-xs text-gray-500 mt-1">incl. taxes & fees</div>
-                            <div className="text-xs text-green-600 font-medium mt-1">
-                              Free cancellation
-                            </div>
+                            {room.IsRefundable && (
+                              <div className="text-xs text-green-600 font-medium mt-1">
+                                Free cancellation
+                              </div>
+                            )}
                           </div>
                         </div>
 

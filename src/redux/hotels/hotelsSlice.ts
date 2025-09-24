@@ -44,6 +44,7 @@ export interface HotelDetailsResponse {
   data: {
     hotel: Hotel[];
     availableRooms: Room[];
+    presentageCommission: number
   };
 }
 

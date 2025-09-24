@@ -104,7 +104,7 @@ export default function PaymentPage({
   return (
     <>
       <Script
-        src="https://demo.myfatoorah.com/payment/v1/session.js"
+        src="https://sa.myfatoorah.com/payment/v1/session.js"
         strategy="afterInteractive"
         onLoad={() => setReady(true)}
         onReady={() => setReady(true)}
