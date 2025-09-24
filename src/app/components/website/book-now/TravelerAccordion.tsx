@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Check } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
@@ -17,6 +18,113 @@ interface TravelerAccordionProps {
   travelers: TravelerFormData[];
   onTravelerUpdate: (index: number, data: TravelerFormData) => void;
 }
+
+export const CustomSelect: React.FC<{
+  value: string;
+  required: boolean;
+  onChange: (value: string) => void;
+  options:
+    | Array<{
+        value?: string;
+        label?: string;
+        country?: string;
+        arabicName?: string;
+      }>
+    | number[];
+  placeholder: string;
+  className?: string;
+  searchable?: boolean;
+}> = ({
+  value,
+  onChange,
+  options,
+  placeholder,
+  className = "",
+  searchable = false,
+  required = true,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredOptions =
+    searchable && Array.isArray(options) && typeof options[0] === "object"
+      ? (options as Array<{ value: string; label: string }>).filter((option) =>
+          option.label?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : options;
+
+  const displayValue =
+    Array.isArray(options) && typeof options[0] === "object"
+      ? (options as Array<{ value: string; label: string }>).find(
+          (opt) => opt.value === value
+        )?.label || placeholder
+      : value || placeholder;
+
+  return (
+    <div className={`relative ${className}`}>
+      <div
+        className="w-full  py-1 text-sm px-4 md:py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-colors hover:border-stone-400 flex items-center justify-between"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={value ? "text-stone-900" : "text-stone-500"}>
+          {displayValue}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 text-stone-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        />
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border  border-stone-300 rounded-lg shadow-lg max-h-60 md:overflow-hidden">
+          {searchable && (
+            <div className="p-2 border-b w-full  bg-white border-stone-200">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full  px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                onClick={(e) => e.stopPropagation()}
+                required={required}
+              />
+            </div>
+          )}
+          <div className="max-h-48 w-full overflow-y-auto bg-white">
+            {Array.isArray(filteredOptions) &&
+            typeof filteredOptions[0] === "object"
+              ? (
+                  filteredOptions as Array<{ value: string; label: string }>
+                ).map((option, indx) => (
+                  <div
+                    key={indx}
+                    className="px-4  py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
+                    onClick={() => {
+                      onChange(option.value);
+                      setIsOpen(false);
+                      setSearchTerm("");
+                    }}
+                  >
+                    {option.label}
+                  </div>
+                ))
+              : (filteredOptions as number[]).map((option) => (
+                  <div
+                    key={option}
+                    className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
+                    onClick={() => {
+                      onChange(option.toString());
+                      setIsOpen(false);
+                    }}
+                  >
+                    {option}
+                  </div>
+                ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const TravelerAccordion: React.FC<TravelerAccordionProps> = ({
   travelers,
@@ -121,113 +229,6 @@ const TravelerAccordion: React.FC<TravelerAccordionProps> = ({
     return "";
   };
 
-  const CustomSelect: React.FC<{
-    value: string;
-    required: boolean;
-    onChange: (value: string) => void;
-    options:
-      | Array<{
-          value?: string;
-          label?: string;
-          country?: string;
-          arabicName?: string;
-        }>
-      | number[];
-    placeholder: string;
-    className?: string;
-    searchable?: boolean;
-  }> = ({
-    value,
-    onChange,
-    options,
-    placeholder,
-    className = "",
-    searchable = false,
-    required = true,
-  }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
-
-    const filteredOptions =
-      searchable && Array.isArray(options) && typeof options[0] === "object"
-        ? (options as Array<{ value: string; label: string }>).filter(
-            (option) =>
-              option.label?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : options;
-
-    const displayValue =
-      Array.isArray(options) && typeof options[0] === "object"
-        ? (options as Array<{ value: string; label: string }>).find(
-            (opt) => opt.value === value
-          )?.label || placeholder
-        : value || placeholder;
-
-    return (
-      <div className={`relative ${className}`}>
-        <div
-          className="w-full  py-1 text-sm px-4 md:py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white cursor-pointer transition-colors hover:border-stone-400 flex items-center justify-between"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className={value ? "text-stone-900" : "text-stone-500"}>
-            {displayValue}
-          </span>
-          <ChevronDown
-            className={`w-4 h-4 text-stone-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          />
-        </div>
-
-        {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white border  border-stone-300 rounded-lg shadow-lg max-h-60 md:overflow-hidden">
-            {searchable && (
-              <div className="p-2 border-b w-full  bg-white border-stone-200">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full  px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  onClick={(e) => e.stopPropagation()}
-                  required={required}
-                />
-              </div>
-            )}
-            <div className="max-h-48 w-full overflow-y-auto bg-white">
-              {Array.isArray(filteredOptions) &&
-              typeof filteredOptions[0] === "object"
-                ? (
-                    filteredOptions as Array<{ value: string; label: string }>
-                  ).map((option, indx) => (
-                    <div
-                      key={indx}
-                      className="px-4  py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
-                      onClick={() => {
-                        onChange(option.value);
-                        setIsOpen(false);
-                        setSearchTerm("");
-                      }}
-                    >
-                      {option.label}
-                    </div>
-                  ))
-                : (filteredOptions as number[]).map((option) => (
-                    <div
-                      key={option}
-                      className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-stone-100 last:border-b-0"
-                      onClick={() => {
-                        onChange(option.toString());
-                        setIsOpen(false);
-                      }}
-                    >
-                      {option}
-                    </div>
-                  ))}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
   return (
     <div className="space-y-4">
       {travelers.map((traveler: any, index: number) => (

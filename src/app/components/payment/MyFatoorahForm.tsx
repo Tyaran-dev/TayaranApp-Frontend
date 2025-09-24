@@ -39,12 +39,14 @@ interface PaymentPageProps {
   flightData: FlightData;
   travelers: TravelerFormData[];
   setLoading: (loading: boolean) => void;
+  finalPrice: number;
 }
 
 export default function PaymentPage({
   flightData,
   travelers,
   setLoading,
+  finalPrice,
 }: PaymentPageProps) {
   const t = useTranslations("bookNow");
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -67,14 +69,13 @@ export default function PaymentPage({
   // Step 2 — Init widget
   useEffect(() => {
     if (!ready || !session || !window.myfatoorah || initDone.current) return;
-
     window.myfatoorah.init({
       sessionId: session.SessionId,
       countryCode: session.CountryCode,
       currencyCode: "SAR",
-      amount: flightData.price.total,
+      amount: finalPrice,
       containerId: "embedded-payment",
-      paymentOptions: ["Card"],
+      paymentOptions: ["ApplePay", "Card"],
       callback: async (resp) => {
         if (!resp.isSuccess) {
           alert("Card data rejected");
@@ -84,7 +85,7 @@ export default function PaymentPage({
         // Call backend to execute payment & store booking data
         const res = await axios.post(`${baseUrl}/payment/execute-payment`, {
           sessionId: session.SessionId,
-          invoiceValue: flightData.price.total,
+          invoiceValue: finalPrice,
           flightData,
           travelers, // send booking data to backend to store with invoiceId
         });

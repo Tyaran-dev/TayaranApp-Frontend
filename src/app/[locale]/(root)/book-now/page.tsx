@@ -10,7 +10,11 @@ import Stepper from "@/app/components/shared/Feedback/Stepper";
 import { useTranslations, useLocale } from "next-intl";
 import Head from "next/head";
 import axios from "axios";
-import { addFlightData, selectFlight, setCommission } from "@/redux/flights/flightSlice";
+import {
+  addFlightData,
+  selectFlight,
+  setCommission,
+} from "@/redux/flights/flightSlice";
 import { LoadingSpinner } from "@/app/components/shared/Feedback/loading-spinner";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,6 +55,20 @@ const Page = () => {
   const flightDataSlice = useSelector(
     (state: any) => state.flightData.slectedFlight
   );
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const presentageCommission = useSelector(
+    (state: any) => state.flightData.presentageCommission || 5
+  );
+
+  const grandTotal = parseFloat(flightDataSlice[0]?.price.grandTotal || "0");
+  const commission = Number(presentageCommission || 0);
+
+  const finalPrice = Number(
+    (grandTotal + (grandTotal * commission) / 100).toFixed(2)
+  );
+
+  console.log(typeof finalPrice);
 
   // ✅ Top-level guard: no flight data
   if (!flightDataSlice || flightDataSlice.length === 0) {
@@ -65,7 +83,9 @@ const Page = () => {
           <p className="text-lg font-semibold text-gray-700">
             {t("errors.noFlightAvailable")}
           </p>
-          <p className="text-gray-500 mt-2">{t("errors.noFlightDescription")}</p>
+          <p className="text-gray-500 mt-2">
+            {t("errors.noFlightDescription")}
+          </p>
 
           <Link
             href={`/${locale}/flight-search`}
@@ -89,33 +109,34 @@ const Page = () => {
   const travellersNum =
     Number(flightDataSlice[0]?.travelerPricings?.length) || 1;
 
-  // 🔹 Re-price flight when page loads
-  useEffect(() => {
-    const repriceFlight = async () => {
-      if (!flightDataSlice || flightDataSlice.length === 0) return;
+  // // 🔹 Re-price flight when page loads
+  // useEffect(() => {
+  //   const repriceFlight = async () => {
+  //     if (!flightDataSlice || flightDataSlice.length === 0) return;
 
-      setLoading(true);
-      try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/flights/flight-pricing`,
-          flightDataSlice[0] // send the original selected flight
-        );
-        const flightData = response.data.data.flightOffers;
+  //     setLoading(true);
+  //     try {
+  //       const response = await axios.post(
+  //         `${baseUrl}/flights/flight-pricing`,
+  //         flightDataSlice[0] // send the original selected flight
+  //       );
+  //       const flightData = response.data.data.flightOffers;
 
-        // update redux with fresh priced flight
-        dispatch(addFlightData(flightData));
-        dispatch(selectFlight(flightData));
-        dispatch(setCommission(response.data.presentageCommission)); // 🔹 store in Redux
+  //       console.log(flightData, "flightData here");
 
-      } catch (error) {
-        console.error("Error repricing flight:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       // update redux with fresh priced flight
+  //       dispatch(addFlightData(flightData));
+  //       dispatch(selectFlight(flightData));
+  //       dispatch(setCommission(response.data.presentageCommission)); // 🔹 store in Redux
+  //     } catch (error) {
+  //       console.error("Error repricing flight:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    repriceFlight();
-  }, []);
+  //   repriceFlight();
+  // }, []);
 
   const initialTravelerData: TravelerFormData = {
     travelerId: Date.now(),
@@ -208,10 +229,11 @@ const Page = () => {
                       type="button"
                       onClick={() => setCurrentStep(3)}
                       disabled={!allTravelersCompleted}
-                      className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${!allTravelersCompleted
+                      className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${
+                        !allTravelersCompleted
                           ? "opacity-50 cursor-not-allowed"
                           : ""
-                        }`}
+                      }`}
                     >
                       {t("payment.continueToPayment")}
                     </button>
@@ -231,6 +253,7 @@ const Page = () => {
                     flightData={flightDataSlice[0]}
                     travelers={travelers}
                     setLoading={setLoading}
+                    finalPrice={finalPrice}
                   />
 
                   <div className="flex justify-between items-center">

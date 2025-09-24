@@ -22,7 +22,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setData } from "@/redux/store";
 import { AirlinesData } from "@/app/data/airlines";
 import axios from "axios";
-import { addFlightData, selectFlight, setCommission } from "@/redux/flights/flightSlice";
+import {
+  addFlightData,
+  selectFlight,
+  setCommission,
+} from "@/redux/flights/flightSlice";
 import { scrollToTop } from "@/utils";
 import { useTranslations } from "next-intl";
 
@@ -120,7 +124,6 @@ const FlightCard = ({
       flight
     );
     const flightData = response.data.data.flightOffers;
-    console.log(response.data,"here")
     dispatch(addFlightData(flight));
     dispatch(selectFlight(flightData));
     dispatch(setCommission(Number(response.data.presentageCommission ?? 0)));
@@ -248,9 +251,7 @@ const FlightCard = ({
                 ) : (
                   <span className="text-sm">{flight?.currency}</span>
                 )}
-                <span className="text-2xl font-bold ">
-                  {flight?.basePrice}
-                </span>
+                <span className="text-2xl font-bold ">{flight?.basePrice}</span>
               </div>
               {/* 🚩 Banner */}
               <div className="w-full text-xs text-center bg-yellow-100 text-yellow-800  font-semibold p-2 rounded-lg mt-1 ">
@@ -268,8 +269,9 @@ const FlightCard = ({
             >
               <span>{t("flightDetails")}</span>
               <div
-                className={`transform transition-transform duration-300 ${isOpenDetails ? "rotate-180" : ""
-                  }`}
+                className={`transform transition-transform duration-300 ${
+                  isOpenDetails ? "rotate-180" : ""
+                }`}
               >
                 <IoIosArrowDown size={16} />
               </div>
@@ -303,9 +305,7 @@ const FlightCard = ({
         {/* Desktop Layout - Keep Original */}
         <div className="hidden md:block">
           <div className="flex justify-between items-center text-sm lg:text-base mb-5 gap-5 flex-wrap ">
-
             <div className="lg:w-3/4 w-full bg-[#98FFC80A] p-2 md:p-5 text-center md:text-start">
-
               {flight?.itineraries_formated?.map(
                 (itinerary: any, index: number) => (
                   <div key={index}>
@@ -458,8 +458,9 @@ const FlightCard = ({
                 onClick={() => setIsOpenDetails(!isOpenDetails)}
               >
                 <div
-                  className={`transform transition-transform duration-300 ${isOpenDetails ? "rotate-180" : ""
-                    }`}
+                  className={`transform transition-transform duration-300 ${
+                    isOpenDetails ? "rotate-180" : ""
+                  }`}
                 >
                   <IoIosArrowDown size={20} color="green" />
                 </div>
@@ -472,7 +473,9 @@ const FlightCard = ({
 
           {/* Bottom features */}
           <div className="flex justify-between font-medium items-center gap-5 flex-wrap">
-            <p className="py-2">{flight.numberOfBookableSeats} seats remaining</p>
+            <p className="py-2">
+              {flight.numberOfBookableSeats} seats remaining
+            </p>
             <div className="flex items-center gap-4">
               {feature.map((item, i) => (
                 <div key={i} className="py-2 px-4 border-r-2 border-[#D7E2EE]">
@@ -495,14 +498,13 @@ const FlightCard = ({
                         <div className="flex flex-col gap-5 justify-between min-w-[120px]">
                           <div className="text-center">
                             <p className="md:font-semibold md:text-lg">
-                              {new Date(segment.departure.at).toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                }
-                              )}
+                              {new Date(
+                                segment.departure.at
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })}
                             </p>
                             <p className="text-slate-500 text-sm">
                               {formatDateToDayMonth(segment.departure_date)}
@@ -519,7 +521,10 @@ const FlightCard = ({
                                 </div>
                               )}
                             </div>
-                            <LuClock8 size={20} className="my-2 text-gray-400" />
+                            <LuClock8
+                              size={20}
+                              className="my-2 text-gray-400"
+                            />
                             <p className="text-slate-500 text-sm">
                               {calculateTotalDurationShort(itinerary.segments)}
                             </p>
@@ -608,7 +613,8 @@ const FlightCard = ({
                       <p className="font-medium text-sm">Checked Baggage</p>
                       <p className="text-gray-500 text-xs">
                         {flight.traveller_pricing[0].allowedBags.quantity}{" "}
-                        {flight?.traveller_pricing[0].allowedBags.weight} / 1 piece
+                        {flight?.traveller_pricing[0].allowedBags.weight} / 1
+                        piece
                       </p>
                     </div>
                   </div>
