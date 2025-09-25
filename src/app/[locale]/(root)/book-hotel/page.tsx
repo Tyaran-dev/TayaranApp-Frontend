@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import Stepper from "@/app/components/shared/Feedback/Stepper";
-import axios from "axios";
+import Section from "@/app/components/shared/section";
 import HotelBookingSummary from "@/app/components/website/book-now/HotelBookingSummary ";
 import {
   CustomAccordion,
@@ -12,15 +11,21 @@ import BookingSkeleton from "@/app/components/shared/Feedback/HotelBookingSkelet
 import DOMPurify from "dompurify";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import Section from "@/app/components/shared/section";
 import { useAppSelector } from "@/redux/hooks";
 import useBookingHandler from "@/hooks/useBookingHandler";
 import { useDispatch } from "react-redux";
 import { clearHotels } from "@/redux/hotels/hotelsSlice";
 import { CustomSelect } from "@/app/components/website/book-now/TravelerAccordion";
 import { countryCodesOptions } from "@/app/data/data.js";
+import PaymentForm from "@/app/components/payment/MyFatoorahForm";
+import Stepper from "@/app/components/shared/Feedback/Stepper";
+import Head from "next/head";
+import { LoadingSpinner } from "@/app/components/shared/Feedback/loading-spinner";
+import Image from "next/image";
+import Link from "next/link";
+import axios from "axios";
 
-// Types
+// Types (keep your existing types)
 type Title = "Mr" | "Ms" | "Mrs" | "Master" | "Miss";
 type CustomerType = "Adult" | "Child";
 type BookingType = "Voucher" | "Regular";
@@ -62,6 +67,7 @@ interface GuestData {
   email: string;
   phone: string;
   phoneCode: string;
+  isCompleted: boolean; // Added to match flight structure
 }
 
 interface RoomGuestData {
@@ -76,7 +82,7 @@ interface PaxRoom {
   ChildrenAges?: number[];
 }
 
-// Utility functions
+// Utility functions (keep your existing ones)
 const extractCheckInInstructions = (
   rateConditions: (string | object | null | undefined)[]
 ) => {
@@ -184,9 +190,6 @@ const validatePhoneNumber = (phone: string) => {
   return null;
 };
 
-/**
- * Fixed phoneCode validation - country codes can be up to 4 digits
- */
 const validatePhoneCode = (phoneCode: string) => {
   if (!phoneCode.trim()) {
     return "Country code is required";
@@ -203,14 +206,17 @@ const validatePhoneCode = (phoneCode: string) => {
 export default function BookingPage() {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
   const t = useTranslations("bookNow");
-  // 1️⃣ Add state to hold BookingReferenceId and booking details
-  const [bookingReferenceId, setBookingReferenceId] = useState<string | null>(
-    null
-  );
-  const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const locale = useLocale();
   const dispatch = useDispatch();
-  // State
-  const [currentStep, setCurrentStep] = useState(3);
+  const router = useRouter();
+
+  // State similar to flight booking
+  const [currentStep, setCurrentStep] = useState(2);
+  const [loading, setLoading] = useState(false);
+  const [bookingReferenceId, setBookingReferenceId] = useState<string | null>(null);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
+
+  // Hotel specific state
   const [roomsGuestData, setRoomsGuestData] = useState<RoomGuestData[]>([]);
   const [openItems, setOpenItems] = useState<string[]>([]);
   const [preBookedRoom, setPreBookedRoom] = useState<Room | null>(null);
@@ -220,17 +226,51 @@ export default function BookingPage() {
     [key: string]: string;
   }>({});
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const { loading } = useAppSelector((state) => state.hotelData);
 
-  // Hooks
-  const locale = useLocale();
-  const router = useRouter();
+  // Redux state
+  const { loading: reduxLoading } = useAppSelector((state) => state.hotelData);
   const { selectedRoom, hotel, searchParamsData } = useAppSelector(
     (state) => state.hotelData
   );
   const hotelCode = hotel?.data?.hotel?.[0].HotelCode;
 
-  // Fixed validateField function
+  // ✅ Top-level guard: no hotel data (similar to flight booking)
+  if (!selectedRoom || !hotel) {
+    const isRTL = locale === "ar";
+
+    return (
+      <Section className="min-h-[80vh] flex justify-center items-center">
+        <div
+          className={`flex flex-col items-center justify-center min-h-[300px] text-center ${isRTL ? "rtl" : "ltr"}`}
+          dir={isRTL ? "rtl" : "ltr"}
+        >
+          <p className="text-lg font-semibold text-gray-700">
+            {t("errors.noHotelAvailable") || "No hotel available"}
+          </p>
+          <p className="text-gray-500 mt-2">
+            {t("errors.noHotelDescription") || "Please search for a hotel first"}
+          </p>
+
+          <Link
+            href={`/${locale}/hotel-search`}
+            className="mt-4 inline-block px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+          >
+            {t("errors.backToSearch") || "Back to Search"}
+          </Link>
+
+          <Image
+            src="/no-hotel.svg"
+            width={400}
+            height={400}
+            alt={t("errors.noHotelAltText") || "No hotel found"}
+            className="mt-6"
+          />
+        </div>
+      </Section>
+    );
+  }
+
+  // Validation functions (keep your existing ones)
   const validateField = useCallback(
     (
       roomIndex: number,
@@ -270,7 +310,6 @@ export default function BookingPage() {
     []
   );
 
-  // Fixed validateForm function
   const validateForm = useCallback(() => {
     const errors: { [key: string]: string } = {};
     let isValid = true;
@@ -303,7 +342,10 @@ export default function BookingPage() {
           isValid = false;
         }
 
-        // Lead guest email/phone
+        // Check if guest is completed
+        const isGuestCompleted = adult.firstName.trim() && adult.lastName.trim() && adult.title;
+
+        // Lead guest validation
         if (roomIndex === 0 && adultIndex === 0) {
           if (!adult.email.trim()) {
             errors[`${guestKey}-email`] = "Email is required";
@@ -319,7 +361,6 @@ export default function BookingPage() {
             isValid = false;
           }
 
-          // Phone code validation for lead guest only
           const phoneCodeError = validatePhoneCode(adult.phoneCode);
           if (phoneCodeError) {
             errors[`${guestKey}-phoneCode`] = phoneCodeError;
@@ -331,13 +372,11 @@ export default function BookingPage() {
       room.children.forEach((child, childIndex) => {
         const guestKey = `room-${roomIndex}-child-${childIndex}`;
 
-        // Validate title
         if (!child.title) {
           errors[`${guestKey}-title`] = "Title is required";
           isValid = false;
         }
 
-        // Validate first name
         const firstNameError = validateGuestName(child.firstName);
         if (firstNameError) {
           errors[`${guestKey}-firstName`] = firstNameError;
@@ -346,7 +385,6 @@ export default function BookingPage() {
           allFirstNames.push(child.firstName.trim().toLowerCase());
         }
 
-        // Validate last name
         const lastNameError = validateGuestName(child.lastName);
         if (lastNameError) {
           errors[`${guestKey}-lastName`] = lastNameError;
@@ -355,7 +393,7 @@ export default function BookingPage() {
       });
     });
 
-    // Fixed duplicate name checking - only check non-empty names
+    // Duplicate name checking
     const nameCounts: { [key: string]: number } = {};
     allFirstNames.forEach((name) => {
       nameCounts[name] = (nameCounts[name] || 0) + 1;
@@ -364,7 +402,6 @@ export default function BookingPage() {
     Object.keys(nameCounts).forEach((name) => {
       if (nameCounts[name] > 1) {
         isValid = false;
-        // Add error for each duplicate
         roomsGuestData.forEach((room, roomIndex) => {
           room.adults.forEach((adult, adultIndex) => {
             if (adult.firstName.trim().toLowerCase() === name) {
@@ -386,10 +423,24 @@ export default function BookingPage() {
     return isValid;
   }, [roomsGuestData]);
 
-  // Check if form is valid
-  const isValidForm = useMemo(() => validateForm(), [validateForm]);
+  // Check if all travelers are completed (similar to flight booking)
+  const allTravelersCompleted = useMemo(() => {
+    return roomsGuestData.every(room =>
+      room.adults.every(adult =>
+        adult.firstName.trim() &&
+        adult.lastName.trim() &&
+        adult.title &&
+        (room.adults.indexOf(adult) > 0 || (adult.email.trim() && validateEmail(adult.email) && adult.phone.trim()))
+      ) &&
+      room.children.every(child =>
+        child.firstName.trim() &&
+        child.lastName.trim() &&
+        child.title
+      )
+    );
+  }, [roomsGuestData]);
 
-  // Callbacks
+  // Callbacks (keep your existing ones with minor modifications)
   const handleToggle = useCallback((value: string) => {
     setOpenItems((prev) =>
       prev.includes(value)
@@ -398,7 +449,6 @@ export default function BookingPage() {
     );
   }, []);
 
-  // Fixed updateGuestData with immediate validation
   const updateGuestData = useCallback(
     (
       roomIndex: number,
@@ -414,17 +464,27 @@ export default function BookingPage() {
         updated[roomIndex][guestType][guestIndex] = {
           ...updated[roomIndex][guestType][guestIndex],
           [field]: value,
+          // Update isCompleted status for the guest
+          isCompleted: field === 'firstName' || field === 'lastName' || field === 'title'
+            ? checkGuestCompletion(updated[roomIndex][guestType][guestIndex], field, value)
+            : updated[roomIndex][guestType][guestIndex].isCompleted
         };
         return updated;
       });
 
-      // Validate immediately when user changes field
       if (hasAttemptedSubmit) {
         validateField(roomIndex, guestType, guestIndex, field, value);
       }
     },
     [hasAttemptedSubmit, validateField]
   );
+
+  const checkGuestCompletion = (guest: GuestData, field: keyof GuestData, value: string): boolean => {
+    const updatedGuest = { ...guest, [field]: value };
+    return !!(updatedGuest.firstName.trim() &&
+      updatedGuest.lastName.trim() &&
+      updatedGuest.title);
+  };
 
   const handleNameInput = useCallback(
     (
@@ -445,7 +505,6 @@ export default function BookingPage() {
     [updateGuestData]
   );
 
-  // Fixed phone code selection handler
   const handlePhoneCodeChange = useCallback(
     (
       roomIndex: number,
@@ -462,7 +521,6 @@ export default function BookingPage() {
         onlyNumbers
       );
 
-      // Validate immediately after selection
       if (hasAttemptedSubmit) {
         validateField(
           roomIndex,
@@ -481,7 +539,6 @@ export default function BookingPage() {
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const randomNum = Math.floor(Math.random() * 1000);
 
-    // Merge country code with phone number
     const formattedPhoneNumber =
       leadGuest?.phoneCode && leadGuest?.phone
         ? `+${leadGuest.phoneCode}${leadGuest.phone}`
@@ -510,7 +567,7 @@ export default function BookingPage() {
       BookingReferenceId: `TBO-BOOK-${dateStr}${randomNum}`,
       TotalFare: selectedRoom?.TotalFare || 0,
       EmailId: leadGuest?.email || "",
-      PhoneNumber: formattedPhoneNumber, // Use the merged phone number here
+      PhoneNumber: formattedPhoneNumber,
       BookingType: "Voucher",
       PaymentMode: "Limit",
     };
@@ -518,14 +575,11 @@ export default function BookingPage() {
 
   const handleSubmitBooking = useBookingHandler(
     formatGuestDataForAPI,
-    isValidForm,
-    searchParamsData ||
-      (() => {
-        throw new Error("Search parameters are missing");
-      })()
+    allTravelersCompleted,
+    searchParamsData || (() => { throw new Error("Search parameters are missing"); })()
   );
 
-  // Effects (remain the same)
+  // Effects
   useEffect(() => {
     if (searchParamsData?.PaxRooms) {
       const initialRoomsData: RoomGuestData[] = searchParamsData.PaxRooms.map(
@@ -538,6 +592,7 @@ export default function BookingPage() {
             email: "",
             phone: "",
             phoneCode: "",
+            isCompleted: false,
           })),
           children: Array.from({ length: room.Children }, () => ({
             title: "Master",
@@ -546,6 +601,7 @@ export default function BookingPage() {
             email: "",
             phone: "",
             phoneCode: "",
+            isCompleted: false,
           })),
         })
       );
@@ -556,7 +612,6 @@ export default function BookingPage() {
 
   useEffect(() => {
     const preBookRoom = async () => {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       if (!selectedRoom) return;
 
       try {
@@ -575,73 +630,34 @@ export default function BookingPage() {
     };
 
     preBookRoom();
-  }, [selectedRoom]);
+  }, [selectedRoom, baseUrl]);
 
-  // Handle form submission
-  const handleSubmit = useCallback(async () => {
+  // Handle step navigation
+  const handleContinueToPayment = useCallback(async () => {
     setHasAttemptedSubmit(true);
 
-    // Validate form before submission
-    const isValid = validateForm();
-
-    if (!isValid) {
-      // Open all accordions to show errors
+    if (!allTravelersCompleted) {
       setOpenItems(roomsGuestData.map((_, i) => `room-${i}`));
-
-      // Scroll to first error after a small delay
       setTimeout(() => {
         const firstErrorKey = Object.keys(validationErrors)[0];
         if (firstErrorKey) {
-          const element = document.querySelector(
-            `[data-error="${firstErrorKey}"]`
-          );
+          const element = document.querySelector(`[data-error="${firstErrorKey}"]`);
           if (element) {
             element.scrollIntoView({ behavior: "smooth", block: "center" });
           }
         }
       }, 100);
-
       return;
     }
 
-    try {
-      // Your existing booking call
-      const bookingResponse = await handleSubmitBooking();
+    setCurrentStep(3);
+  }, [allTravelersCompleted, roomsGuestData, validationErrors]);
 
-      // Capture BookingReferenceId returned by API
-      if (bookingResponse?.BookingReferenceId) {
-        setBookingReferenceId(bookingResponse.BookingReferenceId);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unexpected error occurred");
-      }
-    }
-  }, [validateForm, roomsGuestData, validationErrors, handleSubmitBooking]);
+  const handleBackToDetails = useCallback(() => {
+    setCurrentStep(2);
+  }, []);
 
-  useEffect(() => {
-    if (!bookingReferenceId) return;
-
-    const timer = setTimeout(async () => {
-      try {
-        const response = await axios.post(
-          `${baseUrl}/hotels/BookingDetail`, // your Express endpoint
-          { BookingReferenceId: bookingReferenceId }
-        );
-
-        setBookingDetails(response.data);
-        console.log("Booking details:", response.data);
-      } catch (err) {
-        console.error("Error fetching booking details:", err);
-      }
-    }, 5000); // 5 seconds
-
-    return () => clearTimeout(timer);
-  }, [bookingReferenceId]);
-
-  // Render functions
+  // Render guest inputs function (keep your existing one)
   const renderGuestInputs = useCallback(
     (
       guest: GuestData,
@@ -657,16 +673,15 @@ export default function BookingPage() {
       return (
         <div
           key={`${guestKey}`}
-          className={`space-y-4 p-4 border rounded-lg ${
-            validationErrors[`${guestKey}-firstName`] ||
+          className={`space-y-4 p-4 border rounded-lg ${validationErrors[`${guestKey}-firstName`] ||
             validationErrors[`${guestKey}-lastName`] ||
             validationErrors[`${guestKey}-title`] ||
             (isLeadGuest &&
               (validationErrors[`${guestKey}-email`] ||
                 validationErrors[`${guestKey}-phone`]))
-              ? "border-red-300 bg-red-50"
-              : "border-gray-200 bg-gray-50"
-          }`}
+            ? "border-red-300 bg-red-50"
+            : "border-gray-200 bg-gray-50"
+            }`}
           data-error={guestKey}
         >
           <h4 className="font-medium text-gray-900">{guestLabel}</h4>
@@ -688,11 +703,10 @@ export default function BookingPage() {
                     title
                   )
                 }
-                className={`px-4 py-2 text-sm rounded-lg ${
-                  guest.title === title
-                    ? "bg-greenGradient text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50"
-                }`}
+                className={`px-4 py-2 text-sm rounded-lg ${guest.title === title
+                  ? "bg-greenGradient text-white"
+                  : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
               >
                 {title}
               </button>
@@ -727,11 +741,10 @@ export default function BookingPage() {
                     e.target.value
                   )
                 }
-                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  validationErrors[`${guestKey}-firstName`]
-                    ? "border-red-500"
-                    : "border-stone-300"
-                }`}
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-firstName`]
+                  ? "border-red-500"
+                  : "border-stone-300"
+                  }`}
                 required
               />
               {validationErrors[`${guestKey}-firstName`] && (
@@ -763,11 +776,10 @@ export default function BookingPage() {
                     e.target.value
                   )
                 }
-                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  validationErrors[`${guestKey}-lastName`]
-                    ? "border-red-500"
-                    : "border-stone-300"
-                }`}
+                className={`w-full px-3 py-4 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${validationErrors[`${guestKey}-lastName`]
+                  ? "border-red-500"
+                  : "border-stone-300"
+                  }`}
                 required
               />
               {validationErrors[`${guestKey}-lastName`] && (
@@ -803,11 +815,10 @@ export default function BookingPage() {
                       e.target.value
                     )
                   }
-                  className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${
-                    validationErrors[`${guestKey}-email`]
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
+                  className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-email`]
+                    ? "border-red-500"
+                    : "border-gray-300"
+                    }`}
                   required
                 />
                 {validationErrors[`${guestKey}-email`] && (
@@ -826,11 +837,7 @@ export default function BookingPage() {
                       value={guest.phoneCode}
                       required={true}
                       onChange={(selectedValue) => {
-                        // CustomSelect should return the selected value directly
-                        const onlyNumbers = selectedValue.replace(
-                          /[^0-9]/g,
-                          ""
-                        );
+                        const onlyNumbers = selectedValue.replace(/[^0-9]/g, "");
                         updateGuestData(
                           roomIndex,
                           guestType,
@@ -840,7 +847,7 @@ export default function BookingPage() {
                         );
                       }}
                       options={countryCodesOptions.map((country) => ({
-                        value: country.code.replace(/\+/g, ""), // Store without + sign
+                        value: country.code.replace(/\+/g, ""),
                         label:
                           locale === "en"
                             ? `${country.country} ${country.code}`
@@ -861,10 +868,7 @@ export default function BookingPage() {
                       type="tel"
                       value={guest.phone}
                       onChange={(e) => {
-                        const onlyNumbers = e.target.value.replace(
-                          /[^0-9]/g,
-                          ""
-                        );
+                        const onlyNumbers = e.target.value.replace(/[^0-9]/g, "");
                         updateGuestData(
                           roomIndex,
                           guestType,
@@ -882,11 +886,10 @@ export default function BookingPage() {
                           e.target.value
                         )
                       }
-                      className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${
-                        validationErrors[`${guestKey}-phone`]
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`w-full px-3 py-4 border rounded-lg focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 outline-none ${validationErrors[`${guestKey}-phone`]
+                        ? "border-red-500"
+                        : "border-gray-300"
+                        }`}
                       required
                     />
                     {validationErrors[`${guestKey}-phone`] && (
@@ -906,264 +909,276 @@ export default function BookingPage() {
         </div>
       );
     },
-    [handleNameInput, updateGuestData, validationErrors, t, locale]
+    [handleNameInput, updateGuestData, validationErrors, locale]
   );
 
   // Loading and error states
   if (isLoadingPreBook) {
     return (
-      <div className="min-h-screen bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <BookingSkeleton />
+      <Section className="min-h-[80vh] flex justify-center items-center">
+        <div className="flex justify-center items-center min-h-[80vh]">
+          <LoadingSpinner size="lg" />
         </div>
-      </div>
+      </Section>
     );
   }
 
   if (preBookError) {
     return (
-      <div className="min-h-screen bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-red-200">
-            <p className="text-red-500">{preBookError}</p>
-            <button
-              onClick={() =>
-                router.push(`/${locale}/hotel-details/${hotelCode}`)
-              }
-              className="mt-4 px-4 py-2 bg-greenGradient text-white rounded-lg hover:bg-greenGradient"
-            >
-              Retry
-            </button>
-          </div>
+      <Section className="min-h-[80vh] flex justify-center items-center">
+        <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
+          <p className="text-lg font-semibold text-gray-700">{preBookError}</p>
+          <button
+            onClick={() => router.push(`/${locale}/hotel-details/${hotelCode}`)}
+            className="mt-4 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+          >
+            {t("errors.retry") || "Retry"}
+          </button>
         </div>
-      </div>
+      </Section>
     );
   }
 
   if (!preBookedRoom) {
     return (
-      <div className="min-h-screen bg-gray-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-            <p className="text-gray-600">No room data available</p>
-          </div>
+      <Section className="min-h-[80vh] flex justify-center items-center">
+        <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
+          <p className="text-lg font-semibold text-gray-700">
+            {t("errors.noRoomAvailable") || "No room data available"}
+          </p>
         </div>
-      </div>
+      </Section>
     );
   }
 
-  // Main render
   return (
-    <Section className="py-10">
-      <div className="hidden md:block">
-        <Stepper currentStep={currentStep} stepsType="hotelSteps" />
-      </div>
-      <div className="min-h-screen py-2">
-        <div className="mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-6 pb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Enter guest details
-                  </h2>
-                </div>
-                <div className="px-6 pb-6 space-y-6">
-                  <CustomAccordion
-                    type="multiple"
-                    value={openItems}
-                    onValueChange={setOpenItems}
-                  >
-                    {roomsGuestData.map((roomData, roomIndex) => {
-                      const value = `room-${roomIndex}`;
-                      return (
-                        <CustomAccordionItem
-                          key={roomIndex}
-                          value={value}
-                          title={
-                            <div className="flex items-center gap-3">
-                              <span className="font-medium text-lg">
-                                Room {roomData.roomNumber}
-                              </span>
-                              <span className="text-sm">
-                                ({roomData.adults.length} Adult
-                                {roomData.adults.length > 1 ? "s" : ""}
-                                {roomData.children.length > 0
-                                  ? `, ${roomData.children.length} Child${
-                                      roomData.children.length > 1 ? "ren" : ""
-                                    }`
-                                  : ""}
-                                )
-                              </span>
-                            </div>
-                          }
-                        >
-                          <div className="space-y-4">
-                            {roomData.adults.map((adult, adultIndex) =>
-                              renderGuestInputs(
-                                adult,
-                                roomIndex,
-                                "adults",
-                                adultIndex,
-                                `Guest ${adultIndex + 1} (Adult)${
-                                  roomIndex === 0 && adultIndex === 0
-                                    ? " - Lead Guest *"
-                                    : ""
-                                }`
-                              )
-                            )}
-                            {roomData.children.map((child, childIndex) => {
-                              const childAge =
-                                searchParamsData?.PaxRooms?.[roomIndex]
-                                  ?.ChildrenAges?.[childIndex] || 0;
-                              return renderGuestInputs(
-                                child,
-                                roomIndex,
-                                "children",
-                                childIndex,
-                                `Guest ${
-                                  roomData.adults.length + childIndex + 1
-                                } (Child) - Age ${childAge} Yrs *`
-                              );
-                            })}
-                          </div>
-                        </CustomAccordionItem>
-                      );
-                    })}
-                  </CustomAccordion>
-                </div>
-              </div>
+    <>
+      <Head>
+        <title>{t("pageTitle") || "Hotel Booking"}</title>
+      </Head>
+      <Section className="py-10">
+        {loading ? (
+          <div className="flex justify-center items-center min-h-[80vh]">
+            <LoadingSpinner size="lg" />
+          </div>
+        ) : !selectedRoom || !hotel ? (
+          <div className="flex flex-col items-center justify-center min-h-[300px] text-center">
+            <p className="text-lg font-semibold text-gray-700">
+              {t("errors.noHotelAvailable") || "No hotel available"}
+            </p>
+            <p className="text-gray-500 mt-2">
+              {t("errors.noHotelDescription") || "Please search for a hotel first"}
+            </p>
+          </div>
+        ) : (
+          <div className="w-full flex items-start lg:flex-row flex-col gap-4 mt-6 mb-16">
+            {/* Right section - Guest Details & Payment */}
+            <div className="lg:w-[65%] w-full flex flex-col gap-4">
+              {currentStep === 2 && (
+                <>
 
-              {/* Fees and extras section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-6 pb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Fees and extras
-                  </h2>
-                  <p className="text-sm text-gray-600">Optional fees</p>
-                </div>
-                <div className="px-6 pb-6">
-                  {preBookedRoom.RateConditions && (
-                    <div className="space-y-4">
-                      {extractFeesAndExtras(preBookedRoom.RateConditions)
-                        .mandatory && (
-                        <div
-                          dangerouslySetInnerHTML={
-                            extractFeesAndExtras(preBookedRoom.RateConditions)
-                              .mandatory
-                          }
-                          className="text-sm text-gray-600 space-y-2"
-                        />
+
+                  <form>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                      <div className="p-6 pb-4">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          Enter guest details
+                        </h2>
+                      </div>
+                      <div className="px-6 pb-6 space-y-6">
+                        <CustomAccordion
+                          type="multiple"
+                          value={openItems}
+                          onValueChange={setOpenItems}
+                        >
+                          {roomsGuestData.map((roomData, roomIndex) => {
+                            const value = `room-${roomIndex}`;
+                            return (
+                              <CustomAccordionItem
+                                key={roomIndex}
+                                value={value}
+                                title={
+                                  <div className="flex items-center gap-3">
+                                    <span className="font-medium text-lg">
+                                      Room {roomData.roomNumber}
+                                    </span>
+                                    <span className="text-sm">
+                                      ({roomData.adults.length} Adult
+                                      {roomData.adults.length > 1 ? "s" : ""}
+                                      {roomData.children.length > 0
+                                        ? `, ${roomData.children.length} Child${roomData.children.length > 1 ? "ren" : ""}`
+                                        : ""}
+                                      )
+                                    </span>
+                                  </div>
+                                }
+                              >
+                                <div className="space-y-4">
+                                  {roomData.adults.map((adult, adultIndex) =>
+                                    renderGuestInputs(
+                                      adult,
+                                      roomIndex,
+                                      "adults",
+                                      adultIndex,
+                                      `Guest ${adultIndex + 1} (Adult)${roomIndex === 0 && adultIndex === 0
+                                        ? " - Lead Guest *"
+                                        : ""}`
+                                    )
+                                  )}
+                                  {roomData.children.map((child, childIndex) => {
+                                    const childAge =
+                                      searchParamsData?.PaxRooms?.[roomIndex]
+                                        ?.ChildrenAges?.[childIndex] || 0;
+                                    return renderGuestInputs(
+                                      child,
+                                      roomIndex,
+                                      "children",
+                                      childIndex,
+                                      `Guest ${roomData.adults.length + childIndex + 1
+                                      } (Child) - Age ${childAge} Yrs *`
+                                    );
+                                  })}
+                                </div>
+                              </CustomAccordionItem>
+                            );
+                          })}
+                        </CustomAccordion>
+                      </div>
+                    </div>
+
+                    <div className="pt-6 flex flex-col sm:flex-row gap-4 justify-between">
+                      <button
+                        type="button"
+                        onClick={handleContinueToPayment}
+                        disabled={!allTravelersCompleted}
+                        className={`w-full sm:w-auto border bg-emerald-800 border-gray-300 hover:border-gray-400 text-white transition py-3 px-4 rounded-xl font-semibold ${!allTravelersCompleted
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                          }`}
+                      >
+                        {t("payment.continueToPayment") || "Continue to Payment"}
+                      </button>
+
+                      {!allTravelersCompleted && (
+                        <p className="text-red-600 text-sm mt-2">
+                          {t("errors.completeAllTravelers") || "Please complete all guest details"}
+                        </p>
                       )}
-                      {extractFeesAndExtras(preBookedRoom.RateConditions)
-                        .optional && (
-                        <div
-                          dangerouslySetInnerHTML={
-                            extractFeesAndExtras(preBookedRoom.RateConditions)
-                              .optional
-                          }
-                          className="text-sm text-gray-600 space-y-2"
-                        />
+                    </div>
+                  </form>
+                  {/* Fees and extras section */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="p-6 pb-4">
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        Fees and extras
+                      </h2>
+                      <p className="text-sm text-gray-600">Optional fees</p>
+                    </div>
+                    <div className="px-6 pb-6">
+                      {preBookedRoom.RateConditions && (
+                        <div className="space-y-4">
+                          {extractFeesAndExtras(preBookedRoom.RateConditions).mandatory && (
+                            <div
+                              dangerouslySetInnerHTML={
+                                extractFeesAndExtras(preBookedRoom.RateConditions).mandatory
+                              }
+                              className="text-sm text-gray-600 space-y-2"
+                            />
+                          )}
+                          {extractFeesAndExtras(preBookedRoom.RateConditions).optional && (
+                            <div
+                              dangerouslySetInnerHTML={
+                                extractFeesAndExtras(preBookedRoom.RateConditions).optional
+                              }
+                              className="text-sm text-gray-600 space-y-2"
+                            />
+                          )}
+                          <p className="text-base text-gray-500 mt-4">
+                            The above list may not be comprehensive. Fees and deposits may not include tax and are subject to change.
+                          </p>
+                        </div>
                       )}
+                    </div>
+                  </div>
+
+                  {/* Check-in instructions section */}
+                  <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div className="p-6 pb-4">
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        Check in instructions
+                      </h2>
+                    </div>
+                    <div className="px-6 pb-6">
+                      {preBookedRoom.RateConditions &&
+                        extractCheckInInstructions(preBookedRoom.RateConditions) && (
+                          <div
+                            dangerouslySetInnerHTML={extractCheckInInstructions(
+                              preBookedRoom.RateConditions
+                            )}
+                            className="text-base text-gray-600 space-y-2"
+                          />
+                        )}
                       <p className="text-base text-gray-500 mt-4">
-                        The above list may not be comprehensive. Fees and
-                        deposits may not include tax and are subject to change.
+                        The above list may not be comprehensive. Please check with the property for any updates.
                       </p>
                     </div>
-                  )}
-                </div>
-              </div>
+                  </div>
+                </>
 
-              {/* Check-in instructions section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div className="p-6 pb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">
-                    Check in instructions
-                  </h2>
-                </div>
-                <div className="px-6 pb-6">
-                  {preBookedRoom.RateConditions &&
-                    extractCheckInInstructions(
-                      preBookedRoom.RateConditions
-                    ) && (
-                      <div
-                        dangerouslySetInnerHTML={extractCheckInInstructions(
-                          preBookedRoom.RateConditions
-                        )}
-                        className="text-base text-gray-600 space-y-2"
-                      />
-                    )}
-                  <p className="text-base text-gray-500 mt-4">
-                    The above list may not be comprehensive. Please check with
-                    the property for any updates.
-                  </p>
-                </div>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <button
-                    disabled={!isValidForm || loading === "pending"}
-                    className={`bg-greenGradient w-full p-4 rounded-lg text-slate-200 transition-opacity duration-300 ${
-                      !isValidForm || loading === "pending"
-                        ? "opacity-50 cursor-not-allowed"
-                        : "opacity-100 hover:opacity-90"
-                    }`}
-                    onClick={handleSubmit}
-                  >
-                    {loading === "pending" ? "Processing..." : "Book Now"}
-                  </button>
-                </div>
-              </div>
+              )}
 
-              {/* ✅ Redesigned Amenities Section */}
-              {preBookedRoom &&
-                preBookedRoom.Rooms?.[0]?.Amenities?.length > 0 && (
-                  <section className="mt-10">
-                    {/* Section Title */}
-                    <div className="flex items-center gap-2 mb-6">
-                      <span className="w-1.5 h-8 bg-emerald-500 rounded-full"></span>
-                      <h3 className="text-2xl font-bold text-gray-900">
-                        Room Amenities
-                      </h3>
-                    </div>
 
-                    {/* Amenities Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                      {preBookedRoom.Rooms[0].Amenities.map(
-                        (amenity: string, idx: number) => (
-                          <div
-                            key={idx}
-                            className="flex items-start gap-3 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-4"
-                          >
-                            <div className="flex-shrink-0">
-                              {/* Icon */}
-                              <svg
-                                className="w-5 h-5 text-emerald-500 mt-1"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth={2}
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                            </div>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                              {amenity}
-                            </p>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </section>
-                )}
+
+              {currentStep === 3 && (
+                <div className="flex flex-col gap-4">
+                  <PaymentForm
+                    hotelData={preBookedRoom}
+                    travelers={roomsGuestData}
+                    setLoading={setLoading}
+                    finalPrice={selectedRoom?.TotalFare || 0}
+                    bookingType="hotel"
+                  />
+
+                  <div className="flex justify-between items-center">
+                    <button
+                      type="button"
+                      onClick={handleBackToDetails}
+                      className="text-sm text-blue-600 hover:underline"
+                    >
+                      ← {t("payment.backToDetails") || "Back to Details"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <HotelBookingSummary hotel={hotel} room={preBookedRoom} />
+            {/* Left section - Booking Summary */}
+            <div className="lg:w-[35%] w-full flex flex-col gap-4">
+              <HotelBookingSummary hotel={hotel} room={preBookedRoom} />
+
+              {/* Amenities Section */}
+              {preBookedRoom && preBookedRoom.Rooms?.[0]?.Amenities?.length > 0 && (
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1.5 h-8 bg-emerald-500 rounded-full"></span>
+                    <h3 className="text-lg font-bold text-gray-900">Room Amenities</h3>
+                  </div>
+                  <div className="grid grid-cols-1 gap-3">
+                    {preBookedRoom.Rooms[0].Amenities.map((amenity: string, idx: number) => (
+                      <div key={idx} className="flex items-center gap-3">
+                        <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-gray-700 text-sm">{amenity}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div>
-    </Section>
+        )}
+      </Section>
+    </>
   );
 }

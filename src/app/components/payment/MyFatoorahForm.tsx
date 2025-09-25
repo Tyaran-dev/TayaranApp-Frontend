@@ -86,8 +86,8 @@ export default function PaymentPage({
         const res = await axios.post(`${baseUrl}/payment/execute-payment`, {
           sessionId: session.SessionId,
           invoiceValue: finalPrice,
-          flightData,
-          travelers, // send booking data to backend to store with invoiceId
+          flightData,                                                          // change here to handle hotel
+          travelers, // send booking data to backend to store with invoiceId   // change here to handle hotel
         });
 
         if (res.data?.paymentUrl) {
